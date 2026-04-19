@@ -59,7 +59,7 @@ export const useStore = create<AppState>()(
       savedCareers: [],
       bookings: [],
       progressLevel: 0,
-      theme: 'light',
+      theme: (new Date().getHours() >= 18 || new Date().getHours() < 6) ? 'dark' : 'light',
       chats: [],
 
       setUser: (user) => set({ user }),
