@@ -1,0 +1,17 @@
+export const PATHS = {
+  HOME: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  PRE_TEST: '/pre-test',
+  FULL_TEST: '/full-test',
+  RESULT: '/result',
+  CAREER_LIBRARY: '/careers',
+  CAREER_DETAIL: (id: string | number) => `/careers/${id}`,
+  MENTORS: '/mentors',
+  CHAT_LIST: '/chat',
+  CHAT_DETAIL: (mentorId: string | number) => `/chat/${mentorId}`,
+  BLOG: '/blog',
+  DASHBOARD: '/dashboard',
+  ABOUT: '/about',
+  CONTACT: '/contact',
+} as const;
