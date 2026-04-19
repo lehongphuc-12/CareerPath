@@ -1,5 +1,5 @@
 package com.example.CareerPath_BE.entities;
-// Generated 20 Apr 2026, 02:15:08 by Hibernate Tools 5.6.15.Final
+// Generated 20 Apr 2026, 02:31:16 by Hibernate Tools 5.6.15.Final
 
 
 import java.util.HashSet;
