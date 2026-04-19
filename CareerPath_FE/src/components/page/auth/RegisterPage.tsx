@@ -11,7 +11,7 @@ import {
   Sparkles,
   ChevronRight,
 } from 'lucide-react';
-import { useRegister } from '../../hooks/useRegister';
+import { useRegister } from '../../../hooks/useRegister';
 
 export default function RegisterPage() {
   const {

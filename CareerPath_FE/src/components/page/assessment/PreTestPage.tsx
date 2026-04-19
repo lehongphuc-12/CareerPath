@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '../../store/useStore';
+import { useStore } from '../../../store/useStore';
 import { Brain, Palette, MessageSquare, Timer, Users, BookOpen } from 'lucide-react';
 
 const traits = [

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { careers } from '../../api/mockData';
+import { careers } from '../../../api/mockData';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Bookmark } from 'lucide-react';
-import { useStore } from '../../store/useStore';
+import { useStore } from '../../../store/useStore';
 
 export default function CareerLibraryPage() {
   const [searchTerm, setSearchTerm] = useState('');

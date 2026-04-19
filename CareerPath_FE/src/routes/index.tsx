@@ -1,20 +1,20 @@
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
-import LandingPage from '../components/page/LandingPage';
-import PreTestPage from '../components/page/PreTestPage';
-import FullTestPage from '../components/page/FullTestPage';
-import ResultPage from '../components/page/ResultPage';
-import CareerLibraryPage from '../components/page/CareerLibraryPage';
-import CareerDetailPage from '../components/page/CareerDetailPage';
-import MentorPage from '../components/page/MentorPage';
-import BlogPage from '../components/page/BlogPage';
-import DashboardPage from '../components/page/DashboardPage';
-import AboutPage from '../components/page/AboutPage';
-import ContactPage from '../components/page/ContactPage';
-import ChatPage from '../components/page/ChatPage';
-import ChatListPage from '../components/page/ChatListPage';
-import LoginPage from '../components/page/LoginPage';
-import RegisterPage from '../components/page/RegisterPage';
+import LandingPage from '../components/page/main/LandingPage';
+import PreTestPage from '../components/page/assessment/PreTestPage';
+import FullTestPage from '../components/page/assessment/FullTestPage';
+import ResultPage from '../components/page/assessment/ResultPage';
+import CareerLibraryPage from '../components/page/career/CareerLibraryPage';
+import CareerDetailPage from '../components/page/career/CareerDetailPage';
+import MentorPage from '../components/page/mentor/MentorPage';
+import BlogPage from '../components/page/main/BlogPage';
+import DashboardPage from '../components/page/dashboard/DashboardPage';
+import AboutPage from '../components/page/main/AboutPage';
+import ContactPage from '../components/page/main/ContactPage';
+import ChatPage from '../components/page/chat/ChatPage';
+import ChatListPage from '../components/page/chat/ChatListPage';
+import LoginPage from '../components/page/auth/LoginPage';
+import RegisterPage from '../components/page/auth/RegisterPage';
 import { PATHS } from './paths';
 
 const AppRoutes = () => {

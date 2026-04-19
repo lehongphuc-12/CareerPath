@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '../../store/useStore';
-import { questions } from '../../api/mockData';
+import { useStore } from '../../../store/useStore';
+import { questions } from '../../../api/mockData';
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
 
 export default function FullTestPage() {

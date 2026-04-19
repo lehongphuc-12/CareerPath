@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MessageSquare, ChevronRight, User } from 'lucide-react';
-import { useStore } from '../../store/useStore';
-import { mentors } from '../../api/mockData';
+import { useStore } from '../../../store/useStore';
+import { mentors } from '../../../api/mockData';
 
 const ChatListPage: React.FC = () => {
   const { chats } = useStore();

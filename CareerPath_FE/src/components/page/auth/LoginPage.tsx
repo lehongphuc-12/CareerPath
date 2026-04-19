@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, Sparkles, ChevronRight } from 'lucide-react';
-import { useLogin } from '../../hooks/useLogin';
+import { useLogin } from '../../../hooks/useLogin';
 
 export default function LoginPage() {
   const {
