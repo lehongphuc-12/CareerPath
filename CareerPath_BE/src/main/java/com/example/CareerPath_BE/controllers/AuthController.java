@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.CareerPath_BE.dtos.Auth.LoginRequest;
 import com.example.CareerPath_BE.dtos.Auth.RegisterRequest;
+import com.example.CareerPath_BE.dtos.Auth.GoogleLoginRequest;
 import com.example.CareerPath_BE.dtos.Auth.AuthResponse;
 import com.example.CareerPath_BE.services.IAuthService;     
 
@@ -33,6 +34,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
+        return createResponseWithCookie(response);
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLogin(@RequestBody GoogleLoginRequest request) {
+        AuthResponse response = authService.loginWithGoogle(request.getIdToken());
         return createResponseWithCookie(response);
     }
 

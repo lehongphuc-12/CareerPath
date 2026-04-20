@@ -28,7 +28,7 @@ public class Users  implements java.io.Serializable {
      @Column(name = "email", unique = true, nullable = false)
      private String email;
 
-     @Column(name = "password_hash")
+     @Column(name = "password_hash", nullable = true)
      private String passwordHash;
 
      @Column(name = "full_name")

@@ -48,6 +48,27 @@ export const useLogin = () => {
     }
   };
 
+  const handleGoogleLogin = async (credential: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await authApi.loginWithGoogle(credential);
+      authService.saveAuth(response);
+      setUser({
+        ...response.user,
+        level: 1,
+        xp: 0
+      });
+      navigate('/');
+    } catch (err) {
+      setError('Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     formData,
     showPassword,
@@ -56,5 +77,6 @@ export const useLogin = () => {
     togglePasswordVisibility,
     handleInputChange,
     handleLogin,
+    handleGoogleLogin,
   };
 };

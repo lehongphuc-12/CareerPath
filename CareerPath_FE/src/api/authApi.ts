@@ -26,6 +26,17 @@ export const authApi = {
     return response.json();
   },
 
+  loginWithGoogle: async (idToken: string): Promise<AuthResponse> => {
+    const response = await fetch(`${BASE_URL}/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Google login failed');
+    return response.json();
+  },
+
   getMe: async (): Promise<AuthResponse['user']> => {
     const response = await fetch(`${BASE_URL}/me`, {
       method: 'GET',

@@ -7,5 +7,6 @@ import com.example.CareerPath_BE.dtos.Auth.AuthResponse;
 public interface IAuthService {
     AuthResponse login(LoginRequest request);
     AuthResponse register(RegisterRequest request);
+    AuthResponse loginWithGoogle(String idToken);
     AuthResponse.UserResponse getMe(String token);
 }
