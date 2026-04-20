@@ -23,24 +23,24 @@ public class Questions  implements java.io.Serializable {
      private Tests tests;
 
      @Column(name = "content")
-     private Serializable content;
+     private String content;
 
      @Column(name = "dimension")
      private String dimension;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "questions")
-     private Set choiceses = new HashSet(0);
+     private Set<Choices> choiceses = new HashSet<>(0);
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "questions")
-     private Set userAnswerses = new HashSet(0);
+     private Set<UserAnswers> userAnswerses = new HashSet<>(0);
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "questions")
-     private Set questionFactorses = new HashSet(0);
+     private Set<QuestionFactors> questionFactorses = new HashSet<>(0);
 
     public Questions() {
     }
 
-    public Questions(Tests tests, Serializable content, String dimension, Set choiceses, Set userAnswerses, Set questionFactorses) {
+    public Questions(Tests tests, String content, String dimension, Set<Choices> choiceses, Set<UserAnswers> userAnswerses, Set<QuestionFactors> questionFactorses) {
        this.tests = tests;
        this.content = content;
        this.dimension = dimension;
@@ -63,11 +63,11 @@ public class Questions  implements java.io.Serializable {
     public void setTests(Tests tests) {
         this.tests = tests;
     }
-    public Serializable getContent() {
+    public String getContent() {
         return this.content;
     }
     
-    public void setContent(Serializable content) {
+    public void setContent(String content) {
         this.content = content;
     }
     public String getDimension() {
@@ -77,25 +77,25 @@ public class Questions  implements java.io.Serializable {
     public void setDimension(String dimension) {
         this.dimension = dimension;
     }
-    public Set getChoiceses() {
+    public Set<Choices> getChoiceses() {
         return this.choiceses;
     }
     
-    public void setChoiceses(Set choiceses) {
+    public void setChoiceses(Set<Choices> choiceses) {
         this.choiceses = choiceses;
     }
-    public Set getUserAnswerses() {
+    public Set<UserAnswers> getUserAnswerses() {
         return this.userAnswerses;
     }
     
-    public void setUserAnswerses(Set userAnswerses) {
+    public void setUserAnswerses(Set<UserAnswers> userAnswerses) {
         this.userAnswerses = userAnswerses;
     }
-    public Set getQuestionFactorses() {
+    public Set<QuestionFactors> getQuestionFactorses() {
         return this.questionFactorses;
     }
     
-    public void setQuestionFactorses(Set questionFactorses) {
+    public void setQuestionFactorses(Set<QuestionFactors> questionFactorses) {
         this.questionFactorses = questionFactorses;
     }
 

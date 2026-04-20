@@ -23,7 +23,7 @@ public class Roles  implements java.io.Serializable {
      private String name;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "roles")
-     private Set userses = new HashSet(0);
+     private Set<Users> userses = new HashSet<>(0);
 
     public Roles() {
     }
@@ -32,7 +32,7 @@ public class Roles  implements java.io.Serializable {
     public Roles(String name) {
         this.name = name;
     }
-    public Roles(String name, Set userses) {
+    public Roles(String name, Set<Users> userses) {
        this.name = name;
        this.userses = userses;
     }
@@ -51,11 +51,11 @@ public class Roles  implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Set getUserses() {
+    public Set<Users> getUserses() {
         return this.userses;
     }
     
-    public void setUserses(Set userses) {
+    public void setUserses(Set<Users> userses) {
         this.userses = userses;
     }
 

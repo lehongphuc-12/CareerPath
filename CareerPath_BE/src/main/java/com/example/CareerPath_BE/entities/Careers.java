@@ -25,7 +25,7 @@ public class Careers  implements java.io.Serializable {
      private String name;
 
      @Column(name = "description")
-     private Serializable description;
+     private String description;
 
      @Column(name = "avg_salary")
      private BigDecimal avgSalary;
@@ -34,15 +34,15 @@ public class Careers  implements java.io.Serializable {
      private Integer demandLevel;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
-     private Set careerFactorses = new HashSet(0);
+     private Set<CareerFactors> careerFactorses = new HashSet<>(0);
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
-     private Set careerSkillses = new HashSet(0);
+     private Set<CareerSkills> careerSkillses = new HashSet<>(0);
 
     public Careers() {
     }
 
-    public Careers(String name, Serializable description, BigDecimal avgSalary, Integer demandLevel, Set careerFactorses, Set careerSkillses) {
+    public Careers(String name, String description, BigDecimal avgSalary, Integer demandLevel, Set<CareerFactors> careerFactorses, Set<CareerSkills> careerSkillses) {
        this.name = name;
        this.description = description;
        this.avgSalary = avgSalary;
@@ -65,11 +65,11 @@ public class Careers  implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Serializable getDescription() {
+    public String getDescription() {
         return this.description;
     }
     
-    public void setDescription(Serializable description) {
+    public void setDescription(String description) {
         this.description = description;
     }
     public BigDecimal getAvgSalary() {
@@ -86,18 +86,18 @@ public class Careers  implements java.io.Serializable {
     public void setDemandLevel(Integer demandLevel) {
         this.demandLevel = demandLevel;
     }
-    public Set getCareerFactorses() {
+    public Set<CareerFactors> getCareerFactorses() {
         return this.careerFactorses;
     }
     
-    public void setCareerFactorses(Set careerFactorses) {
+    public void setCareerFactorses(Set<CareerFactors> careerFactorses) {
         this.careerFactorses = careerFactorses;
     }
-    public Set getCareerSkillses() {
+    public Set<CareerSkills> getCareerSkillses() {
         return this.careerSkillses;
     }
     
-    public void setCareerSkillses(Set careerSkillses) {
+    public void setCareerSkillses(Set<CareerSkills> careerSkillses) {
         this.careerSkillses = careerSkillses;
     }
 

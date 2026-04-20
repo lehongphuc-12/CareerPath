@@ -37,12 +37,12 @@ public class UserProfiles  implements java.io.Serializable {
      private Integer grade;
 
      @Column(name = "bio")
-     private Serializable bio;
+     private String bio;
 
     public UserProfiles() {
     }
 
-    public UserProfiles(Genders genders, Users users, Date dateOfBirth, String school, Integer grade, Serializable bio) {
+    public UserProfiles(Genders genders, Users users, Date dateOfBirth, String school, Integer grade, String bio) {
        this.genders = genders;
        this.users = users;
        this.dateOfBirth = dateOfBirth;
@@ -93,11 +93,11 @@ public class UserProfiles  implements java.io.Serializable {
     public void setGrade(Integer grade) {
         this.grade = grade;
     }
-    public Serializable getBio() {
+    public String getBio() {
         return this.bio;
     }
     
-    public void setBio(Serializable bio) {
+    public void setBio(String bio) {
         this.bio = bio;
     }
 

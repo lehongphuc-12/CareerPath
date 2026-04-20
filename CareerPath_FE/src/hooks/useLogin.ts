@@ -2,10 +2,12 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { authService } from '../services/authService';
+import { useStore } from '../store/useStore';
 import { LoginRequest } from '../types/auth';
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const { setUser } = useStore();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +34,11 @@ export const useLogin = () => {
     try {
       const response = await authApi.login(formData);
       authService.saveAuth(response);
+      setUser({
+        ...response.user,
+        level: 1,
+        xp: 0
+      });
       navigate('/');
     } catch (err) {
       setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');

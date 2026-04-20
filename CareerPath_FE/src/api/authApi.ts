@@ -1,39 +1,37 @@
 import { LoginRequest, RegisterRequest, AuthResponse } from '../types/auth';
+import { authService } from '../services/authService';
 
-const BASE_URL = '/api'; // Placeholder for actual API base URL
+const BASE_URL = '/api/auth';
 
 export const authApi = {
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    // In a real app, this would be a fetch call:
-    // const response = await fetch(`${BASE_URL}/auth/login`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(data),
-    // });
-    // if (!response.ok) throw new Error('Login failed');
-    // return response.json();
-
-    // Mock response for now to ensure UI still works
-    console.log('API Login calling with:', data);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          token: 'mock-jwt-token',
-          user: { id: '1', name: 'Mock User', email: data.email, role: 'USER' },
-        });
-      }, 1000);
+    const response = await fetch(`${BASE_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'include',
     });
+    if (!response.ok) throw new Error('Login failed');
+    return response.json();
   },
 
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    console.log('API Register calling with:', data);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          token: 'mock-jwt-token',
-          user: { id: '2', name: data.name, email: data.email, role: 'USER' },
-        });
-      }, 1000);
+    const response = await fetch(`${BASE_URL}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'include',
     });
+    if (!response.ok) throw new Error('Registration failed');
+    return response.json();
+  },
+
+  getMe: async (): Promise<AuthResponse['user']> => {
+    const response = await fetch(`${BASE_URL}/me`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch user session');
+    return response.json();
   },
 };

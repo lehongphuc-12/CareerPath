@@ -22,15 +22,15 @@ public class Factors  implements java.io.Serializable {
      private String name;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "factors")
-     private Set questionFactorses = new HashSet(0);
+     private Set<QuestionFactors> questionFactorses = new HashSet<>(0);
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "factors")
-     private Set careerFactorses = new HashSet(0);
+     private Set<CareerFactors> careerFactorses = new HashSet<>(0);
 
     public Factors() {
     }
 
-    public Factors(FactorTypes factorTypes, String name, Set questionFactorses, Set careerFactorses) {
+    public Factors(FactorTypes factorTypes, String name, Set<QuestionFactors> questionFactorses, Set<CareerFactors> careerFactorses) {
        this.factorTypes = factorTypes;
        this.name = name;
        this.questionFactorses = questionFactorses;
@@ -58,18 +58,18 @@ public class Factors  implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Set getQuestionFactorses() {
+    public Set<QuestionFactors> getQuestionFactorses() {
         return this.questionFactorses;
     }
     
-    public void setQuestionFactorses(Set questionFactorses) {
+    public void setQuestionFactorses(Set<QuestionFactors> questionFactorses) {
         this.questionFactorses = questionFactorses;
     }
-    public Set getCareerFactorses() {
+    public Set<CareerFactors> getCareerFactorses() {
         return this.careerFactorses;
     }
     
-    public void setCareerFactorses(Set careerFactorses) {
+    public void setCareerFactorses(Set<CareerFactors> careerFactorses) {
         this.careerFactorses = careerFactorses;
     }
 

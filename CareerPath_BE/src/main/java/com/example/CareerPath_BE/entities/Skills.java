@@ -26,12 +26,12 @@ public class Skills  implements java.io.Serializable {
      private String type;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "skills")
-     private Set careerSkillses = new HashSet(0);
+     private Set<CareerSkills> careerSkillses = new HashSet<>(0);
 
     public Skills() {
     }
 
-    public Skills(String name, String type, Set careerSkillses) {
+    public Skills(String name, String type, Set<CareerSkills> careerSkillses) {
        this.name = name;
        this.type = type;
        this.careerSkillses = careerSkillses;
@@ -58,11 +58,11 @@ public class Skills  implements java.io.Serializable {
     public void setType(String type) {
         this.type = type;
     }
-    public Set getCareerSkillses() {
+    public Set<CareerSkills> getCareerSkillses() {
         return this.careerSkillses;
     }
     
-    public void setCareerSkillses(Set careerSkillses) {
+    public void setCareerSkillses(Set<CareerSkills> careerSkillses) {
         this.careerSkillses = careerSkillses;
     }
 

@@ -21,12 +21,12 @@ public class FactorTypes  implements java.io.Serializable {
      private String name;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "factorTypes")
-     private Set factorses = new HashSet(0);
+     private Set<Factors> factorses = new HashSet<>(0);
 
     public FactorTypes() {
     }
 
-    public FactorTypes(String name, Set factorses) {
+    public FactorTypes(String name, Set<Factors> factorses) {
        this.name = name;
        this.factorses = factorses;
     }
@@ -45,11 +45,11 @@ public class FactorTypes  implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Set getFactorses() {
+    public Set<Factors> getFactorses() {
         return this.factorses;
     }
     
-    public void setFactorses(Set factorses) {
+    public void setFactorses(Set<Factors> factorses) {
         this.factorses = factorses;
     }
 

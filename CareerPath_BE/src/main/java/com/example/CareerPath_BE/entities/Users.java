@@ -29,7 +29,7 @@ public class Users  implements java.io.Serializable {
      private String email;
 
      @Column(name = "password_hash")
-     private Serializable passwordHash;
+     private String passwordHash;
 
      @Column(name = "full_name")
      private String fullName;
@@ -38,20 +38,20 @@ public class Users  implements java.io.Serializable {
      private Date createdAt;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
-     private Set userProfileses = new HashSet(0);
+     private Set<UserProfiles> userProfileses = new HashSet<>(0);
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
-     private Set userAnswerses = new HashSet(0);
+     private Set<UserAnswers> userAnswerses = new HashSet<>(0);
 
     public Users() {
     }
 
 	
-    public Users(String email, Serializable passwordHash) {
+    public Users(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
     }
-    public Users(Roles roles, String email, Serializable passwordHash, String fullName, Date createdAt, Set userProfileses, Set userAnswerses) {
+    public Users(Roles roles, String email, String passwordHash, String fullName, Date createdAt, Set<UserProfiles> userProfileses, Set<UserAnswers> userAnswerses) {
        this.roles = roles;
        this.email = email;
        this.passwordHash = passwordHash;
@@ -82,11 +82,11 @@ public class Users  implements java.io.Serializable {
     public void setEmail(String email) {
         this.email = email;
     }
-    public Serializable getPasswordHash() {
+    public String getPasswordHash() {
         return this.passwordHash;
     }
     
-    public void setPasswordHash(Serializable passwordHash) {
+    public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
     public String getFullName() {
@@ -103,18 +103,18 @@ public class Users  implements java.io.Serializable {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-    public Set getUserProfileses() {
+    public Set<UserProfiles> getUserProfileses() {
         return this.userProfileses;
     }
     
-    public void setUserProfileses(Set userProfileses) {
+    public void setUserProfileses(Set<UserProfiles> userProfileses) {
         this.userProfileses = userProfileses;
     }
-    public Set getUserAnswerses() {
+    public Set<UserAnswers> getUserAnswerses() {
         return this.userAnswerses;
     }
     
-    public void setUserAnswerses(Set userAnswerses) {
+    public void setUserAnswerses(Set<UserAnswers> userAnswerses) {
         this.userAnswerses = userAnswerses;
     }
 

@@ -2,10 +2,12 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { authService } from '../services/authService';
+import { useStore } from '../store/useStore';
 import { RegisterRequest } from '../types/auth';
 
 export const useRegister = () => {
   const navigate = useNavigate();
+  const { setUser } = useStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +47,11 @@ export const useRegister = () => {
       const { confirmPassword, ...registerData } = formData;
       const response = await authApi.register(registerData);
       authService.saveAuth(response);
+      setUser({
+        ...response.user,
+        level: 1,
+        xp: 0
+      });
       navigate('/');
     } catch (err) {
       setError('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');

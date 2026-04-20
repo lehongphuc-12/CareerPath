@@ -22,12 +22,12 @@ public class Tests  implements java.io.Serializable {
      private String name;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "tests")
-     private Set questionses = new HashSet(0);
+     private Set<Questions> questionses = new HashSet<>(0);
 
     public Tests() {
     }
 
-    public Tests(TestTypes testTypes, String name, Set questionses) {
+    public Tests(TestTypes testTypes, String name, Set<Questions> questionses) {
        this.testTypes = testTypes;
        this.name = name;
        this.questionses = questionses;
@@ -54,11 +54,11 @@ public class Tests  implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    public Set getQuestionses() {
+    public Set<Questions> getQuestionses() {
         return this.questionses;
     }
     
-    public void setQuestionses(Set questionses) {
+    public void setQuestionses(Set<Questions> questionses) {
         this.questionses = questionses;
     }
 

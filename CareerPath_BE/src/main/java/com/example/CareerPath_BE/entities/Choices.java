@@ -25,18 +25,18 @@ public class Choices  implements java.io.Serializable {
      private Questions questions;
 
      @Column(name = "content")
-     private Serializable content;
+     private String content;
 
      @Column(name = "score_value")
      private Integer scoreValue;
 
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "choices")
-     private Set userAnswerses = new HashSet(0);
+     private Set<UserAnswers> userAnswerses = new HashSet<>(0);
 
     public Choices() {
     }
 
-    public Choices(Questions questions, Serializable content, Integer scoreValue, Set userAnswerses) {
+    public Choices(Questions questions, String content, Integer scoreValue, Set<UserAnswers> userAnswerses) {
        this.questions = questions;
        this.content = content;
        this.scoreValue = scoreValue;
@@ -57,11 +57,11 @@ public class Choices  implements java.io.Serializable {
     public void setQuestions(Questions questions) {
         this.questions = questions;
     }
-    public Serializable getContent() {
+    public String getContent() {
         return this.content;
     }
     
-    public void setContent(Serializable content) {
+    public void setContent(String content) {
         this.content = content;
     }
     public Integer getScoreValue() {
@@ -71,11 +71,11 @@ public class Choices  implements java.io.Serializable {
     public void setScoreValue(Integer scoreValue) {
         this.scoreValue = scoreValue;
     }
-    public Set getUserAnswerses() {
+    public Set<UserAnswers> getUserAnswerses() {
         return this.userAnswerses;
     }
     
-    public void setUserAnswerses(Set userAnswerses) {
+    public void setUserAnswerses(Set<UserAnswers> userAnswerses) {
         this.userAnswerses = userAnswerses;
     }
 
