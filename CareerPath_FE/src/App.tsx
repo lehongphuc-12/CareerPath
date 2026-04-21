@@ -4,6 +4,7 @@ import AppRoutes from './routes';
 import { useStore } from './store/useStore';
 import { authService } from './services/authService';
 import { authApi } from './api/authApi';
+import { ToastContainer } from './components/common/Toast';
 
 function App() {
   const { theme, setUser } = useStore();
@@ -49,6 +50,7 @@ function App() {
   return (
     <Router>
       <AppRoutes />
+      <ToastContainer />
     </Router>
   );
 }
