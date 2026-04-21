@@ -40,8 +40,8 @@ export const useLogin = () => {
         xp: 0
       });
       navigate('/');
-    } catch (err) {
-      setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+    } catch (err: any) {
+      setError(err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -61,8 +61,8 @@ export const useLogin = () => {
         xp: 0
       });
       navigate('/');
-    } catch (err) {
-      setError('Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
+    } catch (err: any) {
+      setError(err.message || 'Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
       console.error(err);
     } finally {
       setIsLoading(false);

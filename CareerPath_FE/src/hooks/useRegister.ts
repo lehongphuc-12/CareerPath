@@ -53,8 +53,8 @@ export const useRegister = () => {
         xp: 0
       });
       navigate('/');
-    } catch (err) {
-      setError('Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
+    } catch (err: any) {
+      setError(err.message || 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.');
       console.error(err);
     } finally {
       setIsLoading(false);

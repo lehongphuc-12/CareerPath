@@ -49,8 +49,11 @@ public class AuthController {
     }
 
     private ResponseEntity<AuthResponse> createResponseWithCookie(AuthResponse response) {
+        if (response != null && response.getMessage() != null) {
+            return ResponseEntity.badRequest().body(response);
+        }
         if (response == null || response.getToken() == null) {
-            return ResponseEntity.ok(response);
+            return ResponseEntity.badRequest().body(response);
         }
 
         ResponseCookie cookie = ResponseCookie.from("token", response.getToken())

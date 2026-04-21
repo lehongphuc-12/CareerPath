@@ -11,7 +11,10 @@ export const authApi = {
       body: JSON.stringify(data),
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Login failed');
+    if (!response.ok) {
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.message || 'Login failed');
+    }
     return response.json();
   },
 
@@ -22,7 +25,10 @@ export const authApi = {
       body: JSON.stringify(data),
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Registration failed');
+    if (!response.ok) {
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.message || 'Registration failed');
+    }
     return response.json();
   },
 
@@ -33,7 +39,10 @@ export const authApi = {
       body: JSON.stringify({ idToken }),
       credentials: 'include',
     });
-    if (!response.ok) throw new Error('Google login failed');
+    if (!response.ok) {
+      const err = await response.json().catch(() => null);
+      throw new Error(err?.message || 'Google login failed');
+    }
     return response.json();
   },
 
