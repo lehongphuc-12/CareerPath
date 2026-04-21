@@ -50,7 +50,8 @@ CREATE TABLE users (
     role_id INT REFERENCES roles(role_id),
     created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
 );
-
+ALTER TABLE users
+ALTER COLUMN password_hash NVARCHAR(255) NULL;
 CREATE TABLE user_profiles (
     profile_id INT IDENTITY PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,

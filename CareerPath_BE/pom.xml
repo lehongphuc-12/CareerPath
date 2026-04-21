@@ -68,9 +68,37 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>	
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>	
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -108,13 +136,11 @@
     </executions>
 
     <configuration>
-        <jdbcUrl>${db.url}</jdbcUrl>
-        <userName>${db.username}</userName>
-        <password>${db.password}</password>
-        <driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</driver>
-        <revengFile>src/main/resources/hibernate.reveng.xml</revengFile>
         <packageName>com.example.CareerPath_BE.entities</packageName>
         <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
+        <revengFile>src/main/resources/hibernate.reveng.xml</revengFile>
+        <ejb3>true</ejb3>
+        <jdk5>true</jdk5>
     </configuration>
 </plugin>	
 

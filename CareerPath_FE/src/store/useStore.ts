@@ -2,8 +2,10 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface User {
+  id: string;
   name: string;
   email: string;
+  role: string;
   level: number;
   xp: number;
 }
@@ -53,13 +55,13 @@ interface AppState {
 export const useStore = create<AppState>()(
   persist(
     (set) => ({
-      user: { name: "Alex Chen", email: "alex@example.com", level: 1, xp: 0 },
+      user: null,
       testResult: null,
       preTestResult: null,
       savedCareers: [],
       bookings: [],
       progressLevel: 0,
-      theme: 'light',
+      theme: (new Date().getHours() >= 18 || new Date().getHours() < 6) ? 'dark' : 'light',
       chats: [],
 
       setUser: (user) => set({ user }),

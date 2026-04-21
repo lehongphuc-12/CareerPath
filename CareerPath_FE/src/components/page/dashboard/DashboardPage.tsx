@@ -1,5 +1,5 @@
-import { useStore } from '../../store/useStore';
-import { careers } from '../../api/mockData';
+import { useStore } from '../../../store/useStore';
+import { careers } from '../../../api/mockData';
 import { Link } from 'react-router-dom';
 import { Award, Bookmark, Calendar, ChevronRight, Zap } from 'lucide-react';
 

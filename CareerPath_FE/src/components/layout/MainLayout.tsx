@@ -1,22 +1,7 @@
-import { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import Navbar from '../common/Navbar';
-import { useStore } from '../../store/useStore';
 
 export default function MainLayout() {
-  const { theme } = useStore();
-
-  useEffect(() => {
-    console.log('Current theme:', theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
-    }
-  }, [theme]);
-
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display transition-colors duration-300">
       <Navbar />

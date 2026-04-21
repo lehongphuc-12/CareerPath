@@ -1,39 +1,56 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MainLayout from './components/layout/MainLayout';
-import LandingPage from './components/page/LandingPage';
-import PreTestPage from './components/page/PreTestPage';
-import FullTestPage from './components/page/FullTestPage';
-import ResultPage from './components/page/ResultPage';
-import CareerLibraryPage from './components/page/CareerLibraryPage';
-import CareerDetailPage from './components/page/CareerDetailPage';
-import MentorPage from './components/page/MentorPage';
-import BlogPage from './components/page/BlogPage';
-import DashboardPage from './components/page/DashboardPage';
-import AboutPage from './components/page/AboutPage';
-import ContactPage from './components/page/ContactPage';
-import ChatPage from './components/page/ChatPage';
-import ChatListPage from './components/page/ChatListPage';
+import { useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes';
+import { useStore } from './store/useStore';
+import { authService } from './services/authService';
+import { authApi } from './api/authApi';
+import { ToastContainer } from './components/common/Toast';
 
 function App() {
+  const { theme, setUser } = useStore();
+
+  useEffect(() => {
+    // Session recovery
+    const initAuth = async () => {
+      try {
+        const user = await authApi.getMe();
+        if (user) {
+          // Map API user to store user (adding defaults for level/xp)
+          setUser({
+            ...user,
+            level: 1,
+            xp: 0
+          });
+          // Update persistence just in case
+          authService.saveAuth({ user });
+        }
+      } catch (err) {
+        // Only clear and log if we thought we were authenticated
+        if (authService.isAuthenticated()) {
+          console.warn('Session recovery failed:', err);
+          authService.clearAuth();
+          setUser(null as any);
+        }
+      }
+    };
+
+    initAuth();
+  }, [setUser]);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+    }
+  }, [theme]);
+
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} />
-          <Route path="pre-test" element={<PreTestPage />} />
-          <Route path="full-test" element={<FullTestPage />} />
-          <Route path="result" element={<ResultPage />} />
-          <Route path="careers" element={<CareerLibraryPage />} />
-          <Route path="careers/:id" element={<CareerDetailPage />} />
-          <Route path="mentors" element={<MentorPage />} />
-          <Route path="chat" element={<ChatListPage />} />
-          <Route path="chat/:mentorId" element={<ChatPage />} />
-          <Route path="blog" element={<BlogPage />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<ContactPage />} />
-        </Route>
-      </Routes>
+      <AppRoutes />
+      <ToastContainer />
     </Router>
   );
 }

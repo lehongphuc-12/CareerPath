@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ArrowLeft, User, Bot, Loader2 } from 'lucide-react';
-import { useStore } from '../../store/useStore';
-import { mentors } from '../../api/mockData';
+import { useStore } from '../../../store/useStore';
+import { mentors } from '../../../api/mockData';
 import { GoogleGenAI } from "@google/genai";
 
 const ChatPage: React.FC = () => {

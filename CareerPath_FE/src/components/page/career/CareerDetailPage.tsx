@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
-import { careers, mentors } from '../../api/mockData';
+import { careers, mentors } from '../../../api/mockData';
 import { Bookmark, TrendingUp, Users, Award, ArrowRight } from 'lucide-react';
-import { useStore } from '../../store/useStore';
+import { useStore } from '../../../store/useStore';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 
 export default function CareerDetailPage() {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { mentors } from '../../api/mockData';
+import { mentors } from '../../../api/mockData';
 import { Search, Filter, Star, MessageCircle, Calendar, X, MessageSquare } from 'lucide-react';
-import { useStore } from '../../store/useStore';
+import { useStore } from '../../../store/useStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 

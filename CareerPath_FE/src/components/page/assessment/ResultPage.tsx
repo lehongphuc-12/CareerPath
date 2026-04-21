@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import { useStore } from '../../store/useStore';
-import { careers, mentors } from '../../api/mockData';
+import { useStore } from '../../../store/useStore';
+import { careers, mentors } from '../../../api/mockData';
 import { Link } from 'react-router-dom';
 import { ArrowRight, TrendingDown, Lightbulb, UserPlus, FileText } from 'lucide-react';
 
