@@ -14,7 +14,7 @@ public class FactorTypes  implements java.io.Serializable {
 
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
-     @Column(name = "factor_type_id")
+     @Column(name = "type_id")
      private Integer typeId;
 
      @Column(name = "name")

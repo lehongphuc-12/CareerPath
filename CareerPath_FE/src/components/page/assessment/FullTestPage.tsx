@@ -11,8 +11,9 @@ export default function FullTestPage() {
   const [answers, setAnswers] = useState<number[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setTestResult, addXP } = useStore();
+  const { setTestResult, setAssessmentResult, preTestResult, addXP } = useStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,56 +36,35 @@ export default function FullTestPage() {
   const currentQuestion = questions[currentIdx] || questions[0];
   const progress = questions.length ? ((currentIdx + 1) / questions.length) * 100 : 0;
 
-  const buildResult = (selectedAnswers: number[]) => {
-    const scoresByDimension = {
-      MBTI: [] as number[],
-      LOGIC: [] as number[],
-      INTEREST: [] as number[],
-    };
+  const submitAssessment = async (selectedAnswers: number[]) => {
+    try {
+      setSubmitting(true);
+      setError(null);
 
-    selectedAnswers.forEach((answerId, index) => {
-      const question = questions[index];
-      const choice = question?.choices.find((item) => item.choiceId === answerId);
+      const payload = selectedAnswers
+        .map((choiceId, index) => {
+          const question = questions[index];
+          if (!question || choiceId == null) {
+            return null;
+          }
 
-      if (!question || !choice) {
-        return;
-      }
+          return {
+            questionId: question.questionId,
+            choiceId,
+          };
+        })
+        .filter((item): item is { questionId: number; choiceId: number } => item !== null);
 
-      if (question.dimension === 'MBTI') {
-        scoresByDimension.MBTI.push(choice.scoreValue);
-      } else if (question.dimension === 'LOGIC') {
-        scoresByDimension.LOGIC.push(choice.scoreValue);
-      } else if (question.dimension === 'INTEREST') {
-        scoresByDimension.INTEREST.push(choice.scoreValue);
-      }
-    });
-
-    const averageToPercent = (values: number[]) => {
-      if (!values.length) {
-        return 0;
-      }
-
-      const average = values.reduce((sum, value) => sum + value, 0) / values.length;
-      return Math.round((average / 5) * 100);
-    };
-
-    const mbtiScore = averageToPercent(scoresByDimension.MBTI);
-    const logicScore = averageToPercent(scoresByDimension.LOGIC);
-    const interestScore = averageToPercent(scoresByDimension.INTEREST);
-    const overallScore = averageToPercent([
-      ...scoresByDimension.MBTI,
-      ...scoresByDimension.LOGIC,
-      ...scoresByDimension.INTEREST,
-    ]);
-
-    return {
-      logic: logicScore,
-      creativity: interestScore,
-      communication: mbtiScore,
-      discipline: overallScore,
-      teamwork: mbtiScore,
-      selfLearning: overallScore,
-    };
+      const result = await assessmentApi.submitAssessment(payload, preTestResult);
+      setAssessmentResult(result);
+      setTestResult(result.traitScores);
+      addXP(50);
+      navigate('/result');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Khong the nop bai test.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAnswer = (optionId: number) => {
@@ -94,11 +74,10 @@ export default function FullTestPage() {
 
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(currentIdx + 1);
-    } else {
-      setTestResult(buildResult(newAnswers));
-      addXP(50);
-      navigate('/result');
+      return;
     }
+
+    submitAssessment(newAnswers);
   };
 
   if (loading) {
@@ -141,14 +120,14 @@ export default function FullTestPage() {
     <div className="max-w-2xl mx-auto py-10 space-y-8">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-primary uppercase tracking-widest">Tiến độ</span>
+          <span className="text-sm font-semibold text-primary uppercase tracking-widest">Tien do</span>
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold">{currentIdx + 1}</span>
             <span className="text-slate-400">/ {questions.length}</span>
           </div>
         </div>
         <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-          <motion.div 
+          <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             className="h-full bg-primary rounded-full"
@@ -172,8 +151,9 @@ export default function FullTestPage() {
             {currentQuestion.choices.map((option) => (
               <button
                 key={option.choiceId}
-                onClick={() => handleAnswer(option.choiceId)}
-                className={`group relative flex items-center p-5 rounded-xl border-2 bg-slate-50 dark:bg-slate-800/30 transition-all text-left ${
+                onClick={() => !submitting && handleAnswer(option.choiceId)}
+                disabled={submitting}
+                className={`group relative flex items-center p-5 rounded-xl border-2 bg-slate-50 dark:bg-slate-800/30 transition-all text-left disabled:opacity-70 ${
                   answers[currentIdx] === option.choiceId
                     ? 'border-primary'
                     : 'border-slate-100 dark:border-slate-800 hover:border-primary/50'
@@ -194,15 +174,15 @@ export default function FullTestPage() {
       </AnimatePresence>
 
       <div className="flex justify-between items-center">
-        <button 
+        <button
           onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)}
-          disabled={currentIdx === 0}
+          disabled={currentIdx === 0 || submitting}
           className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
-          <ArrowLeft size={20} /> Quay lại
+          <ArrowLeft size={20} /> Quay lai
         </button>
         <div className="flex items-center gap-2 text-slate-500 text-sm">
-          <Info size={16} /> Lựa chọn của bạn giúp AI định hướng chính xác hơn.
+          <Info size={16} /> {submitting ? 'Dang phan tich ket qua va xin danh gia AI...' : 'Lua chon cua ban giup AI dinh huong chinh xac hon.'}
         </div>
       </div>
     </div>

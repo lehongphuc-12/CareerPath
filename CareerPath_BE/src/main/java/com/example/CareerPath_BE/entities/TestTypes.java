@@ -16,7 +16,7 @@ public class TestTypes  implements java.io.Serializable {
 
      @Id
      @GeneratedValue(strategy = GenerationType.IDENTITY)
-     @Column(name = "test_type_id")
+     @Column(name = "type_id")
      private Integer typeId;
 
      @Column(name = "name")

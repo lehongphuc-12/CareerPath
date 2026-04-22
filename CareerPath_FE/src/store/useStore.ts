@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { AssessmentResult } from '../types/assessment';
 
 interface User {
   id: string;
@@ -34,6 +35,7 @@ interface Chat {
 interface AppState {
   user: User | null;
   testResult: TestResult | null;
+  assessmentResult: AssessmentResult | null;
   preTestResult: TestResult | null;
   savedCareers: string[];
   bookings: any[];
@@ -43,6 +45,7 @@ interface AppState {
   
   setUser: (user: User) => void;
   setTestResult: (result: TestResult) => void;
+  setAssessmentResult: (result: AssessmentResult | null) => void;
   setPreTestResult: (result: TestResult) => void;
   saveCareer: (id: string) => void;
   unsaveCareer: (id: string) => void;
@@ -57,6 +60,7 @@ export const useStore = create<AppState>()(
     (set) => ({
       user: null,
       testResult: null,
+      assessmentResult: null,
       preTestResult: null,
       savedCareers: [],
       bookings: [],
@@ -66,6 +70,7 @@ export const useStore = create<AppState>()(
 
       setUser: (user) => set({ user }),
       setTestResult: (testResult) => set({ testResult }),
+      setAssessmentResult: (assessmentResult) => set({ assessmentResult }),
       setPreTestResult: (preTestResult) => set({ preTestResult }),
       saveCareer: (id) => set((state) => ({ 
         savedCareers: state.savedCareers.includes(id) ? state.savedCareers : [...state.savedCareers, id] 

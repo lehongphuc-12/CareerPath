@@ -15,7 +15,7 @@ public class Tests  implements java.io.Serializable {
      private Integer testId;
 
      @ManyToOne(fetch = FetchType.LAZY)
-     @JoinColumn(name = "test_type_id")
+     @JoinColumn(name = "type_id")
      private TestTypes testTypes;
 
      @Column(name = "name")

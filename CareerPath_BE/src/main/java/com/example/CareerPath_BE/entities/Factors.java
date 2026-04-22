@@ -15,7 +15,7 @@ public class Factors  implements java.io.Serializable {
      private Integer factorId;
 
      @ManyToOne(fetch = FetchType.LAZY)
-     @JoinColumn(name = "factor_type_id")
+     @JoinColumn(name = "type_id")
      private FactorTypes factorTypes;
 
      @Column(name = "name")

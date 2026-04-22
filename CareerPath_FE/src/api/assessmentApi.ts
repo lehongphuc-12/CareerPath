@@ -1,4 +1,4 @@
-import { Question } from '../types/assessment';
+import { AssessmentAnswerRequest, AssessmentResult, Question, TraitScores } from '../types/assessment';
 
 const BASE_URL = '/api/questions';
 
@@ -19,6 +19,30 @@ export const assessmentApi = {
 
     if (!response.ok || !result?.success) {
       throw new Error(result?.message || 'Failed to fetch questions');
+    }
+
+    return result.data;
+  },
+
+  submitAssessment: async (
+    answers: AssessmentAnswerRequest[],
+    preTestResult: TraitScores | null
+  ): Promise<AssessmentResult> => {
+    const response = await fetch(`${BASE_URL}/submit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        answers,
+        preTestResult,
+      }),
+    });
+
+    const result: ApiResponse<AssessmentResult> = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.success) {
+      throw new Error(result?.message || 'Failed to submit assessment');
     }
 
     return result.data;
