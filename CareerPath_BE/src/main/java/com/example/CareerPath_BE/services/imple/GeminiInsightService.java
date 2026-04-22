@@ -50,6 +50,7 @@ public class GeminiInsightService implements IGeminiInsightService {
         }
 
         try {
+            String normalizedModel = normalizeModelName(geminiModel);
             String prompt = buildPrompt(traitScores, preTestResult, factorScores, recommendedCareers);
             String requestBody = objectMapper.writeValueAsString(Map.of(
                     "contents", List.of(Map.of(
@@ -61,7 +62,7 @@ public class GeminiInsightService implements IGeminiInsightService {
             ));
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/" + geminiModel + ":generateContent?key=" + geminiApiKey))
+                    .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/" + normalizedModel + ":generateContent?key=" + geminiApiKey))
                     .timeout(Duration.ofSeconds(30))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
@@ -89,6 +90,21 @@ public class GeminiInsightService implements IGeminiInsightService {
             log.warn("Unable to generate Gemini insight", e);
             return fallbackInsight(traitScores, recommendedCareers);
         }
+    }
+
+    private String normalizeModelName(String rawModel) {
+        if (rawModel == null || rawModel.isBlank()) {
+            return "gemini-2.5-flash";
+        }
+
+        String normalized = rawModel.trim();
+        if (normalized.startsWith("models/")) {
+            normalized = normalized.substring("models/".length());
+        }
+        if (normalized.endsWith(":generateContent")) {
+            normalized = normalized.substring(0, normalized.indexOf(":generateContent"));
+        }
+        return normalized;
     }
 
     private String buildPrompt(
