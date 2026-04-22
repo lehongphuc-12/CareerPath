@@ -4,13 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.CareerPath_BE.dtos.ApiResponse;
+import com.example.CareerPath_BE.dtos.Career.CareerDetailsResponseDto;
 import com.example.CareerPath_BE.dtos.Career.CareerResponseDto;
 import com.example.CareerPath_BE.services.ICareerService;
+
+import jakarta.websocket.server.PathParam;
 
 @RestController
 @RequestMapping("/api/careers")
@@ -28,6 +32,14 @@ public class CareerController {
         Page<CareerResponseDto> careers = careerService.getCareers(page, size, search, sortField, sortOrder);
         return ResponseEntity.ok(
                 new ApiResponse<>(true,200,"Careers fetched successfully", careers)
+        );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CareerDetailsResponseDto>> getCareerById(@PathVariable(value = "id") int id) {
+        CareerDetailsResponseDto career = careerService.getCareerById(id);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true,200,"Career fetched successfully", career)
         );
     }
 }

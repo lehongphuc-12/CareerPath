@@ -1,4 +1,4 @@
-import { Career, PageResponse } from '../types/career';
+import { Career, CareerDetails, PageResponse } from '../types/career';
 
 const BASE_URL = '/api/careers';
 
@@ -37,4 +37,19 @@ export const careerApi = {
 
     return result.data;
   },
+
+  getCareerById: async (id: number): Promise<CareerDetails> => {
+    const response = await fetch(`${BASE_URL}/${id}`, {
+      method: 'GET',
+    });
+
+    const result: ApiResponse<CareerDetails> = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.success) {
+      throw new Error(result?.message || 'Career not found');
+    }
+
+    return result.data;
+  },
 };
+

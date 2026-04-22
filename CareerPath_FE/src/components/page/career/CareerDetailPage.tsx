@@ -1,113 +1,187 @@
 import { useParams, Link } from 'react-router-dom';
-import { careers, mentors } from '../../../api/mockData';
-import { Bookmark, TrendingUp, Users, Award, ArrowRight } from 'lucide-react';
+import { mentors } from '../../../api/mockData';
+import {
+  Bookmark,
+  Users,
+  ArrowRight,
+  Loader2,
+  ArrowLeft,
+  DollarSign,
+  BarChart2,
+} from 'lucide-react';
 import { useStore } from '../../../store/useStore';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import { useState, useEffect } from 'react';
+import { careerApi } from '../../../api/careerApi';
+import { CareerDetails } from '../../../types/career';
+
+const DEFAULT_IMAGE =
+  'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop';
+
+const DEMAND_LABELS: Record<number, { label: string; color: string }> = {
+  1: { label: 'Thấp', color: 'text-slate-500' },
+  2: { label: 'Trung bình', color: 'text-yellow-500' },
+  3: { label: 'Cao', color: 'text-emerald-500' },
+  4: { label: 'Rất cao', color: 'text-orange-500' },
+  5: { label: 'Cực kỳ cao', color: 'text-red-500' },
+};
 
 export default function CareerDetailPage() {
   const { id } = useParams();
-  const { savedCareers, saveCareer, unsaveCareer, theme } = useStore();
-  const career = careers.find(c => c.id === id);
+  const { savedCareers, saveCareer, unsaveCareer } = useStore();
 
-  if (!career) return <div>Không tìm thấy ngành nghề.</div>;
+  const [career, setCareer] = useState<CareerDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const radarData = Object.entries(career.radarData).map(([trait, value]) => ({
-    trait: trait.toUpperCase(),
-    value
-  }));
+  useEffect(() => {
+    if (!id) return;
+    setIsLoading(true);
+    setError(null);
+    careerApi
+      .getCareerById(Number(id))
+      .then((data) => setCareer(data))
+      .catch((err) => setError(err.message || 'Không thể tải thông tin ngành nghề.'))
+      .finally(() => setIsLoading(false));
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    );
+  }
+
+  if (error || !career) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <p className="text-2xl font-bold text-slate-600 dark:text-slate-400">
+          {error || 'Không tìm thấy ngành nghề.'}
+        </p>
+        <Link
+          to="/careers"
+          className="flex items-center gap-2 text-primary font-bold hover:underline"
+        >
+          <ArrowLeft size={18} /> Quay lại danh sách
+        </Link>
+      </div>
+    );
+  }
+
+  const isSaved = savedCareers.includes(career.careerId);
+  const demandInfo = career.demandLevel ? DEMAND_LABELS[career.demandLevel] : null;
 
   return (
     <div className="space-y-12 py-10">
+      {/* Hero Header */}
       <header className="relative h-[400px] rounded-3xl overflow-hidden">
-        <img src={career.image} alt={career.name} className="w-full h-full object-cover" />
+        <img
+          src={career.image || DEFAULT_IMAGE}
+          alt={career.name}
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-10">
           <div className="max-w-4xl space-y-4">
             <div className="flex items-center gap-4">
-              <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-full">Hot Career 2024</span>
-              <button 
-                onClick={() => savedCareers.includes(career.id) ? unsaveCareer(career.id) : saveCareer(career.id)}
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md transition-all ${savedCareers.includes(career.id) ? 'bg-primary text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
+              <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-full">
+                Hot Career 2025
+              </span>
+              <button
+                onClick={() =>
+                  isSaved ? unsaveCareer(career.careerId) : saveCareer(career.careerId)
+                }
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md transition-all ${isSaved ? 'bg-primary text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
               >
-                <Bookmark size={16} /> {savedCareers.includes(career.id) ? 'Đã lưu' : 'Lưu ngành'}
+                <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
+                {isSaved ? 'Đã lưu' : 'Lưu ngành'}
               </button>
             </div>
-            <h1 className="text-5xl font-black text-white">{career.vietnameseName}</h1>
-            <p className="text-xl text-slate-300">{career.name}</p>
+            <h1 className="text-5xl font-black text-white">{career.name}</h1>
           </div>
         </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content */}
         <div className="lg:col-span-2 space-y-12">
           <section className="space-y-6">
             <h2 className="text-3xl font-bold">Tổng quan</h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-              {career.description}
+              {career.description || 'Chưa có mô tả cho ngành nghề này.'}
             </p>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <p className="text-xs text-slate-500 font-bold uppercase mb-1">Lương trung bình</p>
-                <p className="text-2xl font-black text-primary">{career.salary}</p>
-              </div>
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <p className="text-xs text-slate-500 font-bold uppercase mb-1">Tăng trưởng</p>
-                <p className="text-2xl font-black text-emerald-500">{career.growth}</p>
-              </div>
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <p className="text-xs text-slate-500 font-bold uppercase mb-1">Cơ hội việc làm</p>
-                <p className="text-2xl font-black text-orange-500">{career.demand}</p>
-              </div>
-            </div>
-          </section>
 
-          <section className="space-y-8">
-            <h2 className="text-3xl font-bold">Lộ trình 5 năm phát triển</h2>
-            <div className="relative space-y-12 before:absolute before:left-8 before:top-0 before:bottom-0 before:w-1 before:bg-slate-200 dark:before:bg-slate-800">
-              {career.roadmap.map((step, i) => (
-                <div key={i} className="relative pl-20">
-                  <div className="absolute left-6 top-0 size-5 bg-primary rounded-full ring-4 ring-white dark:ring-background-dark"></div>
-                  <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                    <span className="text-xs font-black text-primary uppercase tracking-widest">{step.year}</span>
-                    <h4 className="text-xl font-bold mt-1">{step.title}</h4>
-                    <p className="text-slate-500 dark:text-slate-400 mt-2">{step.desc}</p>
-                  </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                <div className="p-3 bg-primary/10 rounded-xl">
+                  <DollarSign className="text-primary" size={24} />
                 </div>
-              ))}
+                <div>
+                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">
+                    Lương trung bình
+                  </p>
+                  <p className="text-2xl font-black text-primary">
+                    {career.avgSalary
+                      ? `$${Number(career.avgSalary).toLocaleString()}`
+                      : 'Chưa cập nhật'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+                <div className="p-3 bg-emerald-500/10 rounded-xl">
+                  <BarChart2 className="text-emerald-500" size={24} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">
+                    Nhu cầu thị trường
+                  </p>
+                  <p className={`text-2xl font-black ${demandInfo?.color || 'text-slate-400'}`}>
+                    {demandInfo?.label || 'Chưa cập nhật'}
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
         </div>
 
+        {/* Sidebar */}
         <div className="space-y-8">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
-            <h3 className="font-bold text-lg mb-6">Hệ năng lực yêu cầu</h3>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                  <PolarGrid stroke={theme === 'dark' ? '#334155' : '#e2e8f0'} />
-                  <PolarAngleAxis dataKey="trait" tick={{ fill: theme === 'dark' ? '#94a3b8' : '#64748b', fontSize: 10 }} />
-                  <Radar name="Required" dataKey="value" stroke="#6467f2" fill="#6467f2" fillOpacity={0.3} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
+          {/* Mentor suggestions */}
           <div className="bg-primary/5 border border-primary/20 rounded-3xl p-8">
             <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
               <Users className="text-primary" /> Mentor gợi ý
             </h3>
             <div className="space-y-4">
-              {mentors.map(mentor => (
-                <div key={mentor.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                  <img src={mentor.image} alt={mentor.name} className="size-12 rounded-full object-cover" />
+              {mentors.map((mentor) => (
+                <div
+                  key={mentor.id}
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+                >
+                  <img
+                    src={mentor.image}
+                    alt={mentor.name}
+                    className="size-12 rounded-full object-cover"
+                  />
                   <div className="flex-1">
                     <p className="font-bold text-sm">{mentor.name}</p>
                     <p className="text-xs text-slate-500">{mentor.role}</p>
                   </div>
-                  <Link to="/mentors" className="text-primary"><ArrowRight size={18} /></Link>
+                  <Link to="/mentors" className="text-primary">
+                    <ArrowRight size={18} />
+                  </Link>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Back to list */}
+          <Link
+            to="/careers"
+            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+          >
+            <ArrowLeft size={18} /> Xem tất cả ngành nghề
+          </Link>
         </div>
       </div>
     </div>

@@ -1,3 +1,12 @@
+export interface CareerDetails {
+  careerId: number;
+  name: string;
+  description: string;
+  image?: string;
+  avgSalary?: number;
+  demandLevel?: number;
+}
+
 export interface Career {
   careerId: number;
   name: string;

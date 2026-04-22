@@ -4,6 +4,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.*;
+
+import com.example.CareerPath_BE.dtos.Career.CareerDetailsResponseDto;
 import com.example.CareerPath_BE.dtos.Career.CareerResponseDto;
 import com.example.CareerPath_BE.entities.Careers;
 import com.example.CareerPath_BE.repositories.CareersRepository;
@@ -48,6 +50,22 @@ public class CareerService implements ICareerService {
                 career.getAvgSalary(),
                 career.getDemandLevel()
             )
+        );
+    }
+
+    @Override
+    public CareerDetailsResponseDto getCareerById(int id) {
+        Careers career = careersRepository.findById(id).orElse(null);
+        if (career == null) {
+            return null;
+        }
+        return new CareerDetailsResponseDto(
+            career.getCareerId(),
+            career.getName(),
+            career.getDescription(),
+            "",
+            career.getAvgSalary(),
+            career.getDemandLevel()
         );
     }
 }
