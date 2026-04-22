@@ -33,6 +33,9 @@ public class Careers  implements java.io.Serializable {
      @Column(name = "demand_level")
      private Integer demandLevel;
 
+    //  @Column(name = "image")
+    //  private String image;  
+
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
      private Set<CareerFactors> careerFactorses = new HashSet<>(0);
 

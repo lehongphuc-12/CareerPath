@@ -25,40 +25,61 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        
-        String token = null;
+        protected void doFilterInternal(HttpServletRequest request,
+                               HttpServletResponse response,
+                               FilterChain filterChain)
+        throws ServletException, IOException {
 
-        // Try to get token from Cookie
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                    break;
-                }
+    String path = request.getRequestURI();
+
+    // ✅ bỏ qua public API
+    if (path.contains("/api/auth") || path.contains("/api/careers")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
+
+    String token = null;
+
+    // Cookie
+    if (request.getCookies() != null) {
+        for (Cookie cookie : request.getCookies()) {
+            if ("token".equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
             }
         }
+    }
 
-        // Fallback to Authorization header
-        if (token == null) {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                token = authHeader.substring(7);
-            }
+    // Header
+    if (token == null) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
         }
+    }
 
+    try {
         if (token != null && jwtUtil.validateToken(token)) {
+
             Long userId = jwtUtil.extractUserId(token);
             List<String> roles = jwtUtil.extractRoles(token);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userId, null, roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-            );
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userId,
+                            null,
+                            roles.stream()
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toList())
+                    );
+
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+    } catch (Exception e) {
+        SecurityContextHolder.clearContext();
+    }
 
-        filterChain.doFilter(request, response);
+    filterChain.doFilter(request, response);
     }
 }

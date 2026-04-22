@@ -26,4 +26,13 @@ public class ApiResponse<T> {
     String message;
     
     T data;
+
+    public ApiResponse(String message, T data) {
+        this.message = message;
+        this.data = data;
+    }
+
+    public ApiResponse(T data) {
+        this.data = data;
+    }
 }
