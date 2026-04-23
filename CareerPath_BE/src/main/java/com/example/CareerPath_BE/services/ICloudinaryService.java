@@ -6,5 +6,5 @@ public interface ICloudinaryService {
     String uploadFile(MultipartFile file, String folder);
     void deleteFile(String imageUrl);
     void validateFile(MultipartFile file);
-    String extractPublicId(String imageUrl)
+    String extractPublicId(String imageUrl);
 }
