@@ -500,3 +500,50 @@ INSERT INTO career_factors (career_id, factor_id, weight) VALUES
 (30,1,0.7),(30,3,0.85),(30,5,0.8),(30,14,0.95);
 
 SET IDENTITY_INSERT careers OFF;
+
+CREATE TABLE blogs (
+    blog_id INT IDENTITY PRIMARY KEY,
+
+    title NVARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE, -- dùng cho URL SEO
+
+    content NVARCHAR(MAX) NOT NULL,
+    thumbnail VARCHAR(255),
+
+    author_id INT REFERENCES users(user_id), -- người viết
+
+    status VARCHAR(50) DEFAULT 'draft', 
+    -- draft | published | archived
+
+    view_count INT DEFAULT 0,
+    like_count INT DEFAULT 0,
+
+    is_featured BIT DEFAULT 0, -- bài nổi bật
+
+    published_at DATETIME2,
+    created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME,
+    is_deleted BIT DEFAULT 0,
+    deleted_at DATETIME2,
+    language VARCHAR(10) DEFAULT 'vi',
+);
+CREATE TABLE blog_categories (
+    category_id INT IDENTITY PRIMARY KEY,
+    name NVARCHAR(100),
+    slug VARCHAR(100) UNIQUE
+);
+CREATE TABLE blog_category_map (
+    id INT IDENTITY PRIMARY KEY,
+    blog_id INT REFERENCES blogs(blog_id) ON DELETE CASCADE,
+    category_id INT REFERENCES blog_categories(category_id)
+);
+CREATE TABLE blog_comments (
+    comment_id INT IDENTITY PRIMARY KEY,
+    blog_id INT REFERENCES blogs(blog_id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(user_id),
+
+    content NVARCHAR(MAX),
+    parent_id INT, -- reply comment
+
+    created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
+);
