@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { userApi } from '../api/userApi';
 import { UserProfile, UpdateProfileRequest } from '../types/user';
 import { useToastStore } from '../store/useToastStore';
+import { useStore } from '../store/useStore';
 
 export const useProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
