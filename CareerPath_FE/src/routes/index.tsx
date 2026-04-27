@@ -16,6 +16,7 @@ import ChatListPage from '../components/page/chat/ChatListPage';
 import LoginPage from '../components/page/auth/LoginPage';
 import RegisterPage from '../components/page/auth/RegisterPage';
 import ProfilePage from '../components/page/profile/ProfilePage';
+import BlogDetailPage from '../components/page/blogs/BlogDetailPage';
 import { PATHS } from './paths';
 
 const AppRoutes = () => {
@@ -23,7 +24,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path={PATHS.LOGIN} element={<LoginPage />} />
       <Route path={PATHS.REGISTER} element={<RegisterPage />} />
-      
+
       <Route path="/" element={<MainLayout />}>
         <Route index element={<LandingPage />} />
         <Route path={PATHS.PRE_TEST.replace('/', '')} element={<PreTestPage />} />
@@ -39,6 +40,7 @@ const AppRoutes = () => {
         <Route path={PATHS.PROFILE.replace('/', '')} element={<ProfilePage />} />
         <Route path={PATHS.ABOUT.replace('/', '')} element={<AboutPage />} />
         <Route path={PATHS.CONTACT.replace('/', '')} element={<ContactPage />} />
+        <Route path="blog/:id" element={<BlogDetailPage />} />
       </Route>
     </Routes>
   );
