@@ -38,6 +38,7 @@ interface AppState {
   testResult: TestResult | null;
   assessmentResult: AssessmentResult | null;
   preTestResult: TestResult | null;
+  academicScores: Record<string, number> | null;
   savedCareers: string[];
   bookings: any[];
   progressLevel: number;
@@ -48,6 +49,7 @@ interface AppState {
   setTestResult: (result: TestResult) => void;
   setAssessmentResult: (result: AssessmentResult | null) => void;
   setPreTestResult: (result: TestResult) => void;
+  setAcademicScores: (scores: Record<string, number> | null) => void;
   saveCareer: (id: string) => void;
   unsaveCareer: (id: string) => void;
   addBooking: (booking: any) => void;
@@ -63,6 +65,7 @@ export const useStore = create<AppState>()(
       testResult: null,
       assessmentResult: null,
       preTestResult: null,
+      academicScores: null,
       savedCareers: [],
       bookings: [],
       progressLevel: 0,
@@ -73,6 +76,7 @@ export const useStore = create<AppState>()(
       setTestResult: (testResult) => set({ testResult }),
       setAssessmentResult: (assessmentResult) => set({ assessmentResult }),
       setPreTestResult: (preTestResult) => set({ preTestResult }),
+      setAcademicScores: (academicScores) => set({ academicScores }),
       saveCareer: (id) => set((state) => ({ 
         savedCareers: state.savedCareers.includes(id) ? state.savedCareers : [...state.savedCareers, id] 
       })),

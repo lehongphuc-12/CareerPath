@@ -43,7 +43,8 @@ public class GeminiInsightService implements IGeminiInsightService {
             AssessmentTraitScoresDto traitScores,
             AssessmentTraitScoresDto preTestResult,
             Map<String, Integer> factorScores,
-            List<AssessmentCareerMatchDto> recommendedCareers
+            List<AssessmentCareerMatchDto> recommendedCareers,
+            Map<String, Double> academicScores
     ) {
         if (geminiApiKey == null || geminiApiKey.isBlank()) {
             return fallbackInsight(traitScores, recommendedCareers);
@@ -51,7 +52,7 @@ public class GeminiInsightService implements IGeminiInsightService {
 
         try {
             String normalizedModel = normalizeModelName(geminiModel);
-            String prompt = buildPrompt(traitScores, preTestResult, factorScores, recommendedCareers);
+            String prompt = buildPrompt(traitScores, preTestResult, factorScores, recommendedCareers, academicScores);
             String requestBody = objectMapper.writeValueAsString(Map.of(
                     "contents", List.of(Map.of(
                             "parts", List.of(Map.of("text", prompt))
@@ -111,8 +112,13 @@ public class GeminiInsightService implements IGeminiInsightService {
             AssessmentTraitScoresDto traitScores,
             AssessmentTraitScoresDto preTestResult,
             Map<String, Integer> factorScores,
-            List<AssessmentCareerMatchDto> recommendedCareers
+            List<AssessmentCareerMatchDto> recommendedCareers,
+            Map<String, Double> academicScores
     ) {
+        String academicSection = academicScores == null || academicScores.isEmpty()
+                ? "Khong cung cap"
+                : academicScores.toString();
+
         return """
                 Ban la chuyen gia huong nghiep cho hoc sinh, sinh vien.
                 Hay viet nhan xet bang tieng Viet, ngan gon, ro rang, thuc te va khich le.
@@ -122,6 +128,7 @@ public class GeminiInsightService implements IGeminiInsightService {
                 - Pre-test scores: %s
                 - Factor scores: %s
                 - Recommended careers: %s
+                - Academic scores: %s
 
                 Yeu cau:
                 - Tra ve JSON hop le duy nhat.
@@ -129,7 +136,7 @@ public class GeminiInsightService implements IGeminiInsightService {
                 - summary gom 2-3 cau.
                 - recommendation la 1-2 cau, co tinh hanh dong cu the.
                 - Khong dung markdown.
-                """.formatted(traitScores, preTestResult, factorScores, recommendedCareers);
+                """.formatted(traitScores, preTestResult, factorScores, recommendedCareers, academicSection);
     }
 
     private AssessmentInsightDto fallbackInsight(

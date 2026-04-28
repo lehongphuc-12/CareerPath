@@ -13,7 +13,7 @@ export default function FullTestPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setTestResult, setAssessmentResult, preTestResult, addXP } = useStore();
+  const { setTestResult, setAssessmentResult, preTestResult, academicScores, addXP } = useStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function FullTestPage() {
         })
         .filter((item): item is { questionId: number; choiceId: number } => item !== null);
 
-      const result = await assessmentApi.submitAssessment(payload, preTestResult);
+      const result = await assessmentApi.submitAssessment(payload, preTestResult, academicScores);
       
       await new Promise((resolve) => setTimeout(resolve, 4000));
       clearInterval(stepInterval);

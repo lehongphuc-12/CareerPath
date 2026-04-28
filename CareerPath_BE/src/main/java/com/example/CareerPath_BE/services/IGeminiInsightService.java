@@ -12,6 +12,7 @@ public interface IGeminiInsightService {
             AssessmentTraitScoresDto traitScores,
             AssessmentTraitScoresDto preTestResult,
             Map<String, Integer> factorScores,
-            List<AssessmentCareerMatchDto> recommendedCareers
+            List<AssessmentCareerMatchDto> recommendedCareers,
+            Map<String, Double> academicScores
     );
 }
