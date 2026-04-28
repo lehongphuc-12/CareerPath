@@ -70,7 +70,7 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/blog"
+            to="/blogs"
             className={({ isActive }) =>
               isActive
                 ? 'text-primary font-semibold text-sm'
@@ -123,7 +123,11 @@ export default function Navbar() {
                   </div>
                   <div className="w-10 h-10 bg-primary/10 border-2 border-primary/20 rounded-xl flex items-center justify-center text-primary font-black shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
                     {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       (user.name || 'U').charAt(0).toUpperCase()
                     )}
@@ -196,7 +200,7 @@ export default function Navbar() {
           <Link to="/mentors" onClick={() => setIsMenuOpen(false)}>
             Mentors
           </Link>
-          <Link to="/blog" onClick={() => setIsMenuOpen(false)}>
+          <Link to="/blogs" onClick={() => setIsMenuOpen(false)}>
             Blog
           </Link>
           <Link to="/about" onClick={() => setIsMenuOpen(false)}>
@@ -208,7 +212,11 @@ export default function Navbar() {
                 <div className="flex items-center gap-4 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl mb-2">
                   <div className="w-12 h-12 bg-primary/10 border-2 border-primary/20 rounded-xl flex items-center justify-center text-primary font-black text-xl overflow-hidden">
                     {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       (user.name || 'U').charAt(0).toUpperCase()
                     )}

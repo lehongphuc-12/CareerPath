@@ -11,6 +11,7 @@ export const PATHS = {
   CHAT_LIST: '/chat',
   CHAT_DETAIL: (mentorId: string | number) => `/chat/${mentorId}`,
   BLOG: '/blogs',
+  BLOG_DETAIL: (blogId: string | number) => `/blogs/${blogId}`,
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
   ABOUT: '/about',

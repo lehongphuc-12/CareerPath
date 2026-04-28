@@ -7,13 +7,15 @@ export default function BlogPage() {
 
   const getExcerpt = (content: string) => {
     if (!content) return '';
-    return content.length > 160 ? content.substring(0, 160) + '...' : content;
+    const plainText = content.replace(/<[^>]*>/g, '');
+    return plainText.length > 160 ? plainText.substring(0, 160) + '...' : plainText;
   };
 
   const getReadTime = (content: string) => {
     if (!content) return '3 phút';
+    const plainText = content.replace(/<[^>]*>/g, '');
     const wordsPerMinute = 200;
-    const words = content.split(/\s+/).length;
+    const words = plainText.trim().split(/\s+/).filter(Boolean).length;
     return `${Math.ceil(words / wordsPerMinute)} phút`;
   };
 
@@ -43,48 +45,83 @@ export default function BlogPage() {
               <Loader2 className="animate-spin text-primary" size={40} />
             </div>
           ) : !blogPage?.content || blogPage.content.length === 0 ? (
-            <div className="text-center py-20 text-slate-500">
-              Hiện chưa có bài viết nào.
-            </div>
+            <div className="text-center py-20 text-slate-500">Hiện chưa có bài viết nào.</div>
           ) : (
             <>
-              {blogPage.content.map((blog) => (
-                <Link key={blog.blogId} to={`/blog/${blog.blogId}`} className="group block space-y-6">
-                  <div className="aspect-video rounded-3xl overflow-hidden relative">
-                    <img
-                      src={blog.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000'}
-                      alt={blog.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute top-6 left-6">
-                      <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-full">
-                        Nghề nghiệp
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-6 text-slate-500 text-sm">
-                      <span className="flex items-center gap-2">
-                        <Calendar size={16} /> {formatDate(blog.createdAt)}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <Clock size={16} /> {getReadTime(blog.content)} đọc
-                      </span>
-                    </div>
-                    <h2 className="text-3xl font-bold group-hover:text-primary transition-colors leading-tight">
-                      {blog.title}
-                    </h2>
-                    <p className="text-lg text-slate-600 dark:text-slate-400 line-clamp-2">
-                      {getExcerpt(blog.content)}
-                    </p>
-                    <div className="flex items-center gap-2 text-primary font-bold">
-                      Đọc tiếp <ArrowRight size={18} />
-                    </div>
-                  </div>
-                </Link>
-              ))}
+              {blogPage.content.map((blog, index) => {
+                if (index < 2) {
+                  return (
+                    <Link
+                      key={blog.blogId}
+                      to={`/blogs/${blog.blogId}`}
+                      className="group block space-y-6"
+                    >
+                      <div className="aspect-video rounded-3xl overflow-hidden relative">
+                        <img
+                          src={
+                            blog.thumbnail ||
+                            'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000'
+                          }
+                          alt={blog.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute top-6 left-6">
+                          <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-full">
+                            Nghề nghiệp
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-6 text-slate-500 text-sm">
+                          <span className="flex items-center gap-2">
+                            <Calendar size={16} /> {formatDate(blog.createdAt)}
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <Clock size={16} /> {getReadTime(blog.content)} đọc
+                          </span>
+                        </div>
+                        <h2 className="text-3xl font-bold group-hover:text-primary transition-colors leading-tight">
+                          {blog.title}
+                        </h2>
+                        <p className="text-lg text-slate-600 dark:text-slate-400 line-clamp-2">
+                          {getExcerpt(blog.content)}
+                        </p>
+                        <div className="flex items-center gap-2 text-primary font-bold">
+                          Đọc tiếp <ArrowRight size={18} />
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                } else {
+                  return (
+                    <Link
+                      key={blog.blogId}
+                      to={`/blogs/${blog.blogId}`}
+                      className="group block space-y-2 pt-6 bg-slate-50/50 dark:bg-slate-900/50  hover:border-primary/30 transition-all"
+                    >
+                      <div className="flex items-center gap-4 text-slate-500 text-xs">
+                        <span className="px-2 py-0.5 bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold uppercase rounded-full">
+                          Nghề nghiệp
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar size={14} /> {formatDate(blog.createdAt)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock size={14} /> {getReadTime(blog.content)} đọc
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors leading-snug">
+                        {blog.title}
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                        {getExcerpt(blog.content)}
+                      </p>
+                    </Link>
+                  );
+                }
+              })}
 
-              {blogPage.totalPages > 1 && (
+              {blogPage && blogPage.totalPages >= 1 && (
                 <div className="flex justify-center items-center gap-4 pt-8 border-t border-slate-200 dark:border-slate-800">
                   <button
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
