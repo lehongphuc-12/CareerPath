@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/useStore';
 import { assessmentApi } from '../../../api/assessmentApi';
 import { Question } from '../../../types/assessment';
-import { ArrowLeft, Info } from 'lucide-react';
+import { ArrowLeft, Info, Loader2 } from 'lucide-react';
 
 export default function FullTestPage() {
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -36,10 +36,23 @@ export default function FullTestPage() {
   const currentQuestion = questions[currentIdx] || questions[0];
   const progress = questions.length ? ((currentIdx + 1) / questions.length) * 100 : 0;
 
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  const loadingPhrases = [
+    "Đang tổng hợp câu trả lời...",
+    "AI đang phân tích thế mạnh của bạn...",
+    "Đang đối chiếu dữ liệu với 100+ ngành nghề...",
+    "Đang chuẩn bị lộ trình phát triển..."
+  ];
+
   const submitAssessment = async (selectedAnswers: number[]) => {
     try {
       setSubmitting(true);
       setError(null);
+
+      const stepInterval = setInterval(() => {
+        setLoadingStep((prev) => (prev < 3 ? prev + 1 : prev));
+      }, 1000);
 
       const payload = selectedAnswers
         .map((choiceId, index) => {
@@ -56,13 +69,16 @@ export default function FullTestPage() {
         .filter((item): item is { questionId: number; choiceId: number } => item !== null);
 
       const result = await assessmentApi.submitAssessment(payload, preTestResult);
+      
+      await new Promise((resolve) => setTimeout(resolve, 4000));
+      clearInterval(stepInterval);
+
       setAssessmentResult(result);
       setTestResult(result.traitScores);
       addXP(50);
       navigate('/result');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Khong the nop bai test.');
-    } finally {
       setSubmitting(false);
     }
   };
@@ -74,11 +90,27 @@ export default function FullTestPage() {
 
     if (currentIdx < questions.length - 1) {
       setCurrentIdx(currentIdx + 1);
-      return;
     }
-
-    submitAssessment(newAnswers);
   };
+
+  if (submitting) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center space-y-6">
+        <div className="relative flex items-center justify-center">
+          <div className="absolute size-24 bg-primary/20 rounded-full animate-ping" />
+          <div className="size-12 bg-primary rounded-full flex items-center justify-center text-white relative">
+            <Loader2 className="animate-spin" size={24} />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold animate-pulse">{loadingPhrases[loadingStep]}</h2>
+          <p className="text-sm text-slate-500 max-w-sm mx-auto">
+            Hệ thống AI đang tính toán kết quả và đối chiếu lộ trình phù hợp cho bạn.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -179,11 +211,22 @@ export default function FullTestPage() {
           disabled={currentIdx === 0 || submitting}
           className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
         >
-          <ArrowLeft size={20} /> Quay lai
+          <ArrowLeft size={20} /> Quay lại
         </button>
-        <div className="flex items-center gap-2 text-slate-500 text-sm">
-          <Info size={16} /> {submitting ? 'Dang phan tich ket qua va xin danh gia AI...' : 'Lua chon cua ban giup AI dinh huong chinh xac hon.'}
-        </div>
+
+        {currentIdx === questions.length - 1 ? (
+          <button
+            onClick={() => submitAssessment(answers)}
+            disabled={submitting || answers[currentIdx] === undefined}
+            className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+          >
+            Nộp bài
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 text-slate-500 text-sm">
+            <Info size={16} /> {submitting ? 'Đang phân tích kết quả...' : 'Lựa chọn của bạn giúp AI định hướng chính xác hơn.'}
+          </div>
+        )}
       </div>
     </div>
   );
