@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/questions/submit").permitAll()
                 .requestMatchers("/api/auth/**", "/api/careers", "/api/careers/**", "/api/questions", "/api/questions/**").permitAll()
                 .requestMatchers(ApiConstants.PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers("/api/blogs", "/api/blogs/**").permitAll()
                 .anyRequest().authenticated()   
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

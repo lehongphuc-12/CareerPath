@@ -10,7 +10,7 @@ export const PATHS = {
   MENTORS: '/mentors',
   CHAT_LIST: '/chat',
   CHAT_DETAIL: (mentorId: string | number) => `/chat/${mentorId}`,
-  BLOG: '/blog',
+  BLOG: '/blogs',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
   ABOUT: '/about',

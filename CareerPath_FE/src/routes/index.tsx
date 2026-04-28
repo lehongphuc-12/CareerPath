@@ -40,7 +40,7 @@ const AppRoutes = () => {
         <Route path={PATHS.PROFILE.replace('/', '')} element={<ProfilePage />} />
         <Route path={PATHS.ABOUT.replace('/', '')} element={<AboutPage />} />
         <Route path={PATHS.CONTACT.replace('/', '')} element={<ContactPage />} />
-        <Route path="blog/:id" element={<BlogDetailPage />} />
+        <Route path="blogs/:id" element={<BlogDetailPage />} />
       </Route>
     </Routes>
   );
