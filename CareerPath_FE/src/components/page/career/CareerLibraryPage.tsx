@@ -1,43 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, Bookmark, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
-import { careerApi } from '../../../api/careerApi';
-import { Career, PageResponse } from '../../../types/career';
+import { useCareers } from '../../../hooks/useCareers';
 
 export default function CareerLibraryPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
   const { savedCareers, saveCareer, unsaveCareer } = useStore();
+  const { searchTerm, setSearchTerm, careerPage, isLoading, page, setPage } = useCareers();
 
-  const [careerPage, setCareerPage] = useState<PageResponse<Career> | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(0);
-
-  // Debounce search term to avoid spamming API
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-      setPage(0); // Reset page when search changes
-    }, 500);
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
-
-  const fetchCareers = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await careerApi.getCareers(page, 8, debouncedSearch);
-      setCareerPage(data);
-    } catch (error) {
-      console.error('Failed to fetch careers:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [page, debouncedSearch]);
-
-  useEffect(() => {
-    fetchCareers();
-  }, [fetchCareers]);
 
   return (
     <div className="space-y-10 py-10">

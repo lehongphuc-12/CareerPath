@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { mentors } from '../../../api/mockData';
 import {
   Bookmark,
@@ -10,9 +10,7 @@ import {
   BarChart2,
 } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
-import { useState, useEffect } from 'react';
-import { careerApi } from '../../../api/careerApi';
-import { CareerDetails } from '../../../types/career';
+import { useCareerDetail } from '../../../hooks/useCareerDetail';
 
 const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop';
@@ -26,23 +24,9 @@ const DEMAND_LABELS: Record<number, { label: string; color: string }> = {
 };
 
 export default function CareerDetailPage() {
-  const { id } = useParams();
   const { savedCareers, saveCareer, unsaveCareer } = useStore();
+  const { career, isLoading, error } = useCareerDetail();
 
-  const [career, setCareer] = useState<CareerDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-    setIsLoading(true);
-    setError(null);
-    careerApi
-      .getCareerById(Number(id))
-      .then((data) => setCareer(data))
-      .catch((err) => setError(err.message || 'Không thể tải thông tin ngành nghề.'))
-      .finally(() => setIsLoading(false));
-  }, [id]);
 
   if (isLoading) {
     return (
