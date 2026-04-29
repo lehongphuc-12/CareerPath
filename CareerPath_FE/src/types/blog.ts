@@ -7,6 +7,13 @@ export interface Blog {
   createdAt: string;
 }
 
+export interface BlogCategory {
+  categoryId: number;
+  name: string;
+  slug: string;
+}
+
+
 export interface BlogDetail {
   blogId: number;
   title: string;

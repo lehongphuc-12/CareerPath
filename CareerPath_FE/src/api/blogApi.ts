@@ -1,4 +1,4 @@
-import { PageResponse, Blog, BlogDetail } from '../types/blog';
+import { PageResponse, Blog, BlogDetail, BlogCategory } from '../types/blog';
 import axios from 'axios';
 const BASE_URL = '/api/blogs';
 interface ApiResponse<T> {
@@ -8,11 +8,14 @@ interface ApiResponse<T> {
   data: T;
 }
 export const blogApi = {
-  getBlogs: async (page: number, size: number): Promise<PageResponse<Blog>> => {
+  getBlogs: async (page: number, size: number, categoryId?: number): Promise<PageResponse<Blog>> => {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
     });
+    if (categoryId) {
+      params.append('categoryId', categoryId.toString());
+    }
     const response = await axios.get<ApiResponse<PageResponse<Blog>>>(
       `${BASE_URL}?${params.toString()}`
     );
@@ -21,6 +24,15 @@ export const blogApi = {
     }
     throw new Error(response.data.message || 'Failed to loads blogs');
   },
+
+  getCategories: async (): Promise<BlogCategory[]> => {
+    const response = await axios.get<ApiResponse<BlogCategory[]>>(`${BASE_URL}/categories`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to load categories');
+  },
+
 
   getBlogDetail: async (blogId: number): Promise<BlogDetail> => {
     const response = await axios.get<ApiResponse<BlogDetail>>(`${BASE_URL}/${blogId}`);

@@ -1,6 +1,8 @@
 package com.example.CareerPath_BE.services.imple;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,8 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.example.CareerPath_BE.dtos.blog.BlogDetailResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogResponseDto;
+import com.example.CareerPath_BE.dtos.blog.BlogCategoryResponseDto;
 import com.example.CareerPath_BE.entities.Blogs;
+import com.example.CareerPath_BE.entities.BlogCategories;
 import com.example.CareerPath_BE.repositories.BlogRepository;
+import com.example.CareerPath_BE.repositories.BlogCategoriesRepository;
 import com.example.CareerPath_BE.services.IBlogService;
 
 import lombok.AllArgsConstructor;
@@ -21,11 +26,18 @@ import lombok.AllArgsConstructor;
 public class BlogService implements IBlogService {
 
     private final BlogRepository blogRepository;
+    private final BlogCategoriesRepository blogCategoriesRepository;
 
     @Override
-    public Page<BlogResponseDto> getBlogs(int page, int size) {
+    public Page<BlogResponseDto> getBlogs(int page, int size, Integer categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Blogs> blogs = blogRepository.findByIsDeletedFalse(pageable);
+        Page<Blogs> blogs;
+        
+        if (categoryId != null) {
+            blogs = blogRepository.findByBlogCategories_CategoryIdAndIsDeletedFalse(categoryId, pageable);
+        } else {
+            blogs = blogRepository.findByIsDeletedFalse(pageable);
+        }
 
         return blogs.map(blog -> {
             BlogResponseDto dto = new BlogResponseDto();
@@ -33,11 +45,12 @@ public class BlogService implements IBlogService {
             dto.setTitle(blog.getTitle());
             dto.setContent(blog.getContent());
             dto.setThumnail(blog.getThumbnail());
-            dto.setAuthorName(blog.getUsers().getFullName());
+            dto.setAuthorName(blog.getUsers() != null ? blog.getUsers().getFullName() : "Admin");
             dto.setCreatedAt(blog.getCreatedAt());
             return dto;
         });
     }
+
 
     @Override
     public BlogDetailResponseDto getBlogDetail(int blogId) {
@@ -61,4 +74,23 @@ public class BlogService implements IBlogService {
         return dto;
     }
 
+    @Override
+    public List<BlogCategoryResponseDto> getCategories() {
+        List<BlogCategories> categories = blogCategoriesRepository.findAll();
+        if (categories.isEmpty()) {
+            // Seed default categories
+            blogCategoriesRepository.save(new BlogCategories("Xu hướng", "xu-huong"));
+            blogCategoriesRepository.save(new BlogCategories("Kỹ năng mềm", "ky-nang-mem"));
+            blogCategoriesRepository.save(new BlogCategories("Bí quyết học tập", "bi-quyet-hoc-tap"));
+            blogCategoriesRepository.save(new BlogCategories("Câu chuyện Mentor", "cau-chuyen-mentor"));
+            categories = blogCategoriesRepository.findAll();
+        }
+        return categories.stream().map(cat -> {
+            BlogCategoryResponseDto dto = new BlogCategoryResponseDto();
+            dto.setCategoryId(cat.getCategoryId());
+            dto.setName(cat.getName());
+            dto.setSlug(cat.getSlug());
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

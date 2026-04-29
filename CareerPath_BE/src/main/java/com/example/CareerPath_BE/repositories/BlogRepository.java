@@ -10,4 +10,6 @@ import com.example.CareerPath_BE.entities.Blogs;
 @Repository
 public interface BlogRepository extends JpaRepository<Blogs, Integer> {
     Page<Blogs> findByIsDeletedFalse(Pageable pageable);
+    Page<Blogs> findByBlogCategories_CategoryIdAndIsDeletedFalse(Integer categoryId, Pageable pageable);
 }
+

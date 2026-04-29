@@ -3,7 +3,8 @@ import { Calendar, Clock, ArrowRight, Loader2, ChevronLeft, ChevronRight } from 
 import { useBlog } from '../../../hooks/useBlogs';
 
 export default function BlogPage() {
-  const { blogPage, isLoading, page, setPage } = useBlog();
+  const { blogPage, categories, selectedCategory, setSelectedCategory, isLoading, page, setPage } = useBlog();
+
 
   const getExcerpt = (content: string) => {
     if (!content) return '';
@@ -166,12 +167,27 @@ export default function BlogPage() {
               Danh mục
             </h3>
             <nav className="flex flex-col gap-2">
-              {['Xu hướng', 'Kỹ năng mềm', 'Bí quyết học tập', 'Câu chuyện Mentor'].map((cat) => (
+              <button
+                onClick={() => { setSelectedCategory(null); setPage(0); }}
+                className={`text-left px-4 py-3 rounded-xl transition-colors font-medium ${
+                  selectedCategory === null
+                    ? 'bg-primary text-white'
+                    : 'hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                Tất cả
+              </button>
+              {categories.map((cat) => (
                 <button
-                  key={cat}
-                  className="text-left px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 font-medium"
+                  key={cat.categoryId}
+                  onClick={() => { setSelectedCategory(cat.categoryId); setPage(0); }}
+                  className={`text-left px-4 py-3 rounded-xl transition-colors font-medium ${
+                    selectedCategory === cat.categoryId
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  }`}
                 >
-                  {cat}
+                  {cat.name}
                 </button>
               ))}
             </nav>
