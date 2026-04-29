@@ -1,4 +1,4 @@
-import { PageResponse, Blog, BlogDetail, BlogCategory } from '../types/blog';
+import { PageResponse, Blog, BlogDetail, BlogCategory, BlogComment } from '../types/blog';
 import axios from 'axios';
 const BASE_URL = '/api/blogs';
 interface ApiResponse<T> {
@@ -40,5 +40,29 @@ export const blogApi = {
       return response.data.data;
     }
     throw new Error(response.data.message || 'Failed to load blog detail');
+  },
+
+  likeBlog: async (blogId: number, isLike: boolean): Promise<number> => {
+    const response = await axios.post<ApiResponse<number>>(`${BASE_URL}/${blogId}/like?isLike=${isLike}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to like blog');
+  },
+
+  getComments: async (blogId: number): Promise<BlogComment[]> => {
+    const response = await axios.get<ApiResponse<BlogComment[]>>(`${BASE_URL}/${blogId}/comments`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to load comments');
+  },
+
+  addComment: async (blogId: number, content: string): Promise<BlogComment> => {
+    const response = await axios.post<ApiResponse<BlogComment>>(`${BASE_URL}/${blogId}/comments`, { content });
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to add comment');
   },
 };

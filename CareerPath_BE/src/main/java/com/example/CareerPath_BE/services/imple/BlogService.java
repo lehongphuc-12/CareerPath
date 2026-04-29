@@ -13,10 +13,16 @@ import org.springframework.stereotype.Service;
 import com.example.CareerPath_BE.dtos.blog.BlogDetailResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCategoryResponseDto;
+import com.example.CareerPath_BE.dtos.blog.BlogCommentResponseDto;
+import com.example.CareerPath_BE.dtos.blog.CreateCommentDto;
 import com.example.CareerPath_BE.entities.Blogs;
 import com.example.CareerPath_BE.entities.BlogCategories;
+import com.example.CareerPath_BE.entities.BlogComments;
+import com.example.CareerPath_BE.entities.Users;
 import com.example.CareerPath_BE.repositories.BlogRepository;
 import com.example.CareerPath_BE.repositories.BlogCategoriesRepository;
+import com.example.CareerPath_BE.repositories.BlogCommentsRepository;
+import com.example.CareerPath_BE.repositories.UsersRepository;
 import com.example.CareerPath_BE.services.IBlogService;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +33,8 @@ public class BlogService implements IBlogService {
 
     private final BlogRepository blogRepository;
     private final BlogCategoriesRepository blogCategoriesRepository;
+    private final BlogCommentsRepository blogCommentsRepository;
+    private final UsersRepository usersRepository;
 
     @Override
     public Page<BlogResponseDto> getBlogs(int page, int size, Integer categoryId) {
@@ -92,5 +100,62 @@ public class BlogService implements IBlogService {
             dto.setSlug(cat.getSlug());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public int likeBlog(int blogId, boolean isLike) {
+        Blogs blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+        int currentLikes = blog.getLikeCount() != null ? blog.getLikeCount() : 0;
+        if (isLike) {
+            blog.setLikeCount(currentLikes + 1);
+        } else {
+            blog.setLikeCount(Math.max(0, currentLikes - 1));
+        }
+        blogRepository.save(blog);
+        return blog.getLikeCount();
+    }
+
+    @Override
+    public List<BlogCommentResponseDto> getComments(int blogId) {
+        return blogCommentsRepository.findByBlogs_BlogIdOrderByCreatedAtDesc(blogId)
+                .stream()
+                .map(comment -> {
+                    BlogCommentResponseDto dto = new BlogCommentResponseDto();
+                    dto.setCommentId(comment.getCommentId());
+                    dto.setBlogId(comment.getBlogs().getBlogId());
+                    dto.setUserId(comment.getUsers().getUserId());
+                    dto.setUserName(comment.getUsers().getFullName());
+                    dto.setContent(comment.getContent());
+                    dto.setCreatedAt(comment.getCreatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public BlogCommentResponseDto addComment(int blogId, int userId, CreateCommentDto dto) {
+        Blogs blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        BlogComments comment = new BlogComments();
+        comment.setBlogs(blog);
+        comment.setUsers(user);
+        comment.setContent(dto.getContent());
+        comment.setCreatedAt(new java.util.Date());
+
+        BlogComments saved = blogCommentsRepository.save(comment);
+
+        BlogCommentResponseDto responseDto = new BlogCommentResponseDto();
+        responseDto.setCommentId(saved.getCommentId());
+        responseDto.setBlogId(saved.getBlogs().getBlogId());
+        responseDto.setUserId(saved.getUsers().getUserId());
+        responseDto.setUserName(saved.getUsers().getFullName());
+        responseDto.setContent(saved.getContent());
+        responseDto.setCreatedAt(saved.getCreatedAt());
+
+        return responseDto;
     }
 }

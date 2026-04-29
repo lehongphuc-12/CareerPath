@@ -40,3 +40,12 @@ export interface PageResponse<T> {
   size: number;
   number: number;
 }
+
+export interface BlogComment {
+  commentId: number;
+  blogId: number;
+  userId: number;
+  userName: string;
+  content: string;
+  createdAt: string;
+}
