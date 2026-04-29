@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -9,7 +9,6 @@ import {
   Share2, 
   Bookmark,
   MessageCircle,
-  ChevronRight,
   Heart,
   Send,
   MoreHorizontal,
@@ -18,13 +17,54 @@ import {
   Linkedin,
   Link as LinkIcon
 } from 'lucide-react';
-import { blogs as mockBlogs } from '../../../api/mockData';
+import { useBlogDetail } from '../../../hooks/useBlogDetail';
+import { blogApi } from '../../../api/blogApi';
+import { Blog } from '../../../types/blog';
 
 const BlogDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const blog = mockBlogs.find(b => b.id === Number(id)) || mockBlogs[0];
+  const { blog, isLoading, error } = useBlogDetail(Number(id));
   const [isLiked, setIsLiked] = useState(false);
-  const [likes, setLikes] = useState(124);
+  const [likes, setLikes] = useState(0);
+  const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
+
+  useEffect(() => {
+    if (blog) {
+      setLikes(blog.likeCount);
+    }
+  }, [blog]);
+
+  useEffect(() => {
+    blogApi.getBlogs(0, 5)
+      .then((data) => {
+        const filtered = data.content.filter((b) => b.blogId !== Number(id));
+        setRelatedBlogs(filtered.slice(0, 3));
+      })
+      .catch((err) => console.error('Failed to load related blogs', err));
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error || !blog) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
+          {error || 'Không tìm thấy bài viết'}
+        </h2>
+        <Link to="/blog" className="text-primary hover:underline font-bold inline-flex items-center gap-2">
+          <ArrowLeft size={18} /> Quay lại cẩm nang
+        </Link>
+      </div>
+    );
+  }
+
+  const readTime = `${Math.max(1, Math.ceil(blog.content.length / 1000))} phút`;
 
   return (
     <div className="py-10 space-y-12">
@@ -41,11 +81,17 @@ const BlogDetailPage: React.FC = () => {
         </h1>
         <div className="flex flex-wrap items-center gap-6 text-slate-500 text-sm border-b border-slate-100 dark:border-slate-800 pb-8">
           <span className="flex items-center gap-2 font-bold text-primary bg-primary/5 px-3 py-1 rounded-full uppercase tracking-widest text-[10px]">
-            {blog.category}
+            Cẩm nang
           </span>
-          <span className="flex items-center gap-2"><Calendar size={16} /> {blog.date}</span>
-          <span className="flex items-center gap-2"><Clock size={16} /> {blog.readTime} đọc</span>
-          <span className="flex items-center gap-2"><User size={16} /> {blog.author}</span>
+          <span className="flex items-center gap-2">
+            <Calendar size={16} /> {new Date(blog.createdAt).toLocaleDateString('vi-VN')}
+          </span>
+          <span className="flex items-center gap-2">
+            <Clock size={16} /> {readTime} đọc
+          </span>
+          <span className="flex items-center gap-2">
+            <User size={16} /> {blog.authorName}
+          </span>
         </div>
       </header>
 
@@ -54,32 +100,17 @@ const BlogDetailPage: React.FC = () => {
         <div className="lg:col-span-8 space-y-10">
           <div className="aspect-video rounded-3xl overflow-hidden premium-shadow">
             <img 
-              src={blog.image} 
+              src={blog.imageUrl} 
               className="w-full h-full object-cover" 
               alt={blog.title}
             />
           </div>
 
           <article className="prose prose-slate dark:prose-invert max-w-none">
-            <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-              {blog.excerpt}
-            </p>
-            <div className="text-lg text-slate-600 dark:text-slate-400 leading-loose space-y-6 mt-8">
-              <p>
-                Định hướng nghề nghiệp là một hành trình dài và đòi hỏi sự kiên nhẫn. Trong thời đại số ngày nay, 
-                việc nắm bắt các xu hướng công nghệ không chỉ là lợi thế mà còn là điều kiện tiên quyết để thành công.
-              </p>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-12 mb-6">1. Hiểu rõ bản thân</h3>
-              <p>
-                Trước khi nhìn ra thế giới rộng lớn, hãy dành thời gian để hiểu rõ chính mình. Bạn thích điều gì? 
-                Bạn giỏi ở lĩnh vực nào? Những giá trị nào là quan trọng đối với bạn trong công việc?
-              </p>
-              <div className="bg-slate-50 dark:bg-slate-900 p-8 rounded-[2rem] border-l-4 border-primary my-12">
-                <p className="italic text-slate-700 dark:text-slate-300 m-0">
-                  "Cách tốt nhất để dự đoán tương lai là tự tay tạo ra nó." - Abraham Lincoln
-                </p>
-              </div>
-            </div>
+            <div 
+              className="text-lg text-slate-600 dark:text-slate-400 leading-loose space-y-6 mt-8"
+              dangerouslySetInnerHTML={{ __html: blog.content }}
+            />
           </article>
 
           {/* Interaction Bar */}
@@ -97,7 +128,7 @@ const BlogDetailPage: React.FC = () => {
               </button>
               <button className="flex items-center gap-2 text-slate-500 hover:text-primary font-bold transition-colors">
                 <MessageCircle size={24} />
-                24
+                {blog.commentCount}
               </button>
             </div>
             <div className="flex items-center gap-3 relative">
@@ -147,7 +178,6 @@ const BlogDetailPage: React.FC = () => {
                   <button 
                     onClick={() => {
                       navigator.clipboard.writeText(window.location.href);
-                      // You could add a toast here if you have one
                     }}
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors"
                   >
@@ -170,7 +200,7 @@ const BlogDetailPage: React.FC = () => {
 
           {/* Comments Section */}
           <div className="space-y-8 pt-6">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Bình luận (24)</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Bình luận ({blog.commentCount})</h3>
             <div className="flex gap-4">
               <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex-shrink-0" />
               <div className="flex-1 space-y-3">
@@ -190,20 +220,24 @@ const BlogDetailPage: React.FC = () => {
 
         {/* Sidebar */}
         <aside className="lg:col-span-4 space-y-10">
-          <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-            <h3 className="font-bold text-lg mb-6 uppercase tracking-widest text-primary">Bài viết liên quan</h3>
-            <div className="space-y-6">
-              {mockBlogs.filter(b => b.id !== blog.id).slice(0, 3).map(related => (
-                <Link key={related.id} to={`/blog/${related.id}`} className="flex gap-4 group">
-                  <img src={related.image} className="w-20 h-20 object-cover rounded-xl flex-shrink-0" alt="" />
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-sm line-clamp-2 group-hover:text-primary transition-colors">{related.title}</h4>
-                    <span className="text-[10px] text-slate-500 uppercase font-bold">{related.date}</span>
-                  </div>
-                </Link>
-              ))}
+          {relatedBlogs.length > 0 && (
+            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <h3 className="font-bold text-lg mb-6 uppercase tracking-widest text-primary">Bài viết liên quan</h3>
+              <div className="space-y-6">
+                {relatedBlogs.map((related) => (
+                  <Link key={related.blogId} to={`/blog/${related.blogId}`} className="flex gap-4 group">
+                    <img src={related.thumbnail} className="w-20 h-20 object-cover rounded-xl flex-shrink-0" alt={related.title} />
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-sm line-clamp-2 group-hover:text-primary transition-colors">{related.title}</h4>
+                      <span className="text-[10px] text-slate-500 uppercase font-bold">
+                        {new Date(related.createdAt).toLocaleDateString('vi-VN')}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="p-8 rounded-3xl bg-primary/5 border border-primary/20">
             <h3 className="font-bold text-lg mb-4">Đăng ký bản tin</h3>

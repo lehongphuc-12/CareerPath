@@ -5,10 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.CareerPath_BE.dtos.ApiResponse;
+import com.example.CareerPath_BE.dtos.blog.BlogDetailResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogResponseDto;
 import com.example.CareerPath_BE.services.IBlogService;
 
@@ -28,5 +30,12 @@ public class BlogController {
         Page<BlogResponseDto> blogs = blogService.getBlogs(page, size);
         return ResponseEntity.ok(
                 new ApiResponse<>(true, 200, "Blogs fetched successfully", blogs));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BlogDetailResponseDto>> getBlogDetail(@PathVariable int id) {
+        BlogDetailResponseDto blogDetail = blogService.getBlogDetail(id);
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, 200, "Blog fetched successfully", blogDetail));
     }
 }

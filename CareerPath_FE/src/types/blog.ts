@@ -6,6 +6,20 @@ export interface Blog {
   authorName: string;
   createdAt: string;
 }
+
+export interface BlogDetail {
+  blogId: number;
+  title: string;
+  content: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  authorId: number;
+  authorName: string;
+  viewCount: number;
+  commentCount: number;
+  likeCount: number;
+}
 export interface PageResponse<T> {
   content: T[];
   pageable: {

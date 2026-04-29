@@ -1,4 +1,4 @@
-import { PageResponse, Blog } from '../types/blog';
+import { PageResponse, Blog, BlogDetail } from '../types/blog';
 import axios from 'axios';
 const BASE_URL = '/api/blogs';
 interface ApiResponse<T> {
@@ -20,5 +20,13 @@ export const blogApi = {
       return response.data.data;
     }
     throw new Error(response.data.message || 'Failed to loads blogs');
+  },
+
+  getBlogDetail: async (blogId: number): Promise<BlogDetail> => {
+    const response = await axios.get<ApiResponse<BlogDetail>>(`${BASE_URL}/${blogId}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to load blog detail');
   },
 };
