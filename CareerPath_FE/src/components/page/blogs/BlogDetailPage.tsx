@@ -86,6 +86,14 @@ const BlogDetailPage: React.FC = () => {
   }, [blog]);
 
   useEffect(() => {
+    if (id) {
+      blogApi.incrementViewCount(Number(id)).catch((err) => {
+        console.error('Failed to increment view count', err);
+      });
+    }
+  }, [id]);
+
+  useEffect(() => {
     blogApi
       .getBlogs(0, 5)
       .then((data) => {

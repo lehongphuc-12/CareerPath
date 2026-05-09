@@ -106,4 +106,11 @@ public class BlogController {
         return ResponseEntity.ok(
             new ApiResponse<>(true, 200, "Blog created successfully", blogDetail));
     }
+
+    @PostMapping("/{id}/view")
+    public ResponseEntity<ApiResponse<Void>> incrementViewCount(@PathVariable int id) {
+        blogService.incrementViewCount(id);
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, 200, "View count incremented", null));
+    }
 }

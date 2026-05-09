@@ -77,4 +77,8 @@ export const blogApi = {
     }
     throw new Error(response.data.message || 'Failed to create blog');
   },
+
+  incrementViewCount: async (blogId: number): Promise<void> => {
+    await axios.post<ApiResponse<void>>(`${BASE_URL}/${blogId}/view`);
+  },
 };

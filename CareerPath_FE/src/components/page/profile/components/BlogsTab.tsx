@@ -28,8 +28,8 @@ export const BlogsTab: React.FC = () => {
 
   useEffect(() => {
     if (apiCategories && apiCategories.length > 0) {
-      const apiNames = apiCategories.map(c => c.name);
-      setCategories(prev => {
+      const apiNames = apiCategories.map((c) => c.name);
+      setCategories((prev) => {
         const combined = Array.from(new Set([...apiNames, ...prev]));
         return combined;
       });
@@ -114,11 +114,13 @@ export const BlogsTab: React.FC = () => {
                       >
                         <option value="">Chọn danh mục</option>
                         {categories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
                         ))}
                       </select>
-                      <Button 
-                        variant="secondary" 
+                      <Button
+                        variant="secondary"
                         onClick={() => setIsAddingCategory(true)}
                         className="rounded-2xl whitespace-nowrap"
                       >
@@ -134,15 +136,15 @@ export const BlogsTab: React.FC = () => {
                           onChange={(e) => setNewCategoryName(e.target.value)}
                         />
                       </div>
-                      <Button 
+                      <Button
                         onClick={handleAddCategory}
                         className="rounded-2xl h-[56px]"
                         disabled={!newCategoryName.trim()}
                       >
                         Lưu
                       </Button>
-                      <Button 
-                        variant="secondary" 
+                      <Button
+                        variant="secondary"
                         onClick={() => {
                           setIsAddingCategory(false);
                           setNewCategoryName('');
@@ -154,7 +156,6 @@ export const BlogsTab: React.FC = () => {
                     </div>
                   )}
                 </div>
-
               </div>
 
               {/* <Input 
@@ -302,8 +303,7 @@ export const BlogsTab: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
-                          <Eye className="w-4 h-4 opacity-50" />
-                          0
+                          <Eye className="w-4 h-4 opacity-50" />0
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -314,9 +314,9 @@ export const BlogsTab: React.FC = () => {
                           <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-red-500 transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
-                          <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 transition-colors">
+                          {/* <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 transition-colors">
                             <MoreVertical className="w-4 h-4" />
-                          </button>
+                          </button> */}
                         </div>
                       </td>
                     </tr>

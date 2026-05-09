@@ -215,4 +215,12 @@ public class BlogService implements IBlogService {
         responseDto.setLikeCount(saved.getLikeCount());
         return responseDto;
     }
+
+    @Override
+    public void incrementViewCount(int blogId) {
+        blogRepository.findById(blogId).ifPresent(blog -> {
+            blog.setViewCount((blog.getViewCount() == null ? 0 : blog.getViewCount()) + 1);
+            blogRepository.save(blog);
+        });
+    }
 }

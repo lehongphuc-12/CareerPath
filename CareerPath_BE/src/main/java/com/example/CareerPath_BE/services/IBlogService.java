@@ -17,5 +17,6 @@ public interface IBlogService {
     List<BlogCommentResponseDto> getComments(int blogId);
     BlogCommentResponseDto addComment(int blogId, int userId, CreateCommentDto dto);
     BlogDetailResponseDto createBlog(CreateBlogRequestDto request, int userId);
+    void incrementViewCount(int blogId);
 }
 
