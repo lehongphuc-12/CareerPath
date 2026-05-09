@@ -81,4 +81,8 @@ export const blogApi = {
   incrementViewCount: async (blogId: number): Promise<void> => {
     await axios.post<ApiResponse<void>>(`${BASE_URL}/${blogId}/view`);
   },
+
+  deleteBlog: async (blogId: number): Promise<void> => {
+    await axios.delete<ApiResponse<void>>(`${BASE_URL}/${blogId}`);
+  },
 };

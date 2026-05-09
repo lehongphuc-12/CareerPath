@@ -54,6 +54,20 @@ export const useBlog = () => {
     }
   };
 
+  const deleteBlog = async (blogId: number) => {
+    setIsLoading(true);
+    try {
+      await blogApi.deleteBlog(blogId);
+      toast.success('Blog deleted successfully!');
+      fetchBlogs(); // Refresh list
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete blog');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     blogPage,
     categories,
@@ -64,6 +78,7 @@ export const useBlog = () => {
     setPage,
     fetchBlogs,
     createBlog,
+    deleteBlog,
   };
 };
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
@@ -112,5 +113,12 @@ public class BlogController {
         blogService.incrementViewCount(id);
         return ResponseEntity.ok(
             new ApiResponse<>(true, 200, "View count incremented", null));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteBlog(@PathVariable int id) {
+        blogService.deleteBlog(id);
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, 200, "Blog deleted successfully", null));
     }
 }

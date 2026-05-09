@@ -3,9 +3,10 @@ import { useBlog } from '../../../../hooks/useBlogs';
 
 import Tiptap from '../../../common/Tiptap';
 
-import { Plus, Eye, Edit2, Trash2, MoreVertical, X, Save } from 'lucide-react';
+import { Plus, Eye, Edit2, Trash2, MoreVertical, X, Save, AlertTriangle } from 'lucide-react';
 import { Button } from '../../../common/Button';
 import { Input } from '../../../common/Input';
+import { Modal } from '../../../common/Modal';
 import { motion } from 'framer-motion';
 import { blogs as mockBlogs } from '../../../../api/mockData';
 
@@ -20,11 +21,30 @@ export const BlogsTab: React.FC = () => {
     image: '',
   });
 
-  const { categories: apiCategories, createBlog, blogPage, isLoading: isActionLoading } = useBlog();
+  const { categories: apiCategories, createBlog, deleteBlog, blogPage, isLoading: isActionLoading } = useBlog();
   const [categories, setCategories] = useState<string[]>([]);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [blogToDelete, setBlogToDelete] = useState<number | null>(null);
+
+  const handleDeleteClick = (blogId: number) => {
+    setBlogToDelete(blogId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (blogToDelete) {
+      try {
+        await deleteBlog(blogToDelete);
+        setIsDeleteModalOpen(false);
+        setBlogToDelete(null);
+      } catch (error) {
+        console.error('Delete failed', error);
+      }
+    }
+  };
 
   useEffect(() => {
     if (apiCategories && apiCategories.length > 0) {
@@ -311,7 +331,11 @@ export const BlogsTab: React.FC = () => {
                           <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-primary transition-colors">
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-red-500 transition-colors">
+                          <button 
+                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-red-500 transition-colors"
+                            onClick={() => handleDeleteClick(blog.blogId)}
+                            disabled={isActionLoading}
+                          >
                             <Trash2 className="w-4 h-4" />
                           </button>
                           {/* <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 transition-colors">
@@ -334,6 +358,40 @@ export const BlogsTab: React.FC = () => {
           </div>
         </>
       )}
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Xác nhận xóa"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="rounded-2xl"
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={confirmDelete}
+              disabled={isActionLoading}
+              className="rounded-2xl bg-red-50 text-red-600 hover:bg-red-100 border-none"
+            >
+              {isActionLoading ? 'Đang xóa...' : 'Xác nhận xóa'}
+            </Button>
+          </>
+        }
+      >
+        <div className="flex items-center gap-4 text-slate-600 dark:text-slate-400">
+          <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600 flex-shrink-0">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <p>
+            Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.
+          </p>
+        </div>
+      </Modal>
     </motion.div>
   );
 };

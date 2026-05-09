@@ -223,4 +223,12 @@ public class BlogService implements IBlogService {
             blogRepository.save(blog);
         });
     }
+
+    @Override
+    public void deleteBlog(int blogId) {
+        blogRepository.findById(blogId).ifPresent(blog -> {
+            blog.setIsDeleted(true);
+            blogRepository.save(blog);
+        });
+    }
 }
