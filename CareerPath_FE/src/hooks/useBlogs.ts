@@ -83,6 +83,20 @@ export const useBlog = () => {
     }
   };
 
+  const generateAiContent = async (title: string, requirements: string) => {
+    setIsLoading(true);
+    try {
+      const data = await blogApi.generateAiContent(title, requirements);
+      toast.success('AI content generated!');
+      return data;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to generate content');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     blogPage,
     categories,
@@ -95,6 +109,7 @@ export const useBlog = () => {
     createBlog,
     deleteBlog,
     updateBlog,
+    generateAiContent,
   };
 };
 

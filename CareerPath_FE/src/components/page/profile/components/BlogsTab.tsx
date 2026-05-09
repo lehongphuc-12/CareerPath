@@ -3,7 +3,17 @@ import { useBlog } from '../../../../hooks/useBlogs';
 
 import Tiptap from '../../../common/Tiptap';
 
-import { Plus, Eye, Edit2, Trash2, MoreVertical, X, Save, AlertTriangle } from 'lucide-react';
+import {
+  Plus,
+  Eye,
+  Edit2,
+  Trash2,
+  MoreVertical,
+  X,
+  Save,
+  AlertTriangle,
+  Sparkles,
+} from 'lucide-react';
 import { Button } from '../../../common/Button';
 import { Input } from '../../../common/Input';
 import { Modal } from '../../../common/Modal';
@@ -21,15 +31,26 @@ export const BlogsTab: React.FC = () => {
     image: '',
   });
 
-  const { categories: apiCategories, createBlog, deleteBlog, updateBlog, blogPage, isLoading: isActionLoading } = useBlog();
-  const [categories, setCategories] = useState<string[]>([]);
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<number | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<number | null>(null);
+  const [isAiEnabled, setIsAiEnabled] = useState(false);
+  const [aiRequirements, setAiRequirements] = useState('');
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const {
+    categories: apiCategories,
+    createBlog,
+    deleteBlog,
+    updateBlog,
+    generateAiContent,
+    blogPage,
+    isLoading: isActionLoading,
+  } = useBlog();
 
   const handleEditClick = (blog: any) => {
     setNewBlog({
@@ -43,6 +64,8 @@ export const BlogsTab: React.FC = () => {
     setEditingBlogId(blog.blogId);
     setIsEditing(true);
     setIsCreating(true);
+    setIsAiEnabled(false);
+    setAiRequirements('');
   };
 
   const handleDeleteClick = (blogId: number) => {
@@ -81,6 +104,19 @@ export const BlogsTab: React.FC = () => {
     }
   };
 
+  const handleGenerateAiContent = async () => {
+    try {
+      const data = await generateAiContent(newBlog.title, aiRequirements);
+      setNewBlog({ 
+        ...newBlog, 
+        title: data.title,
+        content: data.content 
+      });
+    } catch (error) {
+      console.error('AI Generation failed', error);
+    }
+  };
+
   const handleSaveBlog = async () => {
     if (!newBlog.title.trim() || !newBlog.category || !newBlog.content.trim()) {
       alert('Vui lòng nhập đầy đủ tiêu đề, danh mục và nội dung');
@@ -104,6 +140,8 @@ export const BlogsTab: React.FC = () => {
       setIsCreating(false);
       setIsEditing(false);
       setEditingBlogId(null);
+      setIsAiEnabled(false);
+      setAiRequirements('');
       // Reset form
       setNewBlog({ title: '', category: '', readTime: '', content: '', image: '' });
       setImagePreview('');
@@ -146,8 +184,51 @@ export const BlogsTab: React.FC = () => {
               label="Tiêu đề bài viết"
               placeholder="Nhập tiêu đề..."
               value={newBlog.title}
-              onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
+              onChange={(e) => setNewBlog(prev => ({ ...prev, title: e.target.value }))}
             />
+
+            <div className="flex items-center gap-2 px-1">
+              <button
+                onClick={() => setIsAiEnabled(!isAiEnabled)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                  isAiEnabled
+                    ? 'bg-primary/10 text-primary border-primary/20 border shadow-sm shadow-primary/10'
+                    : 'bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <Sparkles className={`w-4 h-4 ${isAiEnabled ? 'animate-pulse' : ''}`} />
+                <span className="text-sm font-bold">Sử dụng AI tạo nội dung</span>
+              </button>
+            </div>
+
+            {isAiEnabled && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700"
+              >
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">
+                    Yêu cầu cho AI (Tùy chọn)
+                  </label>
+                  <textarea
+                    className="w-full bg-white dark:bg-slate-900 border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary transition-all duration-200 min-h-[100px] text-sm"
+                    placeholder="Ví dụ: Viết theo phong cách hài hước, tập trung vào kỹ năng mềm cho sinh viên..."
+                    value={aiRequirements}
+                    onChange={(e) => setAiRequirements(e.target.value)}
+                  />
+                </div>
+                <Button
+                  onClick={handleGenerateAiContent}
+                  disabled={isActionLoading}
+                  className="w-full rounded-xl bg-gradient-to-r from-primary to-indigo-600 hover:opacity-90 shadow-md shadow-primary/20"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {isActionLoading ? 'Đang tạo nội dung...' : 'Tạo bài viết bằng AI'}
+                </Button>
+              </motion.div>
+            )}
 
             <div className="grid grid-cols-1  gap-4">
               <div className="space-y-1.5">
@@ -160,7 +241,7 @@ export const BlogsTab: React.FC = () => {
                       <select
                         className="flex-1 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary transition-all duration-200"
                         value={newBlog.category}
-                        onChange={(e) => setNewBlog({ ...newBlog, category: e.target.value })}
+                        onChange={(e) => setNewBlog(prev => ({ ...prev, category: e.target.value }))}
                       >
                         <option value="">Chọn danh mục</option>
                         {categories.map((cat) => (
@@ -256,7 +337,7 @@ export const BlogsTab: React.FC = () => {
               <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
                 <Tiptap
                   content={newBlog.content}
-                  onChange={(content) => setNewBlog({ ...newBlog, content })}
+                  onChange={(content) => setNewBlog(prev => ({ ...prev, content }))}
                 />
               </div>
             </div>
@@ -281,7 +362,8 @@ export const BlogsTab: React.FC = () => {
               disabled={isActionLoading}
               className="rounded-2xl shadow-lg shadow-primary/30"
             >
-              <Save className="w-4 h-4 mr-2" /> {isActionLoading ? 'Đang lưu...' : isEditing ? 'Cập nhật bài viết' : 'Lưu bài viết'}
+              <Save className="w-4 h-4 mr-2" />{' '}
+              {isActionLoading ? 'Đang lưu...' : isEditing ? 'Cập nhật bài viết' : 'Lưu bài viết'}
             </Button>
           </div>
         </div>
@@ -364,13 +446,13 @@ export const BlogsTab: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button 
+                          <button
                             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-primary transition-colors"
                             onClick={() => handleEditClick(blog)}
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-red-500 transition-colors"
                             onClick={() => handleDeleteClick(blog.blogId)}
                             disabled={isActionLoading}
@@ -426,9 +508,7 @@ export const BlogsTab: React.FC = () => {
           <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-600 flex-shrink-0">
             <AlertTriangle className="w-6 h-6" />
           </div>
-          <p>
-            Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.
-          </p>
+          <p>Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.</p>
         </div>
       </Modal>
     </motion.div>

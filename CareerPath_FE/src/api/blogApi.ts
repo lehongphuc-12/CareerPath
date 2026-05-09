@@ -97,4 +97,15 @@ export const blogApi = {
     }
     throw new Error(response.data.message || 'Failed to update blog');
   },
+
+  generateAiContent: async (title: string, requirements: string): Promise<{ title: string; content: string }> => {
+    const response = await axios.post<ApiResponse<{ title: string; content: string }>>('/api/ai/generate-blog', {
+      title,
+      requirements,
+    });
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to generate AI content');
+  },
 };

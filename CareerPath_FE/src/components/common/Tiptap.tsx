@@ -1,3 +1,4 @@
+import React from 'react'
 import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { 
@@ -138,6 +139,12 @@ const Tiptap = ({ content, onChange }: TiptapProps) => {
       },
     },
   })
+  
+  React.useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content)
+    }
+  }, [content, editor])
 
   return (
     <div className="w-full border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
