@@ -4,6 +4,7 @@ export interface Blog {
   content: string;
   thumbnail: string;
   authorName: string;
+  categoryName: string;
   createdAt: string;
 }
 

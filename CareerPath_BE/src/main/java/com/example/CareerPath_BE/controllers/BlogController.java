@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import com.example.CareerPath_BE.config.JwtUtil;
 import com.example.CareerPath_BE.dtos.ApiResponse;
 import com.example.CareerPath_BE.dtos.blog.BlogDetailResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogResponseDto;
+import com.example.CareerPath_BE.dtos.blog.CreateBlogRequestDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCategoryResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCommentResponseDto;
 import com.example.CareerPath_BE.dtos.blog.CreateCommentDto;
@@ -89,5 +91,19 @@ public class BlogController {
         BlogCommentResponseDto comment = blogService.addComment(id, userId, dto);
         return ResponseEntity.ok(
                 new ApiResponse<>(true, 200, "Comment added successfully", comment));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<BlogDetailResponseDto>> createBlog(
+        @ModelAttribute CreateBlogRequestDto request,
+        @CookieValue(name = "token", required = true) String token) {
+        if (token == null || !jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body(
+                new ApiResponse<>(false, 401, "Unauthorized: Invalid or missing token", null));
+        }
+        int userId = jwtUtil.extractUserId(token).intValue();
+        BlogDetailResponseDto blogDetail = blogService.createBlog(request, userId);
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, 200, "Blog created successfully", blogDetail));
     }
 }

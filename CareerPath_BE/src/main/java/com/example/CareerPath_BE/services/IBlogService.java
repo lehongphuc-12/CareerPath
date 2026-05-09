@@ -1,6 +1,7 @@
 package com.example.CareerPath_BE.services;
 
 import com.example.CareerPath_BE.dtos.blog.BlogResponseDto;
+import com.example.CareerPath_BE.dtos.blog.CreateBlogRequestDto;
 import com.example.CareerPath_BE.dtos.blog.BlogDetailResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCategoryResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCommentResponseDto;
@@ -15,5 +16,6 @@ public interface IBlogService {
     int likeBlog(int blogId, boolean isLike);
     List<BlogCommentResponseDto> getComments(int blogId);
     BlogCommentResponseDto addComment(int blogId, int userId, CreateCommentDto dto);
+    BlogDetailResponseDto createBlog(CreateBlogRequestDto request, int userId);
 }
 

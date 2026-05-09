@@ -65,4 +65,16 @@ export const blogApi = {
     }
     throw new Error(response.data.message || 'Failed to add comment');
   },
+
+  createBlog: async (formData: FormData): Promise<BlogDetail> => {
+    const response = await axios.post<ApiResponse<BlogDetail>>(`${BASE_URL}/create`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to create blog');
+  },
 };

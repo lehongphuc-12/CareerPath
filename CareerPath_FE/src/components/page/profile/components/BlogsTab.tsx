@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useBlog } from '../../../../hooks/useBlogs';
+
 import Tiptap from '../../../common/Tiptap';
 
 import { Plus, Eye, Edit2, Trash2, MoreVertical, X, Save } from 'lucide-react';
@@ -17,6 +19,57 @@ export const BlogsTab: React.FC = () => {
     content: '',
     image: '',
   });
+
+  const { categories: apiCategories, createBlog, blogPage, isLoading: isActionLoading } = useBlog();
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (apiCategories && apiCategories.length > 0) {
+      const apiNames = apiCategories.map(c => c.name);
+      setCategories(prev => {
+        const combined = Array.from(new Set([...apiNames, ...prev]));
+        return combined;
+      });
+    }
+  }, [apiCategories]);
+
+  const handleAddCategory = () => {
+    if (newCategoryName.trim() && !categories.includes(newCategoryName.trim())) {
+      setCategories([...categories, newCategoryName.trim()]);
+      setNewBlog({ ...newBlog, category: newCategoryName.trim() });
+      setNewCategoryName('');
+      setIsAddingCategory(false);
+    }
+  };
+
+  const handleSaveBlog = async () => {
+    if (!newBlog.title.trim() || !newBlog.category || !newBlog.content.trim()) {
+      alert('Vui lòng nhập đầy đủ tiêu đề, danh mục và nội dung');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', newBlog.title);
+    formData.append('categoryName', newBlog.category);
+    formData.append('content', newBlog.content);
+    if (selectedFile) {
+      formData.append('blogImage', selectedFile);
+    }
+
+    try {
+      await createBlog(formData);
+      setIsCreating(false);
+      // Reset form
+      setNewBlog({ title: '', category: '', readTime: '', content: '', image: '' });
+      setImagePreview('');
+      setSelectedFile(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <motion.div
@@ -51,17 +104,57 @@ export const BlogsTab: React.FC = () => {
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300 ml-1">
                   Danh mục
                 </label>
-                <select
-                  className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary transition-all duration-200"
-                  value={newBlog.category}
-                  onChange={(e) => setNewBlog({ ...newBlog, category: e.target.value })}
-                >
-                  <option value="">Chọn danh mục</option>
-                  <option value="Công nghệ">Công nghệ</option>
-                  <option value="Kỹ năng">Kỹ năng</option>
-                  <option value="Hướng nghiệp">Hướng nghiệp</option>
-                  <option value="Đời sống">Đời sống</option>
-                </select>
+                <div className="flex gap-2">
+                  {!isAddingCategory ? (
+                    <div className="flex-1 flex gap-2">
+                      <select
+                        className="flex-1 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary transition-all duration-200"
+                        value={newBlog.category}
+                        onChange={(e) => setNewBlog({ ...newBlog, category: e.target.value })}
+                      >
+                        <option value="">Chọn danh mục</option>
+                        {categories.map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                      <Button 
+                        variant="secondary" 
+                        onClick={() => setIsAddingCategory(true)}
+                        className="rounded-2xl whitespace-nowrap"
+                      >
+                        <Plus className="w-4 h-4 mr-1" /> Thêm mới
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex gap-2 items-end">
+                      <div className="flex-1">
+                        <Input
+                          placeholder="Nhập tên danh mục mới..."
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                        />
+                      </div>
+                      <Button 
+                        onClick={handleAddCategory}
+                        className="rounded-2xl h-[56px]"
+                        disabled={!newCategoryName.trim()}
+                      >
+                        Lưu
+                      </Button>
+                      <Button 
+                        variant="secondary" 
+                        onClick={() => {
+                          setIsAddingCategory(false);
+                          setNewCategoryName('');
+                        }}
+                        className="rounded-2xl h-[56px]"
+                      >
+                        Hủy
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
               </div>
 
               {/* <Input 
@@ -89,6 +182,7 @@ export const BlogsTab: React.FC = () => {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
+                        setSelectedFile(file);
                         const preview = URL.createObjectURL(file);
                         setImagePreview(preview);
                         setNewBlog({ ...newBlog, image: preview });
@@ -126,13 +220,11 @@ export const BlogsTab: React.FC = () => {
               Hủy
             </Button>
             <Button
-              onClick={() => {
-                alert('Tính năng lưu bài viết sẽ được phát triển sau!');
-                setIsCreating(false);
-              }}
+              onClick={handleSaveBlog}
+              disabled={isActionLoading}
               className="rounded-2xl shadow-lg shadow-primary/30"
             >
-              <Save className="w-4 h-4 mr-2" /> Lưu bài viết
+              <Save className="w-4 h-4 mr-2" /> {isActionLoading ? 'Đang lưu...' : 'Lưu bài viết'}
             </Button>
           </div>
         </div>
@@ -144,7 +236,7 @@ export const BlogsTab: React.FC = () => {
                 Quản lý bài viết
               </h1>
               <p className="text-slate-500 dark:text-slate-400">
-                Bạn đã chia sẻ {mockBlogs.length} bài viết với cộng đồng
+                Bạn đã chia sẻ {blogPage?.content.length || 0} bài viết với cộng đồng
               </p>
             </div>
             <Button
@@ -178,15 +270,15 @@ export const BlogsTab: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {mockBlogs.map((blog) => (
+                  {blogPage?.content.map((blog) => (
                     <tr
-                      key={blog.id}
+                      key={blog.blogId}
                       className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors duration-200"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={blog.image}
+                            src={blog.thumbnail || 'https://via.placeholder.com/150'}
                             className="h-12 w-16 object-cover rounded-xl shadow-sm"
                             alt=""
                           />
@@ -195,23 +287,23 @@ export const BlogsTab: React.FC = () => {
                               {blog.title}
                             </h4>
                             <span className="text-[10px] text-slate-400 uppercase font-bold">
-                              {blog.readTime} đọc
+                              5 phút đọc
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="px-2.5 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded-lg">
-                          {blog.category}
+                          {blog.categoryName}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
-                        {blog.date}
+                        {new Date(blog.createdAt).toLocaleDateString('vi-VN')}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 font-medium">
                           <Eye className="w-4 h-4 opacity-50" />
-                          1.2k
+                          0
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -229,6 +321,13 @@ export const BlogsTab: React.FC = () => {
                       </td>
                     </tr>
                   ))}
+                  {blogPage?.content.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
+                        Chưa có bài viết nào. Hãy viết bài đầu tiên của bạn!
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

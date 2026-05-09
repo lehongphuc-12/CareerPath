@@ -1,6 +1,9 @@
 package com.example.CareerPath_BE.services.imple;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.CareerPath_BE.dtos.blog.BlogDetailResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogResponseDto;
+import com.example.CareerPath_BE.dtos.blog.CreateBlogRequestDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCategoryResponseDto;
 import com.example.CareerPath_BE.dtos.blog.BlogCommentResponseDto;
 import com.example.CareerPath_BE.dtos.blog.CreateCommentDto;
@@ -35,6 +39,7 @@ public class BlogService implements IBlogService {
     private final BlogCategoriesRepository blogCategoriesRepository;
     private final BlogCommentsRepository blogCommentsRepository;
     private final UsersRepository usersRepository;
+    private final CloudinarySerivce cloudinarySerivce;
 
     @Override
     public Page<BlogResponseDto> getBlogs(int page, int size, Integer categoryId) {
@@ -52,8 +57,11 @@ public class BlogService implements IBlogService {
             dto.setBlogId(blog.getBlogId());
             dto.setTitle(blog.getTitle());
             dto.setContent(blog.getContent());
-            dto.setThumnail(blog.getThumbnail());
+            dto.setThumbnail(blog.getThumbnail());
             dto.setAuthorName(blog.getUsers() != null ? blog.getUsers().getFullName() : "Admin");
+            dto.setCategoryName(blog.getBlogCategories() != null && !blog.getBlogCategories().isEmpty() 
+                                ? blog.getBlogCategories().iterator().next().getName() 
+                                : "Khác");
             dto.setCreatedAt(blog.getCreatedAt());
             return dto;
         });
@@ -156,6 +164,55 @@ public class BlogService implements IBlogService {
         responseDto.setContent(saved.getContent());
         responseDto.setCreatedAt(saved.getCreatedAt());
 
+        return responseDto;
+    }
+
+    @Override
+    public BlogDetailResponseDto createBlog(CreateBlogRequestDto request, int userId) {
+
+        BlogCategories category = blogCategoriesRepository.findByName(request.getCategoryName())
+                                    .orElseGet(() -> {
+                                        BlogCategories newCategories = new BlogCategories();
+                                        newCategories.setName(request.getCategoryName());
+                                        return blogCategoriesRepository.save(newCategories);
+                                    });
+
+        Users user = usersRepository.findById(userId)
+                            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        String imgUrl = null;
+        if (request.getBlogImage() != null && !request.getBlogImage().isEmpty()) {
+            imgUrl = cloudinarySerivce.uploadFile(request.getBlogImage(), "/exe/blogs");
+        }
+
+        Blogs blog = new Blogs();
+        blog.setTitle(request.getTitle());
+        blog.setContent(request.getContent());
+        blog.setThumbnail(imgUrl);
+        blog.setCreatedAt(new Date());
+        blog.setUpdatedAt(new Date());
+        blog.setUsers(user);
+        blog.setViewCount(0);
+        blog.setLikeCount(0);
+
+        Set<BlogCategories> categories = new HashSet<>();
+        categories.add(category);
+        blog.setBlogCategories(categories);
+
+        Blogs saved = blogRepository.save(blog);
+
+        BlogDetailResponseDto responseDto = new BlogDetailResponseDto();
+        responseDto.setBlogId(saved.getBlogId());
+        responseDto.setTitle(saved.getTitle());
+        responseDto.setContent(saved.getContent());
+        responseDto.setImageUrl(saved.getThumbnail());
+        responseDto.setCreatedAt(saved.getCreatedAt());
+        responseDto.setUpdatedAt(saved.getUpdatedAt());
+        responseDto.setAuthorId(saved.getUsers().getUserId());
+        responseDto.setAuthorName(saved.getUsers().getFullName());
+        responseDto.setViewCount(saved.getViewCount());
+        responseDto.setCommentCount(saved.getBlogComments().size());
+        responseDto.setLikeCount(saved.getLikeCount());
         return responseDto;
     }
 }

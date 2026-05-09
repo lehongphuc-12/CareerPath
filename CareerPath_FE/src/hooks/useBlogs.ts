@@ -39,6 +39,21 @@ export const useBlog = () => {
     fetchBlogs();
   }, [fetchBlogs]);
 
+  const createBlog = async (formData: FormData) => {
+    setIsLoading(true);
+    try {
+      const newBlog = await blogApi.createBlog(formData);
+      toast.success('Blog created successfully!');
+      fetchBlogs(); // Refresh list
+      return newBlog;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to create blog');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     blogPage,
     categories,
@@ -48,6 +63,7 @@ export const useBlog = () => {
     page,
     setPage,
     fetchBlogs,
+    createBlog,
   };
 };
 
