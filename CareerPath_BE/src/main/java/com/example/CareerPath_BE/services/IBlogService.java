@@ -19,5 +19,6 @@ public interface IBlogService {
     BlogDetailResponseDto createBlog(CreateBlogRequestDto request, int userId);
     void incrementViewCount(int blogId);
     void deleteBlog(int blogId);
+    BlogDetailResponseDto updateBlog(int blogId, CreateBlogRequestDto request);
 }
 

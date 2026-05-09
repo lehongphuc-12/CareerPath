@@ -21,13 +21,29 @@ export const BlogsTab: React.FC = () => {
     image: '',
   });
 
-  const { categories: apiCategories, createBlog, deleteBlog, blogPage, isLoading: isActionLoading } = useBlog();
+  const { categories: apiCategories, createBlog, deleteBlog, updateBlog, blogPage, isLoading: isActionLoading } = useBlog();
   const [categories, setCategories] = useState<string[]>([]);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [blogToDelete, setBlogToDelete] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingBlogId, setEditingBlogId] = useState<number | null>(null);
+
+  const handleEditClick = (blog: any) => {
+    setNewBlog({
+      title: blog.title,
+      category: blog.categoryName,
+      content: blog.content,
+      readTime: '5 phút',
+      image: blog.thumbnail,
+    });
+    setImagePreview(blog.thumbnail);
+    setEditingBlogId(blog.blogId);
+    setIsEditing(true);
+    setIsCreating(true);
+  };
 
   const handleDeleteClick = (blogId: number) => {
     setBlogToDelete(blogId);
@@ -80,8 +96,14 @@ export const BlogsTab: React.FC = () => {
     }
 
     try {
-      await createBlog(formData);
+      if (isEditing && editingBlogId) {
+        await updateBlog(editingBlogId, formData);
+      } else {
+        await createBlog(formData);
+      }
       setIsCreating(false);
+      setIsEditing(false);
+      setEditingBlogId(null);
       // Reset form
       setNewBlog({ title: '', category: '', readTime: '', content: '', image: '' });
       setImagePreview('');
@@ -102,9 +124,17 @@ export const BlogsTab: React.FC = () => {
       {isCreating ? (
         <div className="bg-white dark:bg-slate-900 rounded-3xl premium-shadow p-8 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Viết bài mới</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+              {isEditing ? 'Cập nhật bài viết' : 'Viết bài mới'}
+            </h3>
             <button
-              onClick={() => setIsCreating(false)}
+              onClick={() => {
+                setIsCreating(false);
+                setIsEditing(false);
+                setEditingBlogId(null);
+                setNewBlog({ title: '', category: '', readTime: '', content: '', image: '' });
+                setImagePreview('');
+              }}
               className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-slate-600 transition-colors"
             >
               <X className="w-5 h-5" />
@@ -235,7 +265,13 @@ export const BlogsTab: React.FC = () => {
           <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button
               variant="secondary"
-              onClick={() => setIsCreating(false)}
+              onClick={() => {
+                setIsCreating(false);
+                setIsEditing(false);
+                setEditingBlogId(null);
+                setNewBlog({ title: '', category: '', readTime: '', content: '', image: '' });
+                setImagePreview('');
+              }}
               className="rounded-2xl"
             >
               Hủy
@@ -245,7 +281,7 @@ export const BlogsTab: React.FC = () => {
               disabled={isActionLoading}
               className="rounded-2xl shadow-lg shadow-primary/30"
             >
-              <Save className="w-4 h-4 mr-2" /> {isActionLoading ? 'Đang lưu...' : 'Lưu bài viết'}
+              <Save className="w-4 h-4 mr-2" /> {isActionLoading ? 'Đang lưu...' : isEditing ? 'Cập nhật bài viết' : 'Lưu bài viết'}
             </Button>
           </div>
         </div>
@@ -328,7 +364,10 @@ export const BlogsTab: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-primary transition-colors">
+                          <button 
+                            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-primary transition-colors"
+                            onClick={() => handleEditClick(blog)}
+                          >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button 

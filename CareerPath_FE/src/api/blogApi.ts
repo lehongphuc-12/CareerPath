@@ -85,4 +85,16 @@ export const blogApi = {
   deleteBlog: async (blogId: number): Promise<void> => {
     await axios.delete<ApiResponse<void>>(`${BASE_URL}/${blogId}`);
   },
+
+  updateBlog: async (blogId: number, formData: FormData): Promise<BlogDetail> => {
+    const response = await axios.post<ApiResponse<BlogDetail>>(`${BASE_URL}/${blogId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to update blog');
+  },
 };

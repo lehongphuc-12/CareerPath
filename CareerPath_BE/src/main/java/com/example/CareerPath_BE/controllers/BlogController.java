@@ -121,4 +121,13 @@ public class BlogController {
         return ResponseEntity.ok(
             new ApiResponse<>(true, 200, "Blog deleted successfully", null));
     }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<ApiResponse<BlogDetailResponseDto>> updateBlog(
+        @PathVariable int id,
+        @ModelAttribute CreateBlogRequestDto request) {
+        BlogDetailResponseDto blogDetail = blogService.updateBlog(id, request);
+        return ResponseEntity.ok(
+            new ApiResponse<>(true, 200, "Blog updated successfully", blogDetail));
+    }
 }

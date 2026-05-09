@@ -59,9 +59,24 @@ public class CloudinarySerivce implements ICloudinaryService {
     @Override
     public String extractPublicId(String imageUrl) {
         try {
-            String[] parts = imageUrl.split("/");
-            String publicId = parts[parts.length - 2] + "/" + parts[parts.length - 1];
-            return publicId;
+            String[] parts = imageUrl.split("/upload/");
+            if (parts.length < 2) return null;
+            
+            String pathAfterUpload = parts[1];
+            String[] pathParts = pathAfterUpload.split("/");
+            
+            StringBuilder publicIdBuilder = new StringBuilder();
+            for (int i = 1; i < pathParts.length; i++) {
+                if (i > 1) publicIdBuilder.append("/");
+                publicIdBuilder.append(pathParts[i]);
+            }
+            
+            String publicIdWithExtension = publicIdBuilder.toString();
+            int lastDotIndex = publicIdWithExtension.lastIndexOf(".");
+            if (lastDotIndex != -1) {
+                return publicIdWithExtension.substring(0, lastDotIndex);
+            }
+            return publicIdWithExtension;
         } catch (Exception e) {
             throw new RuntimeException("Extract publicId failed", e);
         }

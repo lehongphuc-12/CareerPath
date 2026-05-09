@@ -68,6 +68,21 @@ export const useBlog = () => {
     }
   };
 
+  const updateBlog = async (blogId: number, formData: FormData) => {
+    setIsLoading(true);
+    try {
+      const updated = await blogApi.updateBlog(blogId, formData);
+      toast.success('Blog updated successfully!');
+      fetchBlogs(); // Refresh list
+      return updated;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update blog');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     blogPage,
     categories,
@@ -79,6 +94,7 @@ export const useBlog = () => {
     fetchBlogs,
     createBlog,
     deleteBlog,
+    updateBlog,
   };
 };
 

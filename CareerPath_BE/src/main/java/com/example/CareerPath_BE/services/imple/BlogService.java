@@ -231,4 +231,54 @@ public class BlogService implements IBlogService {
             blogRepository.save(blog);
         });
     }
+
+    @Override
+    public BlogDetailResponseDto updateBlog(int blogId, CreateBlogRequestDto request) {
+        Blogs blog = blogRepository.findById(blogId)
+                .orElseThrow(() -> new RuntimeException("Blog not found"));
+
+        blog.setTitle(request.getTitle());
+        blog.setContent(request.getContent());
+        blog.setUpdatedAt(new Date());
+
+        if (request.getBlogImage() != null && !request.getBlogImage().isEmpty()) {
+            if (blog.getThumbnail() != null && !blog.getThumbnail().isEmpty()) {
+                try {
+                    cloudinarySerivce.deleteFile(blog.getThumbnail());
+                } catch (Exception e) {
+                    System.err.println("Failed to delete old image: " + e.getMessage());
+                }
+            }
+            String imgUrl = cloudinarySerivce.uploadFile(request.getBlogImage(), "/exe/blogs");
+            blog.setThumbnail(imgUrl);
+        }
+
+        if (request.getCategoryName() != null) {
+            BlogCategories category = blogCategoriesRepository.findByName(request.getCategoryName())
+                    .orElseGet(() -> {
+                        BlogCategories newCategories = new BlogCategories();
+                        newCategories.setName(request.getCategoryName());
+                        return blogCategoriesRepository.save(newCategories);
+                    });
+            Set<BlogCategories> categories = new HashSet<>();
+            categories.add(category);
+            blog.setBlogCategories(categories);
+        }
+
+        Blogs saved = blogRepository.save(blog);
+
+        BlogDetailResponseDto responseDto = new BlogDetailResponseDto();
+        responseDto.setBlogId(saved.getBlogId());
+        responseDto.setTitle(saved.getTitle());
+        responseDto.setContent(saved.getContent());
+        responseDto.setImageUrl(saved.getThumbnail());
+        responseDto.setCreatedAt(saved.getCreatedAt());
+        responseDto.setUpdatedAt(saved.getUpdatedAt());
+        responseDto.setAuthorId(saved.getUsers().getUserId());
+        responseDto.setAuthorName(saved.getUsers().getFullName());
+        responseDto.setViewCount(saved.getViewCount());
+        responseDto.setCommentCount(saved.getBlogComments().size());
+        responseDto.setLikeCount(saved.getLikeCount());
+        return responseDto;
+    }
 }
