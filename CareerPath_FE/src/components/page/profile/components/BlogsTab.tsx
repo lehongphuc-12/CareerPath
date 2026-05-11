@@ -3,22 +3,27 @@ import { useBlog } from '../../../../hooks/useBlogs';
 
 import Tiptap from '../../../common/Tiptap';
 
-import {
-  Plus,
-  Eye,
-  Edit2,
-  Trash2,
-  MoreVertical,
-  X,
-  Save,
-  AlertTriangle,
-  Sparkles,
-} from 'lucide-react';
 import { Button } from '../../../common/Button';
 import { Input } from '../../../common/Input';
 import { Modal } from '../../../common/Modal';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { blogs as mockBlogs } from '../../../../api/mockData';
+import { toast } from '@/src/store/useToastStore';
+import { 
+  Plus, 
+  Eye, 
+  Edit2, 
+  Trash2, 
+  MoreVertical, 
+  X, 
+  Save, 
+  AlertTriangle, 
+  Sparkles,
+  Brain,
+  Cpu,
+  Loader2,
+  Wand2
+} from 'lucide-react';
 
 export const BlogsTab: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
@@ -41,6 +46,27 @@ export const BlogsTab: React.FC = () => {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+
+  const loadingMessages = [
+    "Đang phân tích ý tưởng...",
+    "Đang kết nối với trí tuệ nhân tạo...",
+    "Đang biên soạn nội dung chất lượng...",
+    "Đang tối ưu hóa phong cách viết...",
+    "Đang hoàn thiện những bước cuối cùng...",
+  ];
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isAiGenerating) {
+      interval = setInterval(() => {
+        setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+      }, 2500);
+    }
+    return () => clearInterval(interval);
+  }, [isAiGenerating]);
 
   const {
     categories: apiCategories,
@@ -105,21 +131,25 @@ export const BlogsTab: React.FC = () => {
   };
 
   const handleGenerateAiContent = async () => {
+    setIsAiGenerating(true);
+    setLoadingMessageIndex(0);
     try {
       const data = await generateAiContent(newBlog.title, aiRequirements);
-      setNewBlog({ 
-        ...newBlog, 
+      setNewBlog({
+        ...newBlog,
         title: data.title,
-        content: data.content 
+        content: data.content,
       });
     } catch (error) {
       console.error('AI Generation failed', error);
+    } finally {
+      setIsAiGenerating(false);
     }
   };
 
   const handleSaveBlog = async () => {
     if (!newBlog.title.trim() || !newBlog.category || !newBlog.content.trim()) {
-      alert('Vui lòng nhập đầy đủ tiêu đề, danh mục và nội dung');
+      toast.error('Vui lòng nhập đầy đủ tiêu đề, danh mục và nội dung');
       return;
     }
 
@@ -160,7 +190,96 @@ export const BlogsTab: React.FC = () => {
       className="space-y-6"
     >
       {isCreating ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl premium-shadow p-8 space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl premium-shadow p-8 space-y-6 relative overflow-hidden">
+          <AnimatePresence>
+            {isAiGenerating && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-4rem)] h-[60%] z-50 flex flex-col items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-[40px] border border-slate-200/50 dark:border-slate-700/50 shadow-2xl overflow-hidden"
+              >
+                {/* Tech Background Pattern */}
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                </div>
+
+                {/* Scanning Beam */}
+                <motion.div 
+                  animate={{ top: ['-10%', '110%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 right-0 h-20 bg-gradient-to-b from-transparent via-primary/20 to-transparent z-10"
+                />
+
+                <div className="relative z-20 flex flex-col items-center">
+                  <div className="relative mb-6">
+                    {/* Glowing Orb */}
+                    <motion.div
+                      animate={{
+                        boxShadow: [
+                          "0 0 20px rgba(var(--primary-rgb), 0.2)",
+                          "0 0 60px rgba(var(--primary-rgb), 0.4)",
+                          "0 0 20px rgba(var(--primary-rgb), 0.2)"
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-20 h-20 bg-gradient-to-br from-primary to-indigo-600 rounded-full flex items-center justify-center text-white relative z-20 shadow-xl"
+                    >
+                      <Brain className="w-10 h-10 animate-pulse" />
+                    </motion.div>
+                    
+                    {/* Orbital Rings */}
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10 + i * 5, repeat: Infinity, ease: "linear" }}
+                        className="absolute -inset-4 border border-primary/10 rounded-full"
+                        style={{ padding: i * 8 }}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="text-center space-y-2 px-6">
+                    <AnimatePresence mode="wait">
+                      <motion.h4
+                        key={loadingMessageIndex}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="text-lg font-bold bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent"
+                      >
+                        {loadingMessages[loadingMessageIndex]}
+                      </motion.h4>
+                    </AnimatePresence>
+                    <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <span className="w-8 h-[1px] bg-slate-200 dark:bg-slate-700" />
+                      Neural Network Active
+                      <span className="w-8 h-[1px] bg-slate-200 dark:bg-slate-700" />
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex gap-1.5">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        animate={{
+                          scale: [1, 1.4, 1],
+                          opacity: [0.3, 1, 0.3],
+                        }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                        }}
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               {isEditing ? 'Cập nhật bài viết' : 'Viết bài mới'}
@@ -184,7 +303,7 @@ export const BlogsTab: React.FC = () => {
               label="Tiêu đề bài viết"
               placeholder="Nhập tiêu đề..."
               value={newBlog.title}
-              onChange={(e) => setNewBlog(prev => ({ ...prev, title: e.target.value }))}
+              onChange={(e) => setNewBlog((prev) => ({ ...prev, title: e.target.value }))}
             />
 
             <div className="flex items-center gap-2 px-1">
@@ -241,7 +360,9 @@ export const BlogsTab: React.FC = () => {
                       <select
                         className="flex-1 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl p-4 focus:ring-2 focus:ring-primary transition-all duration-200"
                         value={newBlog.category}
-                        onChange={(e) => setNewBlog(prev => ({ ...prev, category: e.target.value }))}
+                        onChange={(e) =>
+                          setNewBlog((prev) => ({ ...prev, category: e.target.value }))
+                        }
                       >
                         <option value="">Chọn danh mục</option>
                         {categories.map((cat) => (
@@ -337,7 +458,7 @@ export const BlogsTab: React.FC = () => {
               <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
                 <Tiptap
                   content={newBlog.content}
-                  onChange={(content) => setNewBlog(prev => ({ ...prev, content }))}
+                  onChange={(content) => setNewBlog((prev) => ({ ...prev, content }))}
                 />
               </div>
             </div>
