@@ -1,10 +1,28 @@
+import { useState, useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
 import { careers } from '../../../api/mockData';
 import { Link } from 'react-router-dom';
-import { Award, Bookmark, Calendar, ChevronRight, Zap } from 'lucide-react';
+import { Award, Bookmark, Calendar, ChevronRight, Zap, Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, savedCareers, bookings } = useStore();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center text-center space-y-4">
+        <div className="size-12 bg-primary/10 rounded-full flex items-center justify-center text-primary animate-spin">
+          <Loader2 size={24} />
+        </div>
+        <p className="text-slate-500 font-medium">Đang tải dữ liệu tổng quan...</p>
+      </div>
+    );
+  }
 
   const savedCareerData = careers.filter((c) => savedCareers.includes(c.id));
 

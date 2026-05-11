@@ -1,0 +1,115 @@
+import { useState, useEffect, useCallback } from 'react';
+import { blogApi } from '../api/blogApi';
+import { toast } from '../store/useToastStore';
+import { Blog, PageResponse, BlogCategory } from '../types/blog';
+
+export const useBlog = () => {
+  const [blogPage, setBlogPage] = useState<PageResponse<Blog> | null>(null);
+  const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      const data = await blogApi.getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Failed to load categories', error);
+    }
+  }, []);
+
+  const fetchBlogs = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await blogApi.getBlogs(page, 8, selectedCategory || undefined);
+      setBlogPage(response);
+    } catch (error) {
+      toast.error('Failed to load blogs');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, selectedCategory]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, [fetchBlogs]);
+
+  const createBlog = async (formData: FormData) => {
+    setIsLoading(true);
+    try {
+      const newBlog = await blogApi.createBlog(formData);
+      toast.success('Blog created successfully!');
+      fetchBlogs(); // Refresh list
+      return newBlog;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to create blog');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteBlog = async (blogId: number) => {
+    setIsLoading(true);
+    try {
+      await blogApi.deleteBlog(blogId);
+      toast.success('Blog deleted successfully!');
+      fetchBlogs(); // Refresh list
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to delete blog');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateBlog = async (blogId: number, formData: FormData) => {
+    setIsLoading(true);
+    try {
+      const updated = await blogApi.updateBlog(blogId, formData);
+      toast.success('Blog updated successfully!');
+      fetchBlogs(); // Refresh list
+      return updated;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update blog');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateAiContent = async (title: string, requirements: string) => {
+    setIsLoading(true);
+    try {
+      const data = await blogApi.generateAiContent(title, requirements);
+      toast.success('AI content generated!');
+      return data;
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to generate content');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    blogPage,
+    categories,
+    selectedCategory,
+    setSelectedCategory,
+    isLoading,
+    page,
+    setPage,
+    fetchBlogs,
+    createBlog,
+    deleteBlog,
+    updateBlog,
+    generateAiContent,
+  };
+};
+

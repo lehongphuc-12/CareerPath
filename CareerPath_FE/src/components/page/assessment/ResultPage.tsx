@@ -1,14 +1,31 @@
+import { useState, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar as RadarArea } from 'recharts';
 import { useStore } from '../../../store/useStore';
 import { Link } from 'react-router-dom';
-import { ArrowRight, TrendingDown, Lightbulb, UserPlus, FileText } from 'lucide-react';
+import { ArrowRight, TrendingDown, Lightbulb, UserPlus, FileText, Loader2 } from 'lucide-react';
 
 export default function ResultPage() {
   const { testResult, assessmentResult, preTestResult, theme } = useStore();
 
   if (!testResult || !assessmentResult) {
-    return <div>Vui long hoan thanh bai test.</div>;
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
+        <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-400">
+          <FileText size={40} />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold">Chưa có kết quả đánh giá</h2>
+          <p className="text-slate-500 max-w-sm">
+            Bạn cần hoàn thành bài kiểm tra năng lực để AI phân tích lộ trình phù hợp.
+          </p>
+        </div>
+        <Link to="/full-test" className="px-6 py-3 bg-primary text-white font-bold rounded-xl hover:scale-105 transition-transform shadow-lg shadow-primary/20">
+          Làm bài test ngay
+        </Link>
+      </div>
+    );
   }
+
 
   const data = [
     { trait: 'LOGIC', actual: testResult.logic, perception: preTestResult?.logic || 50 },

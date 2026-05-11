@@ -102,7 +102,8 @@ public class AssessmentService implements IAssessmentService {
                 traitScores,
                 request.preTestResult(),
                 factorScores,
-                recommendedCareers
+                recommendedCareers,
+                request.academicScores()
         );
 
         return new AssessmentResultResponseDto(

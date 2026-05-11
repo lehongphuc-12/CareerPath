@@ -26,7 +26,8 @@ export const assessmentApi = {
 
   submitAssessment: async (
     answers: AssessmentAnswerRequest[],
-    preTestResult: TraitScores | null
+    preTestResult: TraitScores | null,
+    academicScores?: Record<string, number> | null
   ): Promise<AssessmentResult> => {
     const response = await fetch(`${BASE_URL}/submit`, {
       method: 'POST',
@@ -36,6 +37,7 @@ export const assessmentApi = {
       body: JSON.stringify({
         answers,
         preTestResult,
+        academicScores,
       }),
     });
 
