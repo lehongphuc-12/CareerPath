@@ -33,7 +33,7 @@ public class QuestionService implements IQuestionService {
                         question.getChoiceses()
                                 .stream()
                                 .sorted(Comparator
-                                        .comparing((com.example.CareerPath_BE.entities.Choices choice) -> choice.getScoreValue(), Comparator.nullsLast(Integer::compareTo))
+                                        .comparing((com.example.CareerPath_BE.entities.Choices choice) -> choice.getChoiceOrder(), Comparator.nullsLast(Integer::compareTo))
                                         .thenComparing(com.example.CareerPath_BE.entities.Choices::getChoiceId))
                                 .map(choice -> new ChoiceResponseDto(
                                         choice.getChoiceId(),
