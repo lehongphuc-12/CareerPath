@@ -6,21 +6,16 @@ import com.example.CareerPath_BE.dtos.Assessment.AssessmentInsightDto;
 import com.example.CareerPath_BE.dtos.Assessment.AssessmentResultResponseDto;
 import com.example.CareerPath_BE.dtos.Assessment.AssessmentSubmitRequestDto;
 import com.example.CareerPath_BE.dtos.Assessment.AssessmentTraitScoresDto;
-import com.example.CareerPath_BE.entities.CareerFactors;
 import com.example.CareerPath_BE.entities.Choices;
-import com.example.CareerPath_BE.entities.QuestionFactors;
 import com.example.CareerPath_BE.entities.Questions;
-import com.example.CareerPath_BE.repositories.CareerFactorsRepository;
-import com.example.CareerPath_BE.repositories.QuestionFactorsRepository;
+import com.example.CareerPath_BE.entities.CareerMbtiMatches;
 import com.example.CareerPath_BE.repositories.QuestionsRepository;
+import com.example.CareerPath_BE.repositories.CareerMbtiMatchesRepository;
 import com.example.CareerPath_BE.services.IAssessmentService;
 import com.example.CareerPath_BE.services.IGeminiInsightService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,19 +25,16 @@ import java.util.stream.Collectors;
 public class AssessmentService implements IAssessmentService {
 
     private final QuestionsRepository questionsRepository;
-    private final QuestionFactorsRepository questionFactorsRepository;
-    private final CareerFactorsRepository careerFactorsRepository;
+    private final CareerMbtiMatchesRepository careerMbtiMatchesRepository;
     private final IGeminiInsightService geminiInsightService;
 
     public AssessmentService(
             QuestionsRepository questionsRepository,
-            QuestionFactorsRepository questionFactorsRepository,
-            CareerFactorsRepository careerFactorsRepository,
+            CareerMbtiMatchesRepository careerMbtiMatchesRepository,
             IGeminiInsightService geminiInsightService
     ) {
         this.questionsRepository = questionsRepository;
-        this.questionFactorsRepository = questionFactorsRepository;
-        this.careerFactorsRepository = careerFactorsRepository;
+        this.careerMbtiMatchesRepository = careerMbtiMatchesRepository;
         this.geminiInsightService = geminiInsightService;
     }
 
@@ -53,16 +45,14 @@ public class AssessmentService implements IAssessmentService {
         Map<Integer, Questions> questionMap = questions.stream()
                 .collect(Collectors.toMap(Questions::getQuestionId, question -> question));
 
-        Map<Integer, List<QuestionFactors>> questionFactorsMap = questionFactorsRepository.findAllWithDetails()
-                .stream()
-                .collect(Collectors.groupingBy(qf -> qf.getQuestions().getQuestionId()));
-
-        Map<String, BigDecimal> factorWeightedScores = new LinkedHashMap<>();
-        Map<String, BigDecimal> factorWeightedMaxScores = new LinkedHashMap<>();
+        Map<String, Integer> sideScores = new LinkedHashMap<>();
+        for (String side : List.of("E", "I", "S", "N", "T", "F", "J", "P")) {
+            sideScores.put(side, 0);
+        }
 
         for (AssessmentAnswerRequestDto answer : request.answers()) {
             Questions question = questionMap.get(answer.questionId());
-            if (question == null) {
+            if (question == null || question.getTestDimensions() == null || question.getDirection() == null) {
                 continue;
             }
 
@@ -76,28 +66,55 @@ public class AssessmentService implements IAssessmentService {
                 continue;
             }
 
-            for (QuestionFactors questionFactor : questionFactorsMap.getOrDefault(answer.questionId(), List.of())) {
-                String factorName = questionFactor.getFactors().getName();
-                BigDecimal weight = safeDecimal(questionFactor.getWeight());
-                BigDecimal scoreContribution = BigDecimal.valueOf(selectedChoice.getScoreValue()).multiply(weight);
-                BigDecimal maxContribution = BigDecimal.valueOf(5).multiply(weight);
+            int score = selectedChoice.getScoreValue();
+            String direction = question.getDirection().trim().toUpperCase();
+            String positiveSide = question.getTestDimensions().getPositiveSide() != null 
+                    ? question.getTestDimensions().getPositiveSide().trim().toUpperCase() : "";
+            String negativeSide = question.getTestDimensions().getNegativeSide() != null 
+                    ? question.getTestDimensions().getNegativeSide().trim().toUpperCase() : "";
 
-                factorWeightedScores.merge(factorName, scoreContribution, BigDecimal::add);
-                factorWeightedMaxScores.merge(factorName, maxContribution, BigDecimal::add);
+            if (direction.equals(positiveSide)) {
+                sideScores.put(positiveSide, sideScores.getOrDefault(positiveSide, 0) + score);
+                sideScores.put(negativeSide, sideScores.getOrDefault(negativeSide, 0) + (6 - score));
+            } else if (direction.equals(negativeSide)) {
+                sideScores.put(negativeSide, sideScores.getOrDefault(negativeSide, 0) + score);
+                sideScores.put(positiveSide, sideScores.getOrDefault(positiveSide, 0) + (6 - score));
             }
         }
 
-        Map<String, Integer> factorScores = factorWeightedScores.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> toPercent(entry.getValue(), factorWeightedMaxScores.get(entry.getKey())),
-                        (left, right) -> left,
-                        LinkedHashMap::new
-                ));
+        Map<String, Integer> factorScores = new LinkedHashMap<>();
+        autoCalcPct("E", "I", sideScores, factorScores);
+        autoCalcPct("S", "N", sideScores, factorScores);
+        autoCalcPct("T", "F", sideScores, factorScores);
+        autoCalcPct("J", "P", sideScores, factorScores);
 
-        AssessmentTraitScoresDto traitScores = buildTraitScores(factorScores);
-        List<AssessmentCareerMatchDto> recommendedCareers = buildCareerRecommendations(factorScores);
+        String mbtiEOrI = (factorScores.getOrDefault("E", 0) >= 50) ? "E" : "I";
+        String mbtiSOrN = (factorScores.getOrDefault("S", 0) >= 50) ? "S" : "N";
+        String mbtiTOrF = (factorScores.getOrDefault("T", 0) >= 50) ? "T" : "F";
+        String mbtiJOrP = (factorScores.getOrDefault("J", 0) >= 50) ? "J" : "P";
+        String mbtiType = mbtiEOrI + mbtiSOrN + mbtiTOrF + mbtiJOrP;
+
+        int logic = factorScores.getOrDefault("T", 0);
+        int creativity = factorScores.getOrDefault("N", 0);
+        int communication = factorScores.getOrDefault("E", 0);
+        int discipline = factorScores.getOrDefault("J", 0);
+        int teamwork = factorScores.getOrDefault("F", 0);
+        int selfLearning = factorScores.getOrDefault("I", 0);
+
+        AssessmentTraitScoresDto traitScores = new AssessmentTraitScoresDto(logic, creativity, communication, discipline, teamwork, selfLearning);
+
+        List<CareerMbtiMatches> matches = careerMbtiMatchesRepository.findAllByMbtiTypeWithCareers(mbtiType);
+        List<AssessmentCareerMatchDto> recommendedCareers = matches.stream()
+                .sorted((a, b) -> b.getCompatibilityScore().compareTo(a.getCompatibilityScore()))
+                .map(match -> new AssessmentCareerMatchDto(
+                        match.getCareers().getCareerId(),
+                        match.getCareers().getName(),
+                        match.getCareers().getDescription(),
+                        match.getCompatibilityScore()
+                ))
+                .limit(6)
+                .collect(Collectors.toList());
+
         AssessmentInsightDto insight = geminiInsightService.generateAssessmentInsight(
                 traitScores,
                 request.preTestResult(),
@@ -116,63 +133,18 @@ public class AssessmentService implements IAssessmentService {
         );
     }
 
-    private List<AssessmentCareerMatchDto> buildCareerRecommendations(Map<String, Integer> factorScores) {
-        Map<Integer, List<CareerFactors>> careerFactorMap = careerFactorsRepository.findAllWithDetails()
-                .stream()
-                .collect(Collectors.groupingBy(cf -> cf.getCareers().getCareerId()));
-
-        return careerFactorMap.values()
-                .stream()
-                .map(factors -> {
-                    CareerFactors first = factors.get(0);
-                    BigDecimal weightedSum = BigDecimal.ZERO;
-                    BigDecimal weightSum = BigDecimal.ZERO;
-
-                    for (CareerFactors factor : factors) {
-                        String factorName = factor.getFactors().getName();
-                        BigDecimal careerWeight = safeDecimal(factor.getWeight());
-                        BigDecimal userFactorScore = BigDecimal.valueOf(factorScores.getOrDefault(factorName, 0))
-                                .divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
-
-                        weightedSum = weightedSum.add(userFactorScore.multiply(careerWeight));
-                        weightSum = weightSum.add(careerWeight);
-                    }
-
-                    int matchScore = weightSum.compareTo(BigDecimal.ZERO) == 0
-                            ? 0
-                            : weightedSum
-                            .divide(weightSum, 6, RoundingMode.HALF_UP)
-                            .multiply(BigDecimal.valueOf(100))
-                            .setScale(0, RoundingMode.HALF_UP)
-                            .intValue();
-
-                    return new AssessmentCareerMatchDto(
-                            first.getCareers().getCareerId(),
-                            first.getCareers().getName(),
-                            first.getCareers().getDescription(),
-                            matchScore
-                    );
-                })
-                .sorted(Comparator.comparing(AssessmentCareerMatchDto::matchScore).reversed())
-                .limit(6)
-                .toList();
-    }
-
-    private AssessmentTraitScoresDto buildTraitScores(Map<String, Integer> factorScores) {
-        int logic = average(factorScores,
-                "Thinking", "Analytical Thinking", "Critical Thinking", "Investigative", "Conventional");
-        int creativity = average(factorScores,
-                "Perceiving", "Artistic", "Enterprising");
-        int communication = average(factorScores,
-                "Extrovert", "Feeling", "Social", "Enterprising");
-        int discipline = average(factorScores,
-                "Judging", "Critical Thinking", "Conventional");
-        int teamwork = average(factorScores,
-                "Extrovert", "Feeling", "Social");
-        int selfLearning = average(factorScores,
-                "Introvert", "Investigative", "Analytical Thinking", "Perceiving");
-
-        return new AssessmentTraitScoresDto(logic, creativity, communication, discipline, teamwork, selfLearning);
+    private void autoCalcPct(String pos, String neg, Map<String, Integer> sideScores, Map<String, Integer> factorScores) {
+        int posScore = sideScores.getOrDefault(pos, 0);
+        int negScore = sideScores.getOrDefault(neg, 0);
+        int total = posScore + negScore;
+        if (total == 0) {
+            factorScores.put(pos, 50);
+            factorScores.put(neg, 50);
+        } else {
+            int posPct = Math.round(100.0f * posScore / total);
+            factorScores.put(pos, posPct);
+            factorScores.put(neg, 100 - posPct);
+        }
     }
 
     private int calculateBias(AssessmentTraitScoresDto actual, AssessmentTraitScoresDto perception) {
@@ -190,36 +162,5 @@ public class AssessmentService implements IAssessmentService {
         );
 
         return (int) Math.round(diffs.stream().mapToInt(Integer::intValue).average().orElse(0));
-    }
-
-    private int average(Map<String, Integer> factorScores, String... factorNames) {
-        int sum = 0;
-        int count = 0;
-
-        for (String factorName : factorNames) {
-            Integer score = factorScores.get(factorName);
-            if (score != null) {
-                sum += score;
-                count++;
-            }
-        }
-
-        return count == 0 ? 0 : Math.round((float) sum / count);
-    }
-
-    private int toPercent(BigDecimal value, BigDecimal maxValue) {
-        if (value == null || maxValue == null || maxValue.compareTo(BigDecimal.ZERO) == 0) {
-            return 0;
-        }
-
-        return value
-                .divide(maxValue, 6, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100))
-                .setScale(0, RoundingMode.HALF_UP)
-                .intValue();
-    }
-
-    private BigDecimal safeDecimal(BigDecimal value) {
-        return value == null ? BigDecimal.ZERO : value;
     }
 }

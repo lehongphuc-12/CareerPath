@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { mentors } from '../../../api/mockData';
 import {
   Bookmark,
@@ -8,6 +10,12 @@ import {
   ArrowLeft,
   DollarSign,
   BarChart2,
+  Check,
+  GraduationCap,
+  Sparkles,
+  Briefcase,
+  AlertCircle,
+  Award
 } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
 import { useCareerDetail } from '../../../hooks/useCareerDetail';
@@ -16,17 +24,24 @@ const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop';
 
 const DEMAND_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: 'Thấp', color: 'text-slate-500' },
-  2: { label: 'Trung bình', color: 'text-yellow-500' },
-  3: { label: 'Cao', color: 'text-emerald-500' },
-  4: { label: 'Rất cao', color: 'text-orange-500' },
-  5: { label: 'Cực kỳ cao', color: 'text-red-500' },
+  1: { label: 'Rất thấp', color: 'text-slate-400 bg-slate-400/10 border-slate-400/25' },
+  2: { label: 'Thấp', color: 'text-slate-500 bg-slate-500/10 border-slate-500/25' },
+  3: { label: 'Trung bình yếu', color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/25' },
+  4: { label: 'Trung bình', color: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/25' },
+  5: { label: 'Khá cao', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/25' },
+  6: { label: 'Cao', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/25' },
+  7: { label: 'Rất cao', color: 'text-teal-500 bg-teal-500/10 border-teal-500/25' },
+  8: { label: 'Cực kỳ cao', color: 'text-orange-500 bg-orange-500/10 border-orange-500/25' },
+  9: { label: 'Bùng nổ', color: 'text-red-500 bg-red-500/10 border-red-500/25' },
+  10: { label: 'Kịch trần', color: 'text-red-650 bg-red-650/10 border-red-650/25' },
 };
+
+type TabType = 'overview' | 'skills' | 'roadmap';
 
 export default function CareerDetailPage() {
   const { savedCareers, saveCareer, unsaveCareer } = useStore();
   const { career, isLoading, error } = useCareerDetail();
-
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
 
   if (isLoading) {
     return (
@@ -52,106 +67,310 @@ export default function CareerDetailPage() {
     );
   }
 
-  const isSaved = savedCareers.includes(career.careerId);
+  const isSaved = savedCareers.includes(career.careerId.toString());
   const demandInfo = career.demand_level ? DEMAND_LABELS[career.demand_level] : null;
 
+  // Split responsibilities
+  const responsibilitiesList = career.responsibilities
+    ? career.responsibilities.split(/[;\n]+/).map(r => r.trim()).filter(Boolean)
+    : [];
+
+  // Split majors
+  const majorsList = career.majors
+    ? career.majors.split(/[,;\n]+/).map(m => m.trim()).filter(Boolean)
+    : [];
+
+  // Split roadmap steps
+  const roadmapSteps = career.roadmap_steps
+    ? career.roadmap_steps.split(/[;\n]+/).map(s => s.trim()).filter(Boolean)
+    : [];
+
   return (
-    <div className="space-y-12 py-10">
+    <div className="space-y-12 py-10 px-4 max-w-6xl mx-auto">
       {/* Hero Header */}
-      <header className="relative h-[400px] rounded-3xl overflow-hidden">
+      <header className="relative h-[280px] md:h-[380px] rounded-3xl overflow-hidden shadow-lg shadow-slate-200/20 dark:shadow-none">
         <img
           src={career.image || DEFAULT_IMAGE}
           alt={career.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-10">
-          <div className="max-w-4xl space-y-4">
-            <div className="flex items-center gap-4">
-              <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase rounded-full">
-                Hot Career 2025
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent flex flex-col justify-end p-6 md:p-10">
+          <div className="max-w-4xl space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 bg-primary text-white text-xs font-black uppercase tracking-wider rounded-full shadow-sm">
+                Xu hướng 2025
               </span>
               <button
                 onClick={() =>
-                  isSaved ? unsaveCareer(career.careerId) : saveCareer(career.careerId)
+                  isSaved ? unsaveCareer(career.careerId.toString()) : saveCareer(career.careerId.toString())
                 }
-                className={`flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md transition-all ${isSaved ? 'bg-primary text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md transition-all font-bold text-xs md:text-sm ${
+                  isSaved 
+                    ? 'bg-primary text-white shadow-md' 
+                    : 'bg-white/20 text-white hover:bg-white/30 border border-white/20'
+                }`}
               >
-                <Bookmark size={16} fill={isSaved ? 'currentColor' : 'none'} />
-                {isSaved ? 'Đã lưu' : 'Lưu ngành'}
+                <Bookmark size={14} fill={isSaved ? 'currentColor' : 'none'} />
+                {isSaved ? 'Đã lưu ngành' : 'Lưu ngành'}
               </button>
             </div>
-            <h1 className="text-5xl font-black text-white">{career.name}</h1>
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-none">
+              {career.name}
+            </h1>
           </div>
         </div>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-12">
-          <section className="space-y-6">
-            <h2 className="text-3xl font-bold">Tổng quan</h2>
-            <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-              {career.description}
-            </p>
+        {/* Main Content (Left Column) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Tabs Navigation Header */}
+          <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6 overflow-x-auto scrollbar-none select-none">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex items-center gap-2 pb-4 text-sm md:text-base font-extrabold transition-all border-b-2 -mb-[2px] cursor-pointer whitespace-nowrap ${
+                activeTab === 'overview'
+                  ? 'border-primary text-primary font-black'
+                  : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650 dark:hover:text-slate-350'
+              }`}
+            >
+              <Briefcase size={16} />
+              Tổng quan
+            </button>
+            
+            <button
+              onClick={() => setActiveTab('skills')}
+              className={`flex items-center gap-2 pb-4 text-sm md:text-base font-extrabold transition-all border-b-2 -mb-[2px] cursor-pointer whitespace-nowrap ${
+                activeTab === 'skills'
+                  ? 'border-primary text-primary font-black'
+                  : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650 dark:hover:text-slate-350'
+              }`}
+            >
+              <Award size={16} />
+              Kỹ năng & Ngành học
+            </button>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-                <div className="p-3 bg-primary/10 rounded-xl">
-                  <DollarSign className="text-primary" size={24} />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">
-                    Lương trung bình
-                  </p>
-                  <p className="text-2xl font-black text-primary">
-                    {career.min_salary && career.max_salary
-                      ? ` ${(Number(career.min_salary) / 1000000).toFixed(1)} - ${(Number(career.max_salary) / 1000000).toFixed(1)} trVND`
-                      : 'Chưa cập nhật'}
-                  </p>
-                </div>
-              </div>
+            <button
+              onClick={() => setActiveTab('roadmap')}
+              className={`flex items-center gap-2 pb-4 text-sm md:text-base font-extrabold transition-all border-b-2 -mb-[2px] cursor-pointer whitespace-nowrap ${
+                activeTab === 'roadmap'
+                  ? 'border-primary text-primary font-black'
+                  : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-650 dark:hover:text-slate-350'
+              }`}
+            >
+              <Sparkles size={16} />
+              Lộ trình phát triển
+            </button>
+          </div>
 
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-4">
-                <div className="p-3 bg-emerald-500/10 rounded-xl">
-                  <BarChart2 className="text-emerald-500" size={24} />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase mb-1">
-                    Nhu cầu thị trường
-                  </p>
-                  <p className={`text-2xl font-black ${demandInfo?.color || 'text-slate-400'}`}>
-                    {demandInfo?.label || 'Chưa cập nhật'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* Conditional Rendering of Tabs with AnimatePresence */}
+          <div className="min-h-[200px]">
+            <AnimatePresence mode="wait">
+              {activeTab === 'overview' && (
+                <motion.div
+                  key="overview"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-8"
+                >
+                  {/* Overview & Stats */}
+                  <section className="space-y-6">
+                    <p className="text-base md:text-lg text-slate-650 dark:text-slate-400 leading-relaxed font-medium">
+                      {career.description}
+                    </p>
+
+                    {/* Stats grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-4 shadow-sm">
+                        <div className="p-3 bg-primary/10 rounded-xl shrink-0">
+                          <DollarSign className="text-primary" size={24} />
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase mb-0.5 tracking-wider">
+                            Lương trung bình
+                          </p>
+                          <p className="text-xl md:text-2xl font-black text-primary">
+                            {career.min_salary && career.max_salary
+                              ? `${(Number(career.min_salary) / 1000000).toFixed(0)} - ${(Number(career.max_salary) / 1000000).toFixed(0)} triệu VND`
+                              : 'Chưa cập nhật'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-4 shadow-sm">
+                        <div className="p-3 bg-emerald-500/10 rounded-xl shrink-0">
+                          <BarChart2 className="text-emerald-500" size={24} />
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase mb-0.5 tracking-wider">
+                            Nhu cầu thị trường
+                          </p>
+                          <p className={`text-xl md:text-2xl font-black ${demandInfo ? 'text-slate-850 dark:text-slate-200' : 'text-slate-400'}`}>
+                            {demandInfo ? demandInfo.label : 'Chưa cập nhật'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Daily Responsibilities */}
+                  <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
+                    <h3 className="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                      <Briefcase className="text-primary" size={20} /> Công việc chính hàng ngày
+                    </h3>
+                    {responsibilitiesList.length > 0 ? (
+                      <ul className="space-y-3.5">
+                        {responsibilitiesList.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-3 text-slate-650 dark:text-slate-400 text-sm md:text-base leading-relaxed font-medium">
+                            <div className="p-1 rounded-full bg-emerald-500/10 text-emerald-500 shrink-0 mt-1">
+                              <Check size={12} className="stroke-[3]" />
+                            </div>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="flex items-center gap-2.5 p-5 bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-450 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl text-sm md:text-base">
+                        <AlertCircle size={18} className="text-slate-400 shrink-0" />
+                        <span>Chưa có dữ liệu công việc chính cho nghề này.</span>
+                      </div>
+                    )}
+                  </section>
+                </motion.div>
+              )}
+
+              {activeTab === 'skills' && (
+                <motion.div
+                  key="skills"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-8"
+                >
+                  {/* Required Skills */}
+                  <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
+                    <h3 className="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                      <Award className="text-primary" size={20} /> Kỹ năng cần thiết
+                    </h3>
+                    {career.skills && career.skills.length > 0 ? (
+                      <div className="flex flex-wrap gap-2.5">
+                        {career.skills.map((skill, idx) => (
+                          <span
+                            key={idx}
+                            className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-sm border border-slate-200/50 dark:border-slate-800/80 shadow-xs transition-colors"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2.5 p-5 bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-450 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl text-sm md:text-base">
+                        <AlertCircle size={18} className="text-slate-400 shrink-0" />
+                        <span>Chưa có dữ liệu kỹ năng yêu cầu cho nghề này.</span>
+                      </div>
+                    )}
+                  </section>
+
+                  {/* Majors Section */}
+                  <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
+                    <h3 className="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                      <GraduationCap className="text-primary" size={22} /> Ngành học đại học/cao đẳng phù hợp
+                    </h3>
+                    {majorsList.length > 0 ? (
+                      <div className="flex flex-wrap gap-2.5">
+                        {majorsList.map((item, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/20 text-primary font-bold text-sm hover:bg-primary/10 transition-colors shadow-xs"
+                          >
+                            <GraduationCap size={15} />
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2.5 p-5 bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-450 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl text-sm md:text-base">
+                        <AlertCircle size={18} className="text-slate-400 shrink-0" />
+                        <span>Chưa có dữ liệu ngành học đề xuất cho nghề này.</span>
+                      </div>
+                    )}
+                  </section>
+                </motion.div>
+              )}
+
+              {activeTab === 'roadmap' && (
+                <motion.div
+                  key="roadmap"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-8"
+                >
+                  {/* Career Roadmap Timeline */}
+                  <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
+                    <h3 className="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                      <Sparkles className="text-primary" size={20} /> Lộ trình phát triển sự nghiệp
+                    </h3>
+                    {roadmapSteps.length > 0 ? (
+                      <div className="relative pl-6 md:pl-8 border-l-2 border-slate-100 dark:border-slate-800 ml-4 space-y-8 py-2">
+                        {roadmapSteps.map((stepTitle, idx) => (
+                          <div key={idx} className="relative">
+                            {/* Circle counter */}
+                            <span className="absolute -left-[35px] md:-left-[43px] top-1 size-7 md:size-9 rounded-full bg-primary/10 dark:bg-primary/20 border-2 border-primary text-primary font-black text-xs md:text-sm flex items-center justify-center shadow-xs">
+                              {idx + 1}
+                            </span>
+                            
+                            <div className="space-y-1">
+                              <h4 className="font-extrabold text-base md:text-lg text-slate-800 dark:text-slate-150">
+                                {stepTitle}
+                              </h4>
+                              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                Giai đoạn {idx + 1}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2.5 p-5 bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-450 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl text-sm md:text-base">
+                        <AlertCircle size={18} className="text-slate-400 shrink-0" />
+                        <span>Chưa có dữ liệu lộ trình sự nghiệp cho nghề này.</span>
+                      </div>
+                    )}
+                  </section>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar (Right Column) */}
         <div className="space-y-8">
-          {/* Mentor suggestions */}
-          <div className="bg-primary/5 border border-primary/20 rounded-3xl p-8">
-            <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+          {/* Mentor Suggestions */}
+          <div className="bg-primary/5 border border-primary/20 rounded-3xl p-6 md:p-8 space-y-6">
+            <h3 className="font-extrabold text-lg text-slate-800 dark:text-slate-150 flex items-center gap-2">
               <Users className="text-primary" /> Mentor gợi ý
             </h3>
             <div className="space-y-4">
               {mentors.map((mentor) => (
                 <div
                   key={mentor.id}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow-xs"
                 >
                   <img
                     src={mentor.image}
                     alt={mentor.name}
-                    className="size-12 rounded-full object-cover"
+                    className="size-11 rounded-full object-cover shrink-0"
                   />
-                  <div className="flex-1">
-                    <p className="font-bold text-sm">{mentor.name}</p>
-                    <p className="text-xs text-slate-500">{mentor.role}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-extrabold text-sm text-slate-800 dark:text-slate-150 truncate">{mentor.name}</p>
+                    <p className="text-xs text-slate-400 truncate mt-0.5">{mentor.role}</p>
                   </div>
-                  <Link to="/mentors" className="text-primary">
+                  <Link to="/mentors" className="text-primary hover:scale-115 transition-transform shrink-0">
                     <ArrowRight size={18} />
                   </Link>
                 </div>
@@ -159,12 +378,12 @@ export default function CareerDetailPage() {
             </div>
           </div>
 
-          {/* Back to list */}
+          {/* Back Button */}
           <Link
             to="/careers"
-            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl border border-slate-200 dark:border-slate-800 font-extrabold text-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors shadow-xs"
           >
-            <ArrowLeft size={18} /> Xem tất cả ngành nghề
+            <ArrowLeft size={16} /> Xem tất cả ngành nghề
           </Link>
         </div>
       </div>

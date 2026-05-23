@@ -21,16 +21,29 @@ public class Tests  implements java.io.Serializable {
      @Column(name = "name")
      private String name;
 
+     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
+     private String description;
+
+     @Temporal(TemporalType.TIMESTAMP)
+     @Column(name = "created_at", updatable = false)
+     private java.util.Date createdAt = new java.util.Date();
+
      @OneToMany(fetch = FetchType.LAZY, mappedBy = "tests")
      private Set<Questions> questionses = new HashSet<>(0);
+
+     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tests")
+     private Set<TestDimensions> testDimensions = new HashSet<>(0);
 
     public Tests() {
     }
 
-    public Tests(TestTypes testTypes, String name, Set<Questions> questionses) {
+    public Tests(TestTypes testTypes, String name, String description, java.util.Date createdAt, Set<Questions> questionses, Set<TestDimensions> testDimensions) {
        this.testTypes = testTypes;
        this.name = name;
+       this.description = description;
+       this.createdAt = createdAt;
        this.questionses = questionses;
+       this.testDimensions = testDimensions;
     }
    
     public Integer getTestId() {
@@ -54,12 +67,37 @@ public class Tests  implements java.io.Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public java.util.Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(java.util.Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Set<Questions> getQuestionses() {
         return this.questionses;
     }
     
     public void setQuestionses(Set<Questions> questionses) {
         this.questionses = questionses;
+    }
+
+    public Set<TestDimensions> getTestDimensions() {
+        return this.testDimensions;
+    }
+
+    public void setTestDimensions(Set<TestDimensions> testDimensions) {
+        this.testDimensions = testDimensions;
     }
 
 

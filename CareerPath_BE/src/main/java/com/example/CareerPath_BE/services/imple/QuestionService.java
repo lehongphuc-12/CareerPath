@@ -29,11 +29,11 @@ public class QuestionService implements IQuestionService {
                 .map(question -> new QuestionResponseDto(
                         question.getQuestionId(),
                         question.getContent(),
-                        question.getDimension(),
+                        question.getTestDimensions() != null ? question.getTestDimensions().getCode() : null,
                         question.getChoiceses()
                                 .stream()
                                 .sorted(Comparator
-                                        .comparing((com.example.CareerPath_BE.entities.Choices choice) -> choice.getScoreValue(), Comparator.nullsLast(Integer::compareTo))
+                                        .comparing((com.example.CareerPath_BE.entities.Choices choice) -> choice.getChoiceOrder(), Comparator.nullsLast(Integer::compareTo))
                                         .thenComparing(com.example.CareerPath_BE.entities.Choices::getChoiceId))
                                 .map(choice -> new ChoiceResponseDto(
                                         choice.getChoiceId(),

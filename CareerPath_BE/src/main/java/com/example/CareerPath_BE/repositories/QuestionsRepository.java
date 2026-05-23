@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface QuestionsRepository extends JpaRepository<Questions, Integer> {
-    @Query("select distinct q from Questions q left join fetch q.choiceses")
+    @Query("select distinct q from Questions q left join fetch q.choiceses left join fetch q.testDimensions")
     List<Questions> findAllWithChoices();
 }

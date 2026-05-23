@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/useStore';
 import { assessmentApi } from '../../../api/assessmentApi';
 import { Question } from '../../../types/assessment';
-import { ArrowLeft, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, HelpCircle, Info, Loader2, Sparkles } from 'lucide-react';
+
+const QUESTIONS_PER_PAGE = 5;
 
 export default function FullTestPage() {
-  const [currentIdx, setCurrentIdx] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ export default function FullTestPage() {
         const data = await assessmentApi.getQuestions();
         setQuestions(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Khong the tai danh sach cau hoi.');
+        setError(err instanceof Error ? err.message : 'Không thể tải danh sách câu hỏi.');
       } finally {
         setLoading(false);
       }
@@ -33,8 +35,27 @@ export default function FullTestPage() {
     fetchQuestions();
   }, []);
 
-  const currentQuestion = questions[currentIdx] || questions[0];
-  const progress = questions.length ? ((currentIdx + 1) / questions.length) * 100 : 0;
+  // Smooth scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+  const startIndex = currentPage * QUESTIONS_PER_PAGE;
+  const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, questions.length);
+  const currentPageQuestions = questions.slice(startIndex, endIndex);
+
+  // Check how many questions are answered on this page
+  const currentPageAnsweredCount = currentPageQuestions.filter((_, idx) => {
+    const globalIdx = startIndex + idx;
+    return answers[globalIdx] !== undefined && answers[globalIdx] !== null;
+  }).length;
+
+  const isCurrentPageComplete = currentPageAnsweredCount === currentPageQuestions.length;
+
+  // Calculate overall progress
+  const answeredCount = answers.filter((a) => a !== undefined && a !== null).length;
+  const progress = questions.length ? (answeredCount / questions.length) * 100 : 0;
 
   const [loadingStep, setLoadingStep] = useState(0);
 
@@ -78,18 +99,45 @@ export default function FullTestPage() {
       addXP(50);
       navigate('/result');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Khong the nop bai test.');
+      setError(err instanceof Error ? err.message : 'Không thể nộp bài test.');
       setSubmitting(false);
     }
   };
 
-  const handleAnswer = (optionId: number) => {
+  const handleSelectAnswer = (globalIdx: number, optionId: number) => {
     const newAnswers = [...answers];
-    newAnswers[currentIdx] = optionId;
+    newAnswers[globalIdx] = optionId;
     setAnswers(newAnswers);
 
-    if (currentIdx < questions.length - 1) {
-      setCurrentIdx(currentIdx + 1);
+    // Auto scroll to next question on the current page, or to the footer if it's the last question
+    const currentQuestionLocalIdx = globalIdx - startIndex;
+    if (currentQuestionLocalIdx < currentPageQuestions.length - 1) {
+      const nextGlobalIdx = globalIdx + 1;
+      setTimeout(() => {
+        const nextEl = document.getElementById(`question-${nextGlobalIdx}`);
+        if (nextEl) {
+          nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    } else {
+      setTimeout(() => {
+        const footerEl = document.getElementById('pagination-footer');
+        if (footerEl) {
+          footerEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
@@ -114,10 +162,9 @@ export default function FullTestPage() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto py-10">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center">
-          Dang tai cau hoi...
-        </div>
+      <div className="max-w-3xl mx-auto py-12 flex flex-col items-center justify-center space-y-4">
+        <Loader2 className="animate-spin text-primary size-10" />
+        <span className="text-slate-500 font-medium">Đang tải danh sách câu hỏi đánh giá chuyên sâu...</span>
       </div>
     );
   }
@@ -131,103 +178,235 @@ export default function FullTestPage() {
             onClick={() => window.location.reload()}
             className="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-800"
           >
-            Thu lai
+            Thử lại
           </button>
         </div>
       </div>
     );
   }
 
-  if (!questions.length || !currentQuestion) {
+  if (!questions.length) {
     return (
       <div className="max-w-2xl mx-auto py-10">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center">
-          Chua co cau hoi nao de hien thi.
+          Chưa có câu hỏi nào để hiển thị.
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-10 space-y-8">
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-primary uppercase tracking-widest">Tien do</span>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold">{currentIdx + 1}</span>
-            <span className="text-slate-400">/ {questions.length}</span>
+    <div className="max-w-3xl mx-auto py-8 space-y-8 px-4">
+      {/* Top Banner and overall progress */}
+      <section className="bg-gradient-to-r from-primary/10 to-indigo-500/10 border border-primary/20 dark:border-primary/10 rounded-2xl p-6 backdrop-blur-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+              <Sparkles size={14} />
+              <span>Bước 02 / 03</span>
+            </div>
+            <h3 className="text-xl font-extrabold mt-1">
+              Đánh giá Năng lực chuyên sâu
+            </h3>
+          </div>
+          <div className="text-right">
+            <span className="text-slate-400 dark:text-slate-500 text-xs font-semibold block uppercase">Trang</span>
+            <span className="text-2xl font-black text-primary">
+              {currentPage + 1}
+            </span>
+            <span className="text-slate-400 font-semibold"> / {totalPages}</span>
           </div>
         </div>
-        <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            className="h-full bg-primary rounded-full"
-          />
-        </div>
-      </div>
 
+        <div className="space-y-2">
+          <div className="flex justify-between items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Tiến trình hoàn thành: {Math.round(progress)}%</span>
+            <span>Đã trả lời: {answeredCount} / {questions.length} câu</span>
+          </div>
+          <div className="h-3 w-full bg-slate-200/60 dark:bg-slate-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.4 }}
+              className="h-full bg-gradient-to-r from-primary to-indigo-500 rounded-full"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Questions Stack */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={currentIdx}
-          initial={{ opacity: 0, x: 20 }}
+          key={currentPage}
+          initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 md:p-12 shadow-xl shadow-primary/5"
+          exit={{ opacity: 0, x: -50 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-6"
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 leading-snug">
-            {currentQuestion.content}
-          </h2>
+          {currentPageQuestions.map((q, idx) => {
+            const globalIdx = startIndex + idx;
+            const isAnswered = answers[globalIdx] !== undefined && answers[globalIdx] !== null;
 
-          <div className="grid gap-4">
-            {currentQuestion.choices.map((option) => (
-              <button
-                key={option.choiceId}
-                onClick={() => !submitting && handleAnswer(option.choiceId)}
-                disabled={submitting}
-                className={`group relative flex items-center p-5 rounded-xl border-2 bg-slate-50 dark:bg-slate-800/30 transition-all text-left disabled:opacity-70 ${
-                  answers[currentIdx] === option.choiceId
-                    ? 'border-primary'
-                    : 'border-slate-100 dark:border-slate-800 hover:border-primary/50'
+            return (
+              <div
+                key={q.questionId}
+                id={`question-${globalIdx}`}
+                className={`bg-white dark:bg-slate-900 border rounded-2xl p-6 shadow-md transition-all duration-300 ${
+                  isAnswered 
+                    ? 'border-emerald-500/20 shadow-emerald-500/5 bg-emerald-50/5 dark:bg-emerald-950/5' 
+                    : 'border-slate-200 dark:border-slate-800/80 shadow-slate-200/10 hover:border-primary/20'
                 }`}
               >
-                <div className="size-6 rounded-full border-2 border-slate-300 dark:border-slate-600 group-hover:border-primary flex items-center justify-center mr-4 shrink-0">
-                  <div
-                    className={`size-2.5 rounded-full bg-primary transition-opacity ${
-                      answers[currentIdx] === option.choiceId ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    }`}
-                  />
+                <div className="flex items-start gap-3 mb-5">
+                  <div className={`p-1.5 rounded-lg shrink-0 ${
+                    isAnswered 
+                      ? 'bg-emerald-500/10 text-emerald-500' 
+                      : 'bg-primary/10 text-primary'
+                  }`}>
+                    {isAnswered ? <CheckCircle2 size={18} /> : <HelpCircle size={18} />}
+                  </div>
+                  <div>
+                    <span className={`text-xs font-bold uppercase tracking-wide block ${
+                      isAnswered ? 'text-emerald-500' : 'text-slate-400'
+                    }`}>
+                      Câu hỏi {globalIdx + 1}
+                    </span>
+                    <h4 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 mt-1 leading-snug">
+                      {q.content}
+                    </h4>
+                  </div>
                 </div>
-                <span className="text-lg font-medium">{option.content}</span>
-              </button>
-            ))}
-          </div>
+
+                <div className="flex items-center justify-between md:justify-center gap-4 md:gap-8 py-6 w-full max-w-xl mx-auto select-none">
+                  {/* Left Label: Agree */}
+                  <button
+                    type="button"
+                    onClick={() => handleSelectAnswer(globalIdx, q.choices[0].choiceId)}
+                    className="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 dark:text-emerald-400 hover:scale-105 active:scale-95 transition-transform text-left shrink-0"
+                  >
+                    Đồng ý
+                  </button>
+                  
+                  {/* Circles list */}
+                  <div className="flex items-center justify-center gap-3 md:gap-5 flex-1">
+                    {q.choices.map((option, choiceIdx) => {
+                      const isSelected = answers[globalIdx] === option.choiceId;
+                      const totalChoicesCount = q.choices.length;
+                      
+                      // Calculate size
+                      let sizeClass = "size-6 md:size-8";
+                      let checkSize = 10;
+                      if (choiceIdx === 0 || choiceIdx === totalChoicesCount - 1) {
+                        sizeClass = "size-10 md:size-12";
+                        checkSize = 18;
+                      } else if (choiceIdx === 1 || choiceIdx === totalChoicesCount - 2) {
+                        sizeClass = "size-8 md:size-10";
+                        checkSize = 14;
+                      }
+                      
+                      // Colors based on choice index relative to midpoint
+                      const midpoint = (totalChoicesCount - 1) / 2;
+                      let borderStyle = "";
+                      let selectedStyle = "";
+                      
+                      if (choiceIdx < midpoint) {
+                        // Green/Agree side
+                        borderStyle = "border-emerald-500 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10";
+                        selectedStyle = "border-emerald-500 bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-400";
+                      } else if (choiceIdx === midpoint) {
+                        // Neutral middle
+                        borderStyle = "border-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/10";
+                        selectedStyle = "border-slate-400 bg-slate-400/20 dark:bg-slate-400/30 text-slate-500 dark:text-slate-400";
+                      } else {
+                        // Purple/Disagree side
+                        borderStyle = "border-purple-500 hover:bg-purple-50/20 dark:hover:bg-purple-950/10";
+                        selectedStyle = "border-purple-500 bg-purple-500/20 dark:bg-purple-500/30 text-purple-600 dark:text-purple-400";
+                      }
+                      
+                      return (
+                        <button
+                          key={option.choiceId}
+                          type="button"
+                          onClick={() => handleSelectAnswer(globalIdx, option.choiceId)}
+                          className={`rounded-full border-2 flex items-center justify-center transition-all duration-205 cursor-pointer hover:scale-110 active:scale-95 ${sizeClass} ${
+                            isSelected ? selectedStyle : `${borderStyle} bg-transparent text-transparent`
+                          }`}
+                          title={option.content}
+                        >
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ duration: 0.15 }}
+                            >
+                              <Check size={checkSize} className="stroke-[3.5]" />
+                            </motion.div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Right Label: Disagree */}
+                  <button
+                    type="button"
+                    onClick={() => handleSelectAnswer(globalIdx, q.choices[q.choices.length - 1].choiceId)}
+                    className="text-xs sm:text-sm md:text-base font-extrabold text-purple-600 dark:text-purple-450 hover:scale-105 active:scale-95 transition-transform text-right shrink-0"
+                  >
+                    Không đồng ý
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </motion.div>
       </AnimatePresence>
 
-      <div className="flex justify-between items-center">
+      {/* Pagination Footer */}
+      <div 
+        id="pagination-footer"
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-slate-200 dark:border-slate-800"
+      >
         <button
-          onClick={() => currentIdx > 0 && setCurrentIdx(currentIdx - 1)}
-          disabled={currentIdx === 0 || submitting}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
+          onClick={handlePrevPage}
+          disabled={currentPage === 0 || submitting}
+          className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
         >
-          <ArrowLeft size={20} /> Quay lại
+          <ArrowLeft size={18} /> Quay lại
         </button>
 
-        {currentIdx === questions.length - 1 ? (
+        <div className="text-center text-sm font-medium text-slate-500">
+          {!isCurrentPageComplete ? (
+            <span className="text-amber-500 dark:text-amber-400 flex items-center justify-center gap-1.5 animate-pulse">
+              <Info size={16} /> Hãy trả lời hết {currentPageQuestions.length - currentPageAnsweredCount} câu còn lại ở trang này
+            </span>
+          ) : (
+            <span className="text-emerald-500 flex items-center justify-center gap-1.5">
+              <CheckCircle2 size={16} /> Sẵn sàng chuyển trang tiếp theo
+            </span>
+          )}
+        </div>
+
+        {currentPage === totalPages - 1 ? (
           <button
             onClick={() => submitAssessment(answers)}
-            disabled={submitting || answers[currentIdx] === undefined}
-            className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+            disabled={submitting || !isCurrentPageComplete}
+            className="flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-primary to-indigo-600 text-white font-extrabold rounded-xl hover:shadow-lg hover:shadow-primary/25 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95"
           >
-            Nộp bài
+            Nộp bài đánh giá <Sparkles size={18} />
           </button>
         ) : (
-          <div className="flex items-center gap-2 text-slate-500 text-sm">
-            <Info size={16} /> {submitting ? 'Đang phân tích kết quả...' : 'Lựa chọn của bạn giúp AI định hướng chính xác hơn.'}
-          </div>
+          <button
+            onClick={handleNextPage}
+            disabled={!isCurrentPageComplete}
+            className="flex items-center justify-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95"
+          >
+            Tiếp theo <ArrowRight size={18} />
+          </button>
         )}
       </div>
     </div>
   );
 }
+
