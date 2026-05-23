@@ -29,7 +29,7 @@ public class QuestionService implements IQuestionService {
                 .map(question -> new QuestionResponseDto(
                         question.getQuestionId(),
                         question.getContent(),
-                        question.getDimension(),
+                        question.getTestDimensions() != null ? question.getTestDimensions().getCode() : null,
                         question.getChoiceses()
                                 .stream()
                                 .sorted(Comparator
