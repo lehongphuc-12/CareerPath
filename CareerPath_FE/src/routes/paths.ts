@@ -16,4 +16,6 @@ export const PATHS = {
   PROFILE: '/profile',
   ABOUT: '/about',
   CONTACT: '/contact',
+  ADMIN: '/admin',
 } as const;
+

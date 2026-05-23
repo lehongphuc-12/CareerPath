@@ -410,7 +410,7 @@ export default function ResultPage() {
             <div className="grid gap-3">
               <Link
                 to="/careers"
-                className="flex items-center gap-3.5 p-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-850 border border-transparent hover:border-slate-200/50 dark:hover:border-slate-800/80 transition-all group"
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200/50 dark:hover:border-slate-800/80 transition-all group"
               >
                 <div className="size-11 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
                   <FileText size={20} />
@@ -428,7 +428,7 @@ export default function ResultPage() {
 
               <Link
                 to="/mentors"
-                className="flex items-center gap-3.5 p-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-850 border border-transparent hover:border-slate-200/50 dark:hover:border-slate-800/80 transition-all group"
+                className="flex items-center gap-3.5 p-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent hover:border-slate-200/50 dark:hover:border-slate-800/80 transition-all group"
               >
                 <div className="size-11 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
                   <UserPlus size={20} />
@@ -452,7 +452,7 @@ export default function ResultPage() {
           {/* Radar Chart Card */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-extrabold text-lg text-slate-850 dark:text-slate-100 flex items-center gap-2">
+              <h3 className="font-extrabold text-lg text-slate-800 dark:text-slate-100 flex items-center gap-2">
                 <BarChart3 size={18} className="text-primary" /> Bản đồ thế mạnh năng lực (Radar Chart)
               </h3>
               <div className="flex items-center gap-3 text-xs font-semibold">

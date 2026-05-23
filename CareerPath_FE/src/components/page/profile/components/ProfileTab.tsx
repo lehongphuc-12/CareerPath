@@ -279,7 +279,7 @@ const InfoItem = ({
 }) => (
   <div className="group space-y-1.5 p-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/30 border border-transparent hover:border-primary/20 hover:bg-primary/[0.02] transition-all duration-300">
     <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
-      {React.cloneElement(icon as React.ReactElement, { className: 'w-4 h-4' })}
+      {React.cloneElement(icon as React.ReactElement<any>, { className: 'w-4 h-4' })}
       <span className="text-[11px] font-bold uppercase tracking-wider">{label}</span>
     </div>
     <div className="text-slate-900 dark:text-white font-semibold">{value}</div>

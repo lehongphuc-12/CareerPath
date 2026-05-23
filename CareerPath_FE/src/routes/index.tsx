@@ -17,6 +17,7 @@ import LoginPage from '../components/page/auth/LoginPage';
 import RegisterPage from '../components/page/auth/RegisterPage';
 import ProfilePage from '../components/page/profile/ProfilePage';
 import BlogDetailPage from '../components/page/blogs/BlogDetailPage';
+import AdminPage from '../components/page/admin/AdminPage';
 import { PATHS } from './paths';
 
 const AppRoutes = () => {
@@ -41,9 +42,11 @@ const AppRoutes = () => {
         <Route path={PATHS.ABOUT.replace('/', '')} element={<AboutPage />} />
         <Route path={PATHS.CONTACT.replace('/', '')} element={<ContactPage />} />
         <Route path="blogs/:id" element={<BlogDetailPage />} />
+        <Route path={PATHS.ADMIN.replace('/', '')} element={<AdminPage />} />
       </Route>
     </Routes>
   );
 };
+
 
 export default AppRoutes;

@@ -207,7 +207,7 @@ export default function CareerDetailPage() {
                           <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase mb-0.5 tracking-wider">
                             Nhu cầu thị trường
                           </p>
-                          <p className={`text-xl md:text-2xl font-black ${demandInfo ? 'text-slate-850 dark:text-slate-200' : 'text-slate-400'}`}>
+                          <p className={`text-xl md:text-2xl font-black ${demandInfo ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400'}`}>
                             {demandInfo ? demandInfo.label : 'Chưa cập nhật'}
                           </p>
                         </div>
