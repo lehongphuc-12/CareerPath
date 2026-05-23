@@ -236,6 +236,51 @@ CREATE TABLE blog_comments (
 
     created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
 );
+-- ==========================================
+-- CHAT SYSTEM (1:1 & Group Chat Extensible)
+-- ==========================================
+
+-- 1. Bảng phòng chat (Mỗi cuộc hội thoại 1:1 là một phòng chat)
+CREATE TABLE chat_rooms (
+    room_id INT IDENTITY PRIMARY KEY,
+    name NVARCHAR(255) NULL,                     -- Tên phòng (thường NULL cho chat 1:1, có tên nếu là chat nhóm)
+    is_group BIT DEFAULT 0,                      -- 0: Chat 1:1, 1: Chat nhóm
+    created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME2 DEFAULT CURRENT_TIMESTAMP -- Cập nhật khi có tin nhắn mới để sắp xếp danh sách phòng chat
+);
+
+-- 2. Bảng liên kết người dùng và phòng chat (Một phòng chat 1:1 sẽ có đúng 2 bản ghi cho 2 users tham gia)
+CREATE TABLE chat_room_participants (
+    id INT IDENTITY PRIMARY KEY,
+    room_id INT REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+    joined_at DATETIME2 DEFAULT CURRENT_TIMESTAMP,
+    last_read_at DATETIME2 DEFAULT CURRENT_TIMESTAMP -- Dùng để đếm số tin nhắn chưa đọc (unread messages)
+    
+    CONSTRAINT unique_room_user UNIQUE (room_id, user_id)
+);
+
+-- 3. Bảng lưu trữ chi tiết các tin nhắn trong phòng chat
+CREATE TABLE chat_messages (
+    message_id INT IDENTITY PRIMARY KEY,
+    room_id INT REFERENCES chat_rooms(room_id) ON DELETE CASCADE,
+    sender_id INT REFERENCES users(user_id),
+    content NVARCHAR(MAX) NOT NULL,
+    created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==========================================
+-- INDEXES TO OPTIMIZE PERFORMANCE
+-- ==========================================
+
+-- Tối ưu hóa việc lấy lịch sử tin nhắn của một phòng chat theo thời gian gần nhất
+CREATE INDEX idx_chat_messages_room 
+ON chat_messages(room_id, created_at DESC);
+
+-- Tối ưu hóa việc tìm danh sách phòng chat mà một User đang tham gia
+CREATE INDEX idx_chat_room_participants_user 
+ON chat_room_participants(user_id);
+
 
 -- =========================
 -- INDEXES
