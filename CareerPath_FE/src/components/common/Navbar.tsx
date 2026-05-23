@@ -140,6 +140,15 @@ export default function Navbar() {
 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 py-2 z-50">
+                    {user && user.role && user.role.toUpperCase() === 'ADMIN' && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Trang Admin
+                      </Link>
+                    )}
                     <Link
                       to="/profile"
                       className="flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold"
@@ -164,6 +173,7 @@ export default function Navbar() {
                     </button>
                   </div>
                 )}
+
               </div>
             ) : (
               <>
@@ -206,7 +216,13 @@ export default function Navbar() {
           <Link to="/about" onClick={() => setIsMenuOpen(false)}>
             Về chúng tôi
           </Link>
+          {user && user.role && user.role.toUpperCase() === 'ADMIN' && (
+            <Link to="/admin" className="text-primary font-bold" onClick={() => setIsMenuOpen(false)}>
+              Trang Admin
+            </Link>
+          )}
           <div className="border-t border-slate-200 dark:border-slate-700 pt-4 mt-4 flex flex-col gap-3">
+
             {user ? (
               <>
                 <div className="flex items-center gap-4 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl mb-2">
