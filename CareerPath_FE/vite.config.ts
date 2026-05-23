@@ -25,6 +25,10 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        '/ws': {
+          target: 'ws://localhost:8080',
+          ws: true,
+        },
       },
     },
   };

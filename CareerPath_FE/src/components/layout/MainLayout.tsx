@@ -1,5 +1,6 @@
 import { Outlet, Link } from 'react-router-dom';
 import Navbar from '../common/Navbar';
+import ChatWidget from '../chat/ChatWidget';
 
 export default function MainLayout() {
   return (
@@ -22,6 +23,7 @@ export default function MainLayout() {
             <p className="text-slate-500 dark:text-slate-400 text-xs">© 2024 Mentora. All rights reserved.</p>
           </div>
         </footer>
+      <ChatWidget />
       </div>
     );
 }
