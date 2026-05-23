@@ -5,7 +5,8 @@
 INSERT INTO roles(name)
 VALUES 
 ('Admin'),
-('User');
+('User'),
+('Mentor');
 
 -- =========================
 -- GENDERS
