@@ -6,6 +6,12 @@ export interface CareerDetails {
   min_salary?: number;
   max_salary?: number;
   demand_level?: number;
+  
+  // Optional fields for enrichment (displayed if available)
+  majors?: string;
+  responsibilities?: string;
+  roadmap_steps?: string;
+  skills?: string[];
 }
 
 export interface Career {

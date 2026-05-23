@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   TrendingDown,
+  TrendingUp,
   Lightbulb,
   UserPlus,
   FileText,

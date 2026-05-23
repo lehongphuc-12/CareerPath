@@ -56,7 +56,10 @@ public class GeminiService implements IGeminiService {
             String requestBody = objectMapper.writeValueAsString(Map.of(
                     "contents", List.of(Map.of(
                             "parts", List.of(Map.of("text", prompt))
-                    ))
+                    )),
+                    "generationConfig", Map.of(
+                            "responseMimeType", "application/json"
+                    )
             ));
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -107,7 +110,10 @@ public class GeminiService implements IGeminiService {
             String requestBody = objectMapper.writeValueAsString(Map.of(
                     "contents", List.of(Map.of(
                             "parts", List.of(Map.of("text", prompt))
-                    ))
+                    )),
+                    "generationConfig", Map.of(
+                            "responseMimeType", "application/json"
+                    )
             ));
 
             HttpRequest request = HttpRequest.newBuilder()
@@ -237,6 +243,7 @@ public class GeminiService implements IGeminiService {
             "- Do not wrap the response in markdown code blocks.\n" +
             "- Do not include explanations, notes, or additional text outside the JSON.\n" +
             "- Ensure all special characters and line breaks are properly escaped according to JSON standards.\n" +
+            "- To prevent JSON parsing errors, do NOT use double quotes (\") inside the HTML content. Use single quotes (') or HTML entities (&quot;) instead.\n" +
             "10. The article should be approximately 600-800 words while maintaining high content quality and avoiding unnecessary repetition.\n",
             title, requirements, title
         );
@@ -276,6 +283,7 @@ public class GeminiService implements IGeminiService {
             "- Do not wrap the response in markdown code blocks.\n" +
             "- Do not include explanations, notes, or additional text outside the JSON.\n" +
             "- Ensure all special characters and line breaks are properly escaped according to JSON standards.\n" +
+            "- To prevent JSON parsing errors, do NOT use double quotes (\") inside the HTML content. Use single quotes (') or HTML entities (&quot;) instead.\n" +
             "10. The article should be approximately 600-800 words while maintaining high content quality and avoiding unnecessary repetition.\n",
             requirements
         );

@@ -60,15 +60,16 @@ export default function CareerLibraryPage() {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    savedCareers.includes(career.careerId)
-                      ? unsaveCareer(career.careerId)
-                      : saveCareer(career.careerId);
+                    const idStr = career.careerId.toString();
+                    savedCareers.includes(idStr)
+                      ? unsaveCareer(idStr)
+                      : saveCareer(idStr);
                   }}
-                  className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-colors ${savedCareers.includes(career.careerId) ? 'bg-primary text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}
+                  className={`absolute top-4 right-4 p-2 rounded-full backdrop-blur-md transition-colors ${savedCareers.includes(career.careerId.toString()) ? 'bg-primary text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}
                 >
                   <Bookmark
                     size={20}
-                    fill={savedCareers.includes(career.careerId) ? 'currentColor' : 'none'}
+                    fill={savedCareers.includes(career.careerId.toString()) ? 'currentColor' : 'none'}
                   />
                 </button>
               </div>
@@ -78,11 +79,8 @@ export default function CareerLibraryPage() {
                     to={`/careers/${career.careerId}`}
                     className="text-xl font-bold group-hover:text-primary transition-colors block"
                   >
-                    {career.vietnameseName || career.name}
+                    {career.name}
                   </Link>
-                  <p className="text-sm text-slate-500">
-                    {career.vietnameseName ? career.name : ''}
-                  </p>
                 </div>
                 <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-3">
                   {career.description}
