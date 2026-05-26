@@ -5,7 +5,6 @@ import com.example.CareerPath_BE.dtos.ApiResponse;
 import com.example.CareerPath_BE.dtos.Chat.ChatMessageResponse;
 import com.example.CareerPath_BE.dtos.Chat.ChatRoomResponse;
 import com.example.CareerPath_BE.dtos.Chat.CreatePrivateRoomRequest;
-import com.example.CareerPath_BE.dtos.Chat.MentorProfileResponse;
 import com.example.CareerPath_BE.dtos.Chat.ParticipantResponse;
 import com.example.CareerPath_BE.services.ChatService;
 import lombok.RequiredArgsConstructor;
