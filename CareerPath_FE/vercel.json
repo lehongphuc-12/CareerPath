@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://careerpath-58id.onrender.com/api/:path*"
+    }
+  ]
+}
