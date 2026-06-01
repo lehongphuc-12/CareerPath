@@ -22,6 +22,8 @@ docker-compose up -d
 ```
 This will start PostgreSQL on port **5432** and Redis on **6379**.
 
+ngrok tcp 1433
+
 ### 2. Start the Backend
 Navigate to the backend directory and run the Spring Boot application using Maven:
 ```bash
