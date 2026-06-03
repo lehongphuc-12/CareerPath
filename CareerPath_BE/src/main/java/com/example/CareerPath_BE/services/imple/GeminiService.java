@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import jakarta.annotation.PostConstruct;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -41,6 +41,15 @@ public class GeminiService implements IGeminiService {
 
     public GeminiService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @PostConstruct
+    public void checkConfig() {
+        log.info("===== GEMINI CONFIG CHECK =====");
+        log.info("System.getenv(GEMINI_API_KEY) = {}", System.getenv("GEMINI_API_KEY"));
+        log.info("geminiApiKey = {}", geminiApiKey);
+        log.info("geminiModel = {}", geminiModel);
+        log.info("================================");
     }
 
     @Override
