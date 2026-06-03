@@ -865,9 +865,6 @@ SET IDENTITY_INSERT Majors OFF;
 -- =========================
 -- CAREER_MAJOR MAP
 -- =========================
--- =========================
--- CAREER_MAJOR MAP
--- =========================
 INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 144, 1);
 INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 106, 1);
 INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 157, 1);
