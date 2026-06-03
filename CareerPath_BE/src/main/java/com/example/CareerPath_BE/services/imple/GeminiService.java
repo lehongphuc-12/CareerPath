@@ -49,6 +49,10 @@ public class GeminiService implements IGeminiService {
         log.info("System.getenv(GEMINI_API_KEY) = {}", System.getenv("GEMINI_API_KEY"));
         log.info("geminiApiKey = {}", geminiApiKey);
         log.info("geminiModel = {}", geminiModel);
+        log.info("Property source key=[{}]", geminiApiKey);
+log.info("Env key=[{}]", System.getenv("GEMINI_API_KEY"));
+log.info("Equal={}",
+    geminiApiKey.equals(System.getenv("GEMINI_API_KEY")));
         log.info("================================");
     }
 
