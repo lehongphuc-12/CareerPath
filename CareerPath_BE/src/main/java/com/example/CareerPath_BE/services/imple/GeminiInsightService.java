@@ -59,11 +59,13 @@ public class GeminiInsightService implements IGeminiInsightService {
                     )),
                     "generationConfig", Map.of(
                             "responseMimeType", "application/json"
-                    )
+                    )   
             ));
 
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/" + normalizedModel + ":generateContent?key=" + geminiApiKey;
+            log.info("Gemini URL={}", url);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://generativelanguage.googleapis.com/v1beta/models/" + normalizedModel + ":generateContent?key=" + geminiApiKey))
+                    .uri(URI.create(url))
                     .timeout(Duration.ofSeconds(30))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
