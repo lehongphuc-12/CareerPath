@@ -21,12 +21,12 @@ export default defineConfig(({ mode }) => {
       hmr: process.env.DISABLE_HMR !== 'true',
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'https://careerpath-58id.onrender.com',
+          target: env.VITE_API_URL || 'http://localhost:8080',
           changeOrigin: true,
           secure: false,
         },
         '/ws': {
-          target: (env.VITE_API_URL || 'https://careerpath-58id.onrender.com').replace(/^http/, 'ws'),
+          target: (env.VITE_API_URL || 'http://localhost:8080').replace(/^http/, 'ws'),
           ws: true,
         },
       },

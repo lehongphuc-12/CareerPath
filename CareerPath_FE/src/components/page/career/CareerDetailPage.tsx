@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { mentors } from '../../../api/mockData';
@@ -15,7 +15,9 @@ import {
   Sparkles,
   Briefcase,
   AlertCircle,
-  Award
+  Award,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
 import { useCareerDetail } from '../../../hooks/useCareerDetail';
@@ -42,6 +44,29 @@ export default function CareerDetailPage() {
   const { savedCareers, saveCareer, unsaveCareer } = useStore();
   const { career, isLoading, error } = useCareerDetail();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [showAllMajors, setShowAllMajors] = useState(false);
+
+  const MAJORS_INITIAL_COUNT = 6;
+
+  // Lấy danh sách ngành từ API relatedMajors (ưu tiên) hoặc fallback về career.majors (string cũ)
+  const allMajors = useMemo(() => {
+    if (career?.relatedMajors && career.relatedMajors.length > 0) {
+      return career.relatedMajors;
+    }
+    // Fallback: parse old string-based majors field
+    if (career?.majors) {
+      return career.majors.split(/[,;\n]+/).map((m, idx) => ({
+        id: idx,
+        majorCode: '',
+        majorName: m.trim(),
+        isPrimary: false,
+      })).filter(m => m.majorName);
+    }
+    return [];
+  }, [career?.relatedMajors, career?.majors]);
+
+  const visibleMajors = showAllMajors ? allMajors : allMajors.slice(0, MAJORS_INITIAL_COUNT);
+  const hasMoreMajors = allMajors.length > MAJORS_INITIAL_COUNT;
 
   if (isLoading) {
     return (
@@ -73,11 +98,6 @@ export default function CareerDetailPage() {
   // Split responsibilities
   const responsibilitiesList = career.responsibilities
     ? career.responsibilities.split(/[;\n]+/).map(r => r.trim()).filter(Boolean)
-    : [];
-
-  // Split majors
-  const majorsList = career.majors
-    ? career.majors.split(/[,;\n]+/).map(m => m.trim()).filter(Boolean)
     : [];
 
   // Split roadmap steps
@@ -276,20 +296,49 @@ export default function CareerDetailPage() {
 
                   {/* Majors Section */}
                   <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
-                    <h3 className="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                      <GraduationCap className="text-primary" size={22} /> Ngành học đại học/cao đẳng phù hợp
-                    </h3>
-                    {majorsList.length > 0 ? (
-                      <div className="flex flex-wrap gap-2.5">
-                        {majorsList.map((item, idx) => (
-                          <span
-                            key={idx}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/20 text-primary font-bold text-sm hover:bg-primary/10 transition-colors shadow-xs"
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-extrabold text-xl text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <GraduationCap className="text-primary" size={22} /> Ngành học phù hợp
+                      </h3>
+                      {allMajors.length > 0 && (
+                        <span className="text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+                          {allMajors.length} ngành
+                        </span>
+                      )}
+                    </div>
+                    {allMajors.length > 0 ? (
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-2.5">
+                          {visibleMajors.map((major) => (
+                            <span
+                              key={major.id}
+                              className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl font-bold text-sm transition-colors shadow-xs ${
+                                major.isPrimary
+                                  ? 'bg-primary/10 dark:bg-primary/20 border border-primary/30 text-primary hover:bg-primary/15'
+                                  : 'bg-slate-50 dark:bg-slate-800/70 border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-800'
+                              }`}
+                              title={major.majorCode ? `Mã ngành: ${major.majorCode}` : undefined}
+                            >
+                              <GraduationCap size={15} className={major.isPrimary ? 'text-primary' : 'text-slate-400'} />
+                              {major.majorName}
+                              {major.majorCode && (
+                                <span className="text-[11px] font-semibold opacity-50 ml-0.5">({major.majorCode})</span>
+                              )}
+                            </span>
+                          ))}
+                        </div>
+                        {hasMoreMajors && (
+                          <button
+                            onClick={() => setShowAllMajors(!showAllMajors)}
+                            className="flex items-center gap-1.5 text-sm font-bold text-primary hover:text-primary/80 transition-colors cursor-pointer mt-1"
                           >
-                            <GraduationCap size={15} />
-                            {item}
-                          </span>
-                        ))}
+                            {showAllMajors ? (
+                              <><ChevronUp size={16} /> Thu gọn</>
+                            ) : (
+                              <><ChevronDown size={16} /> Xem thêm {allMajors.length - MAJORS_INITIAL_COUNT} ngành khác</>
+                            )}
+                          </button>
+                        )}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2.5 p-5 bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-450 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl text-sm md:text-base">

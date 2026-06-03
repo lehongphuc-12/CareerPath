@@ -7,7 +7,9 @@ const BASE_URL = '/api/users';
 export const userApi = {
   getProfile: async (): Promise<UserProfile> => {
     try {
-      const response = await axios.get<ApiResponse<UserProfile>>(BASE_URL + '/profile/me');
+      const response = await axios.get<ApiResponse<UserProfile>>(BASE_URL + '/profile/me', {
+        withCredentials: true,
+      });
       if (!response.data.success) {
         throw new Error(response.data.message || 'Failed to fetch profile');
       }
@@ -44,6 +46,7 @@ export const userApi = {
       formData,
       {
         headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
       }
     );
     return response.data.data;

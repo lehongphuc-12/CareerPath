@@ -7,17 +7,25 @@ import org.springframework.data.domain.*;
 
 import com.example.CareerPath_BE.dtos.Career.CareerDetailsResponseDto;
 import com.example.CareerPath_BE.dtos.Career.CareerResponseDto;
+import com.example.CareerPath_BE.dtos.Career.MajorDto;
+import com.example.CareerPath_BE.entities.CareerMajor;
 import com.example.CareerPath_BE.entities.Careers;
+import com.example.CareerPath_BE.repositories.CareerMajorRepository;
 import com.example.CareerPath_BE.repositories.CareersRepository;
 import com.example.CareerPath_BE.services.ICareerService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CareerService implements ICareerService {
 
     private final CareersRepository careersRepository;
+    private final CareerMajorRepository careerMajorRepository;
 
-    public CareerService(CareersRepository careersRepository) {
+    public CareerService(CareersRepository careersRepository, CareerMajorRepository careerMajorRepository) {
         this.careersRepository = careersRepository;
+        this.careerMajorRepository = careerMajorRepository;
     }
 
     @Override
@@ -60,6 +68,19 @@ public class CareerService implements ICareerService {
         if (career == null) {
             return null;
         }
+
+        // Lấy danh sách ngành học liên quan qua bảng Career_Major
+        List<CareerMajor> careerMajors = careerMajorRepository.findByCareerId(id);
+        List<MajorDto> majorDtos = careerMajors.stream()
+            .map(cm -> new MajorDto(
+                cm.getMajor().getId(),
+                cm.getMajor().getMajorCode(),
+                cm.getMajor().getMajorName(),
+                cm.getMajor().getGroupCode(),
+                cm.getIsPrimary()
+            ))
+            .collect(Collectors.toList());
+
         return new CareerDetailsResponseDto(
             career.getCareerId(),
             career.getName(),
@@ -67,7 +88,8 @@ public class CareerService implements ICareerService {
             career.getImage(),
             career.getMinSalary(),
             career.getMaxSalary(),
-            career.getDemandLevel()
+            career.getDemandLevel(),
+            majorDtos
         );
     }
 }

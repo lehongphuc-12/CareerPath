@@ -1,3 +1,11 @@
+export interface MajorInfo {
+  id: number;
+  majorCode: string;
+  majorName: string;
+  groupCode?: string;
+  isPrimary?: boolean;
+}
+
 export interface CareerDetails {
   careerId: number;
   name: string;
@@ -6,7 +14,8 @@ export interface CareerDetails {
   min_salary?: number;
   max_salary?: number;
   demand_level?: number;
-  
+  relatedMajors?: MajorInfo[];
+
   // Optional fields for enrichment (displayed if available)
   majors?: string;
   responsibilities?: string;

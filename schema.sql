@@ -269,6 +269,36 @@ CREATE TABLE chat_messages (
     created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE Majors (
+    Id INT IDENTITY(1,1) NOT NULL,
+    MajorCode VARCHAR(10) NOT NULL,   -- Mã ngành chuẩn của Bộ (Ví dụ: '7480201')
+    MajorName NVARCHAR(255) NOT NULL, -- Tên ngành tiếng Việt có dấu (Ví dụ: N'Công nghệ thông tin')
+    GroupCode VARCHAR(5) NULL,        -- Mã nhóm ngành cắt 3 số đầu (Ví dụ: '748')
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+    UpdatedAt DATETIME2 DEFAULT GETDATE(),
+
+    -- Các ràng buộc (Constraints)
+    CONSTRAINT PK_Majors PRIMARY KEY (Id),
+    CONSTRAINT UQ_Majors_MajorCode UNIQUE (MajorCode) -- Đảm bảo mã ngành không bị trùng lặp
+);
+
+CREATE TABLE Career_Major (
+    CareerId INT NOT NULL,
+    MajorId INT NOT NULL,
+    IsPrimary BIT DEFAULT 0, -- 1: Ngành phù hợp nhất/gốc, 0: Ngành liên quan (Bổ sung để làm tính năng gợi ý ưu tiên)
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+
+    -- Thiết lập Khóa chính phức hợp (Composite Primary Key) để tránh map trùng lặp
+    CONSTRAINT PK_Career_Major PRIMARY KEY (CareerId, MajorId),
+
+    -- Thiết lập Khóa ngoại (Foreign Keys) để đảm bảo toàn vẹn dữ liệu
+    CONSTRAINT FK_Career_Major_Careers FOREIGN KEY (CareerId) 
+        REFERENCES Careers(career_id) ON DELETE CASCADE,
+        
+    CONSTRAINT FK_Career_Major_Majors FOREIGN KEY (MajorId) 
+        REFERENCES Majors(Id) ON DELETE CASCADE
+);
+
 -- ==========================================
 -- INDEXES TO OPTIMIZE PERFORMANCE
 -- ==========================================
@@ -297,3 +327,6 @@ ON career_skills(career_id);
 
 CREATE INDEX idx_career_mbti
 ON career_mbti_matches(mbti_type);
+
+CREATE INDEX IX_Majors_MajorCode ON Majors(MajorCode);
+CREATE INDEX IX_Career_Major_MajorId ON Career_Major(MajorId);

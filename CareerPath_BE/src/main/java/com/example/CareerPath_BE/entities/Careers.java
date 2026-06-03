@@ -1,3 +1,4 @@
+
 package com.example.CareerPath_BE.entities;
 
 import jakarta.persistence.*;
@@ -42,6 +43,9 @@ public class Careers implements java.io.Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
     private Set<CareerMbtiMatches> careerMbtiMatches = new HashSet<>(0);
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "career")
+    private Set<CareerMajor> careerMajors = new HashSet<>(0);
 
     public Careers() {
     }
@@ -136,5 +140,13 @@ public class Careers implements java.io.Serializable {
 
     public void setCareerMbtiMatches(Set<CareerMbtiMatches> careerMbtiMatches) {
         this.careerMbtiMatches = careerMbtiMatches;
+    }
+
+    public Set<CareerMajor> getCareerMajors() {
+        return this.careerMajors;
+    }
+
+    public void setCareerMajors(Set<CareerMajor> careerMajors) {
+        this.careerMajors = careerMajors;
     }
 }
