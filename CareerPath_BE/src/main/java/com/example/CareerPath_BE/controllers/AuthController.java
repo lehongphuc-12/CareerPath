@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 
 import com.example.CareerPath_BE.dtos.ApiResponse;
 import com.example.CareerPath_BE.dtos.Auth.LoginRequest;
@@ -44,8 +46,24 @@ public class AuthController {
         return createResponseWithCookie(response);
     }
 
+    private String extractToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<AuthResponse.UserResponse>> getMe(@CookieValue(name = "token", required = false) String token) {
+    public ResponseEntity<ApiResponse<AuthResponse.UserResponse>> getMe(HttpServletRequest request) {
+        String token = extractToken(request);
         AuthResponse.UserResponse user = authService.getMe(token);
         return ResponseEntity.ok(ApiResponse.<AuthResponse.UserResponse>builder().data(user).build());
     }

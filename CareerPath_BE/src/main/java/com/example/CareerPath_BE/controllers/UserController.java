@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 
 import com.example.CareerPath_BE.config.JwtUtil;
 import com.example.CareerPath_BE.dtos.ApiResponse;
@@ -42,6 +44,20 @@ public class UserController {
     private final RolesRepository rolesRepository;
     private final UserProfilesRepository userProfilesRepository;
 
+    private String extractToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
 
     @GetMapping("/profile/{id}")
     public ResponseEntity<ApiResponse<UserDetailResponse>> getProfile(@PathVariable int id) {
@@ -54,8 +70,9 @@ public class UserController {
     }
 
     @GetMapping("/profile/me")
-    public ResponseEntity<ApiResponse<UserDetailResponse>> getMyProfile(@CookieValue("token") String token) {
-        if (!jwtUtil.validateToken(token)) {
+    public ResponseEntity<ApiResponse<UserDetailResponse>> getMyProfile(HttpServletRequest request) {
+        String token = extractToken(request);
+        if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<UserDetailResponse>builder()
                     .code(401)
                     .message("Invalid token")
@@ -72,16 +89,17 @@ public class UserController {
 
     @PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<UserDetailResponse>> updateProfile(
-            @CookieValue("token") String token,
-            @ModelAttribute UpdateProfileRequest request) {
-        if (!jwtUtil.validateToken(token)) {
+            HttpServletRequest request,
+            @ModelAttribute UpdateProfileRequest updateRequest) {
+        String token = extractToken(request);
+        if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<UserDetailResponse>builder()
                     .code(401)
                     .message("Invalid token")
                     .build());
         }
         int id = jwtUtil.extractUserId(token).intValue();
-        UserDetailResponse updatedProfile = userService.updateProfile(id, request);
+        UserDetailResponse updatedProfile = userService.updateProfile(id, updateRequest);
         return ResponseEntity.ok(ApiResponse.<UserDetailResponse>builder()
                 .code(200)
                 .message("Update profile successfully")
@@ -90,7 +108,8 @@ public class UserController {
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<ApiResponse<List<String>>> getAllRoles(@CookieValue(name = "token", required = false) String token) {
+    public ResponseEntity<ApiResponse<List<String>>> getAllRoles(HttpServletRequest request) {
+        String token = extractToken(request);
         if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<List<String>>builder()
                     .code(401)
@@ -109,7 +128,8 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<AuthResponse.UserResponse>>> getAllUsers(@CookieValue(name = "token", required = false) String token) {
+    public ResponseEntity<ApiResponse<List<AuthResponse.UserResponse>>> getAllUsers(HttpServletRequest request) {
+        String token = extractToken(request);
         if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<List<AuthResponse.UserResponse>>builder()
                     .code(401)
@@ -141,9 +161,10 @@ public class UserController {
 
     @PutMapping("/{id}/role")
     public ResponseEntity<ApiResponse<Void>> updateUserRole(
-            @CookieValue(name = "token", required = false) String token,
+            HttpServletRequest request,
             @PathVariable int id,
             @RequestParam String roleName) {
+        String token = extractToken(request);
         if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<Void>builder().code(401).message("Invalid token").build());
         }
@@ -170,8 +191,9 @@ public class UserController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<ApiResponse<Void>> deleteUser(
-            @CookieValue(name = "token", required = false) String token,
+            HttpServletRequest request,
             @PathVariable int id) {
+        String token = extractToken(request);
         if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<Void>builder().code(401).message("Invalid token").build());
         }
