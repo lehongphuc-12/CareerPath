@@ -54,10 +54,10 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout() {
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false) // Set to true in production
+                .secure(true) // Required for cross-site cookies (SameSite=None)
                 .path("/")
                 .maxAge(0) // Expire immediately
-                .sameSite("Lax")
+                .sameSite("None") // Required for cross-origin requests
                 .build();
 
         return ResponseEntity.ok()
@@ -75,10 +75,10 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("token", response.getToken())
                 .httpOnly(true)
-                .secure(false) // Set to true in production
+                .secure(true) // Required for cross-site cookies (SameSite=None)
                 .path("/")
                 .maxAge(3600) // 1 hour
-                .sameSite("Lax")
+                .sameSite("None") // Required for cross-origin requests
                 .build();
 
         return ResponseEntity.ok()
