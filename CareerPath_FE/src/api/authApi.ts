@@ -48,8 +48,10 @@ export const authApi = {
   },
 
   getMe: async (): Promise<AuthResponse['user']> => {
+    const token = authService.getToken();
     const response = await fetch(`${BASE_URL}/me`, {
       method: 'GET',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
       credentials: 'include',
     });
     const result: ApiResponse<AuthResponse['user']> = await response.json().catch(() => null);
@@ -60,8 +62,10 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
+    const token = authService.getToken();
     const response = await fetch(`${BASE_URL}/logout`, {
       method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
       credentials: 'include',
     });
     if (!response.ok) throw new Error('Logout failed');

@@ -8,7 +8,17 @@ import './index.css';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 import axios from 'axios';
+import { authService } from './services/authService';
+
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+
+axios.interceptors.request.use((config) => {
+  const token = authService.getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
