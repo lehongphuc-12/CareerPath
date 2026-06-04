@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ArrowLeft, Bot, Loader2, Phone, Video } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
 import { Client } from '@stomp/stompjs';
+import { authService } from '../../../services/authService';
 
 interface Mentor {
   userId: number;
@@ -89,9 +90,14 @@ const ChatPage: React.FC = () => {
     if (!user || !roomId) return;
 
     const apiUrl = import.meta.env.VITE_API_URL || '';
-    const socketUrl = apiUrl 
+    let socketUrl = apiUrl 
       ? apiUrl.replace(/^http/, 'ws').replace(/\/$/, '') + '/ws'
       : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
+      
+    const token = authService.getToken();
+    if (token) {
+      socketUrl += `?token=${token}`;
+    }
     const client = new Client({
       brokerURL: socketUrl,
       reconnectDelay: 5000,

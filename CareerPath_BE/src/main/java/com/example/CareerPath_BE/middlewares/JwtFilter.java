@@ -59,6 +59,11 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
+        // Add support for extracting token from query parameters (for WebSocket)
+        if (token == null) {
+            token = request.getParameter("token");
+        }
+
         try {
             if (token != null && jwtUtil.validateToken(token)) {
                 Long userId = jwtUtil.extractUserId(token);

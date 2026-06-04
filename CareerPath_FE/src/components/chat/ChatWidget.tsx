@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { Client } from '@stomp/stompjs';
+import { authService } from '../../services/authService';
 
 type View = 'list' | 'chat';
 
@@ -84,9 +85,14 @@ const ChatWidget: React.FC = () => {
     }
 
     const apiUrl = import.meta.env.VITE_API_URL || '';
-    const socketUrl = apiUrl 
+    let socketUrl = apiUrl 
       ? apiUrl.replace(/^http/, 'ws').replace(/\/$/, '') + '/ws'
       : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
+      
+    const token = authService.getToken();
+    if (token) {
+      socketUrl += `?token=${token}`;
+    }
     console.log('Connecting to WebSocket:', socketUrl);
 
     const client = new Client({
