@@ -83,7 +83,10 @@ const ChatWidget: React.FC = () => {
       return;
     }
 
-    const socketUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const socketUrl = apiUrl 
+      ? apiUrl.replace(/^http/, 'ws').replace(/\/$/, '') + '/ws'
+      : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
     console.log('Connecting to WebSocket:', socketUrl);
 
     const client = new Client({

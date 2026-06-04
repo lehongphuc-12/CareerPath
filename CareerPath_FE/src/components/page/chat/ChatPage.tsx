@@ -88,7 +88,10 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     if (!user || !roomId) return;
 
-    const socketUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const socketUrl = apiUrl 
+      ? apiUrl.replace(/^http/, 'ws').replace(/\/$/, '') + '/ws'
+      : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
     const client = new Client({
       brokerURL: socketUrl,
       reconnectDelay: 5000,
