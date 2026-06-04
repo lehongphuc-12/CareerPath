@@ -11,6 +11,7 @@ import {
   BookOpen,
   GraduationCap,
   Trash2,
+  Edit2,
 } from 'lucide-react';
 
 const traits = [
@@ -123,14 +124,36 @@ export default function PreTestPage() {
               <span className="font-bold text-lg">{trait.label}</span>
             </div>
             <div className="space-y-4">
-              <div className="flex justify-between text-sm font-medium">
+              <div className="flex justify-between items-center text-sm font-medium">
                 <span className="text-slate-400">{trait.desc}</span>
-                <span className="text-primary font-bold">{scores[trait.id]}%</span>
+                <div 
+                  className="flex items-center text-primary font-bold bg-primary/5 hover:bg-primary/10 px-2 py-1 rounded-lg transition-colors cursor-text group border border-transparent hover:border-primary/20"
+                  title="Nhấn để nhập trực tiếp"
+                >
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={scores[trait.id]}
+                    onChange={(e) => {
+                      let val = parseInt(e.target.value);
+                      if (isNaN(val)) val = 0;
+                      if (val > 100) val = 100;
+                      if (val < 0) val = 0;
+                      setScores({ ...scores, [trait.id]: val });
+                    }}
+                    className="w-8 bg-transparent text-right outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <span>%</span>
+                  <Edit2 size={12} className="ml-1.5 opacity-40 group-hover:opacity-100 transition-opacity" />
+                </div>
               </div>
               <input
                 type="range"
                 min="0"
                 max="100"
+                step="5"
                 value={scores[trait.id]}
                 onChange={(e) => setScores({ ...scores, [trait.id]: parseInt(e.target.value) })}
                 className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full appearance-none cursor-pointer accent-primary"
@@ -163,14 +186,12 @@ export default function PreTestPage() {
 
             {/* Toggle */}
             <div
-              className={`relative w-12 h-7 rounded-full transition-colors duration-300 peer-focus:ring-2 peer-focus:ring-primary/40 ${
-                useAcademicScores ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'
-              }`}
+              className={`relative w-12 h-7 rounded-full transition-colors duration-300 peer-focus:ring-2 peer-focus:ring-primary/40 ${useAcademicScores ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
             >
               <span
-                className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 ${
-                  useAcademicScores ? 'translate-x-5' : 'translate-x-0'
-                }`}
+                className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 ${useAcademicScores ? 'translate-x-5' : 'translate-x-0'
+                  }`}
               />
             </div>
           </label>
