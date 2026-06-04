@@ -1,6 +1,7 @@
 import { Outlet, Link } from 'react-router-dom';
 import Navbar from '../common/Navbar';
 import ChatWidget from '../chat/ChatWidget';
+import logo from '../../assets/imgs/logo.png';
 
 export default function MainLayout() {
   return (
@@ -12,15 +13,15 @@ export default function MainLayout() {
         <footer className="border-t border-slate-200 dark:border-slate-800 py-12 px-6 lg:px-40 mt-20">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-4">
-              <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">M</div>
-              <h2 className="text-slate-900 dark:text-white text-lg font-bold tracking-tight">Mentora</h2>
+              <img src={logo} alt="CareerPath Logo" className="h-8 object-contain" />
+              <h2 className="text-slate-900 dark:text-white text-lg font-bold tracking-tight">CareerPath</h2>
             </div>
             <div className="flex gap-8 text-slate-500 dark:text-slate-400 text-sm">
               <Link to="/about" className="hover:text-primary">Về chúng tôi</Link>
               <Link to="/contact" className="hover:text-primary">Liên hệ</Link>
               <a href="#" className="hover:text-primary">Privacy Policy</a>
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-xs">© 2024 Mentora. All rights reserved.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-xs">© 2024 CareerPath. All rights reserved.</p>
           </div>
         </footer>
       <ChatWidget />

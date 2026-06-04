@@ -5,6 +5,7 @@ import { useStore } from '../../store/useStore';
 import { toast } from '../../store/useToastStore';
 import { authApi } from '../../api/authApi';
 import { useState } from 'react';
+import logo from '../../assets/imgs/logo.png';
 
 export default function Navbar() {
   const { user, setUser, theme, toggleTheme } = useStore();
@@ -29,9 +30,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-primary/20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 lg:px-10 py-4 transition-colors duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <div className="p-2 bg-primary rounded-lg text-white">
-            <Rocket size={20} />
-          </div>
+          <img src={logo} alt="CareerPath Logo" className="h-10 object-contain" />
           <h2 className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
             CareerPath
           </h2>
