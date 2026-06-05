@@ -20,4 +20,6 @@ public class CareerResponseDto {
     private BigDecimal min_salary;
     private BigDecimal max_salary;
     private Integer demand_level;
+    private Integer categoryId;
+    private String categoryName;
 }

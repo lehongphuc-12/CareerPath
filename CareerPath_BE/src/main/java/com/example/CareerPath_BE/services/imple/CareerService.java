@@ -16,6 +16,7 @@ import com.example.CareerPath_BE.services.ICareerService;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.CareerPath_BE.dtos.Career.CareerCategoryDto;
 
 @Service
 public class CareerService implements ICareerService {
@@ -29,7 +30,7 @@ public class CareerService implements ICareerService {
     }
 
     @Override
-    public Page<CareerResponseDto> getCareers(int page, int size, String search, String sortField, String sortOrder) {
+    public Page<CareerResponseDto> getCareers(int page, int size, String search, String sortField, String sortOrder, Integer categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("careerId").descending());
 
         if (sortField != null && !sortField.isEmpty()) {
@@ -43,10 +44,18 @@ public class CareerService implements ICareerService {
 
         Page<Careers> careersPage;
 
-        if (search != null && !search.isEmpty()) {
-            careersPage = careersRepository.findByNameContainingIgnoreCase(search, pageable);
+        if (categoryId != null) {
+            if (search != null && !search.isEmpty()) {
+                careersPage = careersRepository.findByNameContainingIgnoreCaseAndCategory_CategoryId(search, categoryId, pageable);
+            } else {
+                careersPage = careersRepository.findByCategory_CategoryId(categoryId, pageable);
+            }
         } else {
-            careersPage = careersRepository.findAll(pageable);
+            if (search != null && !search.isEmpty()) {
+                careersPage = careersRepository.findByNameContainingIgnoreCase(search, pageable);
+            } else {
+                careersPage = careersRepository.findAll(pageable);
+            }
         }
 
         return careersPage.map(career ->
@@ -57,7 +66,9 @@ public class CareerService implements ICareerService {
                 career.getImage(),
                 career.getMinSalary(),
                 career.getMaxSalary(),
-                career.getDemandLevel()
+                career.getDemandLevel(),
+                career.getCategory() != null ? career.getCategory().getCategoryId() : null,
+                career.getCategory() != null ? career.getCategory().getName() : null
             )
         );
     }
@@ -81,6 +92,16 @@ public class CareerService implements ICareerService {
             ))
             .collect(Collectors.toList());
 
+        CareerCategoryDto categoryDto = null;
+        if (career.getCategory() != null) {
+            categoryDto = new CareerCategoryDto(
+                career.getCategory().getCategoryId(),
+                career.getCategory().getName(),
+                career.getCategory().getDescription(),
+                career.getCategory().getImage()
+            );
+        }
+
         return new CareerDetailsResponseDto(
             career.getCareerId(),
             career.getName(),
@@ -89,6 +110,7 @@ public class CareerService implements ICareerService {
             career.getMinSalary(),
             career.getMaxSalary(),
             career.getDemandLevel(),
+            categoryDto,
             majorDtos
         );
     }

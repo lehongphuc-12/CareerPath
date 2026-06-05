@@ -6,6 +6,6 @@ import com.example.CareerPath_BE.dtos.Career.CareerDetailsResponseDto;
 import com.example.CareerPath_BE.dtos.Career.CareerResponseDto;
 
 public interface ICareerService {
-    Page<CareerResponseDto> getCareers(int page, int size, String search, String sortField, String sortOrder);
+    Page<CareerResponseDto> getCareers(int page, int size, String search, String sortField, String sortOrder, Integer categoryId);
     CareerDetailsResponseDto getCareerById(int id);
 }

@@ -31,6 +31,10 @@ public class Careers implements java.io.Serializable {
     @Column(name = "demand_level")
     private Integer demandLevel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = true)
+    private CareerCategories category;
+
     @Column(name = "image")
     private String image;
 
@@ -108,6 +112,14 @@ public class Careers implements java.io.Serializable {
 
     public void setDemandLevel(Integer demandLevel) {
         this.demandLevel = demandLevel;
+    }
+
+    public CareerCategories getCategory() {
+        return category;
+    }
+
+    public void setCategory(CareerCategories category) {
+        this.category = category;
     }
 
     public String getImage() {

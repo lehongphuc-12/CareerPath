@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CareersRepository extends JpaRepository<Careers, Integer> {
     Page<Careers> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Careers> findByCategory_CategoryId(Integer categoryId, Pageable pageable);
+    Page<Careers> findByNameContainingIgnoreCaseAndCategory_CategoryId(String name, Integer categoryId, Pageable pageable);
 }

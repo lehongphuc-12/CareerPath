@@ -43,8 +43,9 @@ public class CareerController {
             @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "") String search,
             @RequestParam(defaultValue = "") String sortField,  
-            @RequestParam(defaultValue = "asc") String sortOrder) {
-        Page<CareerResponseDto> careers = careerService.getCareers(page, size, search, sortField, sortOrder);
+            @RequestParam(defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) Integer categoryId) {
+        Page<CareerResponseDto> careers = careerService.getCareers(page, size, search, sortField, sortOrder, categoryId);
         return ResponseEntity.ok(
                 new ApiResponse<>(true,200,"Careers fetched successfully", careers)
         );
@@ -70,6 +71,8 @@ public class CareerController {
         if (!isAdmin) {
             return ResponseEntity.status(403).body(new ApiResponse<>(false, 403, "Access denied: Admin role required", null));
         }
+        // Note: For create, category object should be mapped properly if we send category ID from client. 
+        // For simplicity we save what is bound to the entity (e.g. { category: { categoryId: 1 } })
         Careers savedCareer = careersRepository.save(career);
         return ResponseEntity.ok(new ApiResponse<>(true, 200, "Career created successfully", savedCareer));
     }
@@ -97,6 +100,11 @@ public class CareerController {
         career.setMaxSalary(careerDetails.getMaxSalary());
         career.setDemandLevel(careerDetails.getDemandLevel());
         career.setImage(careerDetails.getImage());
+        if (careerDetails.getCategory() != null) {
+            career.setCategory(careerDetails.getCategory());
+        } else {
+            career.setCategory(null);
+        }
         Careers updatedCareer = careersRepository.save(career);
         return ResponseEntity.ok(new ApiResponse<>(true, 200, "Career updated successfully", updatedCareer));
     }
