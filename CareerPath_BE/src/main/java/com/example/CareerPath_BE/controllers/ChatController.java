@@ -7,6 +7,8 @@ import com.example.CareerPath_BE.dtos.Chat.ChatRoomResponse;
 import com.example.CareerPath_BE.dtos.Chat.CreatePrivateRoomRequest;
 import com.example.CareerPath_BE.dtos.Chat.ParticipantResponse;
 import com.example.CareerPath_BE.services.ChatService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,11 @@ public class ChatController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/mentors")
-    public ResponseEntity<ApiResponse<List<ParticipantResponse>>> getMentors() {
-        List<ParticipantResponse> mentors = chatService.getMentors();
+    public ResponseEntity<ApiResponse<List<ParticipantResponse>>> getMentors(
+            @RequestParam(required = false) Integer careerId) {
+        List<ParticipantResponse> mentors = careerId != null
+                ? chatService.getMentorsByCareerId(careerId)
+                : chatService.getMentors();
         return ResponseEntity.ok(ApiResponse.<List<ParticipantResponse>>builder()
                 .success(true)
                 .code(200)
@@ -33,8 +38,9 @@ public class ChatController {
     }
 
     @GetMapping("/rooms")
-    public ResponseEntity<ApiResponse<List<ChatRoomResponse>>> getRooms(@CookieValue(name = "token", required = false) String token) {
-        if (token == null || !jwtUtil.validateToken(token)) {
+    public ResponseEntity<ApiResponse<List<ChatRoomResponse>>> getRooms(HttpServletRequest request) {
+        String token = extractToken(request);
+        if (!isValidToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<List<ChatRoomResponse>>builder()
                     .success(false)
                     .code(401)
@@ -53,9 +59,9 @@ public class ChatController {
 
     @GetMapping("/rooms/{roomId}/messages")
     public ResponseEntity<ApiResponse<List<ChatMessageResponse>>> getMessages(
-            @CookieValue(name = "token", required = false) String token,
+            HttpServletRequest request,
             @PathVariable Integer roomId) {
-        if (token == null || !jwtUtil.validateToken(token)) {
+        if (!isValidToken(extractToken(request))) {
             return ResponseEntity.status(401).body(ApiResponse.<List<ChatMessageResponse>>builder()
                     .success(false)
                     .code(401)
@@ -73,9 +79,10 @@ public class ChatController {
 
     @PostMapping("/rooms/private")
     public ResponseEntity<ApiResponse<ChatRoomResponse>> getOrCreatePrivateRoom(
-            @CookieValue(name = "token", required = false) String token,
-            @RequestBody CreatePrivateRoomRequest request) {
-        if (token == null || !jwtUtil.validateToken(token)) {
+            HttpServletRequest request,
+            @RequestBody CreatePrivateRoomRequest body) {
+        String token = extractToken(request);
+        if (!isValidToken(token)) {
             return ResponseEntity.status(401).body(ApiResponse.<ChatRoomResponse>builder()
                     .success(false)
                     .code(401)
@@ -83,12 +90,31 @@ public class ChatController {
                     .build());
         }
         Integer userId = jwtUtil.extractUserId(token).intValue();
-        ChatRoomResponse room = chatService.getOrCreatePrivateRoom(userId, request.getTargetUserId());
+        ChatRoomResponse room = chatService.getOrCreatePrivateRoom(userId, body.getTargetUserId());
         return ResponseEntity.ok(ApiResponse.<ChatRoomResponse>builder()
                 .success(true)
                 .code(200)
                 .message("Lấy phòng trò chuyện thành công")
                 .data(room)
                 .build());
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+
+    private boolean isValidToken(String token) {
+        return token != null && jwtUtil.validateToken(token);
     }
 }

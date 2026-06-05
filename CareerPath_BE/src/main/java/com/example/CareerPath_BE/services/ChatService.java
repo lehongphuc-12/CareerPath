@@ -8,8 +8,11 @@ import java.util.List;
 
 public interface ChatService {
     
-    // Lấy tất cả Mentor (nếu chưa có, tự động seed tài khoản mẫu)
+    // Lấy tất cả Mentor từ database
     List<ParticipantResponse> getMentors();
+
+    // Lấy Mentor theo ngành nghề (career_id)
+    List<ParticipantResponse> getMentorsByCareerId(Integer careerId);
     
     // Lấy danh sách các cuộc trò chuyện của một User
     List<ChatRoomResponse> getUserRooms(Integer userId);

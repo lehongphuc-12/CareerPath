@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { mentors } from '../../../api/mockData';
+import { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { mentorApi, Mentor } from '../../../api/mentorApi';
+import { chatApi } from '../../../api/chatApi';
 import {
   Bookmark,
   Users,
@@ -38,9 +39,49 @@ const DEMAND_LABELS: Record<number, { label: string; color: string }> = {
 };
 
 export default function CareerDetailPage() {
-  const { savedCareers, saveCareer, unsaveCareer } = useStore();
+  const navigate = useNavigate();
+  const { user, savedCareers, saveCareer, unsaveCareer } = useStore();
   const { career, isLoading, error } = useCareerDetail();
   const [showAllMajors, setShowAllMajors] = useState(false);
+  const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [mentorsLoading, setMentorsLoading] = useState(false);
+  const [chatLoadingId, setChatLoadingId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!career?.careerId) return;
+
+    setMentorsLoading(true);
+    mentorApi
+      .getMentors(career.careerId)
+      .then(setMentors)
+      .catch((err) => {
+        console.error('Lỗi khi tải mentor:', err);
+        setMentors([]);
+      })
+      .finally(() => setMentorsLoading(false));
+  }, [career?.careerId]);
+
+  const handleMentorChat = async (mentor: Mentor) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    setChatLoadingId(mentor.userId);
+    try {
+      const result = await chatApi.createPrivateRoom(mentor.userId);
+      navigate(`/chat/${result.data.roomId}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Yêu cầu đăng nhập';
+      if (message.includes('đăng nhập')) {
+        navigate('/login');
+      } else {
+        console.error('Lỗi khi mở phòng chat:', err);
+      }
+    } finally {
+      setChatLoadingId(null);
+    }
+  };
 
   const MAJORS_INITIAL_COUNT = 6;
 
@@ -263,25 +304,46 @@ export default function CareerDetailPage() {
               <Users className="text-primary" /> Mentor gợi ý
             </h3>
             <div className="space-y-4">
-              {mentors.map((mentor) => (
-                <div
-                  key={mentor.id}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow-xs"
-                >
-                  <img
-                    src={mentor.image}
-                    alt={mentor.name}
-                    className="size-11 rounded-full object-cover shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-extrabold text-sm text-slate-800 dark:text-slate-150 truncate">{mentor.name}</p>
-                    <p className="text-xs text-slate-400 truncate mt-0.5">{mentor.role}</p>
-                  </div>
-                  <Link to="/mentors" className="text-primary hover:scale-115 transition-transform shrink-0">
-                    <ArrowRight size={18} />
-                  </Link>
+              {mentorsLoading ? (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="animate-spin text-primary" size={24} />
                 </div>
-              ))}
+              ) : mentors.length > 0 ? (
+                mentors.map((mentor) => (
+                  <div
+                    key={mentor.userId}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 shadow-xs"
+                  >
+                    <img
+                      src={mentor.image || `https://i.pravatar.cc/150?u=${mentor.userId}`}
+                      alt={mentor.fullName}
+                      className="size-11 rounded-full object-cover shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-extrabold text-sm text-slate-800 dark:text-slate-150 truncate">{mentor.fullName}</p>
+                      <p className="text-xs text-slate-400 truncate mt-0.5">{mentor.role}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleMentorChat(mentor)}
+                      disabled={chatLoadingId === mentor.userId}
+                      title={user ? 'Chat với mentor' : 'Đăng nhập để chat'}
+                      className="text-primary hover:scale-115 transition-transform shrink-0 disabled:opacity-50"
+                    >
+                      {chatLoadingId === mentor.userId ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <ArrowRight size={18} />
+                      )}
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="flex items-center gap-2.5 p-4 bg-white/50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-450 border border-slate-200/50 dark:border-slate-800/80 rounded-2xl text-sm">
+                  <AlertCircle size={16} className="text-slate-400 shrink-0" />
+                  <span>Chưa có mentor cho ngành nghề này.</span>
+                </div>
+              )}
             </div>
           </div>
 

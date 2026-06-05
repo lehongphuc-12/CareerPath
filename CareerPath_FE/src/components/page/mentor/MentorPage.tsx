@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Star, MessageCircle, MessageSquare, Loader2 } from 'lucide-react';
+import { Search, MessageCircle, MessageSquare, Loader2, AlertCircle } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-
-interface Mentor {
-  userId: number;
-  fullName: string;
-  email: string;
-  image?: string;
-  role: string;
-}
+import { chatApi } from '../../../api/chatApi';
+import { mentorApi, Mentor } from '../../../api/mentorApi';
 
 export default function MentorPage() {
   const navigate = useNavigate();
@@ -18,27 +12,23 @@ export default function MentorPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [chatLoadingId, setChatLoadingId] = useState<number | null>(null);
 
-  // Fetch mentors from backend
   useEffect(() => {
-    const fetchMentors = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/chat/mentors');
-        const data = await response.json();
-        if (data.success && data.data) {
-          setMentors(data.data);
-        }
-      } catch (error) {
-        console.error('Lỗi khi tải danh sách mentor:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchMentors();
+    setIsLoading(true);
+    setLoadError(null);
+    mentorApi
+      .getMentors()
+      .then(setMentors)
+      .catch((err) => {
+        console.error('Lỗi khi tải danh sách mentor:', err);
+        setMentors([]);
+        setLoadError(err instanceof Error ? err.message : 'Không thể tải danh sách mentor.');
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   const filteredMentors = mentors.filter(m =>
@@ -54,17 +44,15 @@ export default function MentorPage() {
     }
     setChatLoadingId(mentor.userId);
     try {
-      const response = await fetch('/api/chat/rooms/private', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUserId: mentor.userId }),
-      });
-      const data = await response.json();
-      if (data.success && data.data) {
-        navigate(`/chat/${data.data.roomId}`);
-      }
+      const result = await chatApi.createPrivateRoom(mentor.userId);
+      navigate(`/chat/${result.data.roomId}`);
     } catch (error) {
-      console.error('Lỗi khi mở phòng chat:', error);
+      const message = error instanceof Error ? error.message : 'Yêu cầu đăng nhập';
+      if (message.includes('đăng nhập')) {
+        navigate('/login');
+      } else {
+        console.error('Lỗi khi mở phòng chat:', error);
+      }
     } finally {
       setChatLoadingId(null);
     }
@@ -113,12 +101,22 @@ export default function MentorPage() {
           <Loader2 size={36} className="text-primary animate-spin" />
           <p className="text-slate-500 dark:text-slate-400 text-sm">Đang tải danh sách Mentor...</p>
         </div>
+      ) : loadError ? (
+        <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-red-200 dark:border-red-900/40">
+          <AlertCircle size={48} className="mx-auto mb-4 text-red-400" />
+          <p className="text-slate-600 dark:text-slate-300 font-medium">{loadError}</p>
+        </div>
       ) : filteredMentors.length === 0 ? (
         <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
           <MessageSquare size={48} className="mx-auto mb-4 text-slate-300" />
           <p className="text-slate-500 dark:text-slate-400 font-medium">
-            {searchTerm ? 'Không tìm thấy mentor phù hợp' : 'Chưa có mentor nào trong hệ thống'}
+            {searchTerm ? 'Không tìm thấy mentor phù hợp với từ khóa tìm kiếm' : 'Chưa có mentor nào trong hệ thống'}
           </p>
+          {!searchTerm && (
+            <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">
+              Mentor sẽ xuất hiện khi được admin thêm vào hệ thống.
+            </p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
@@ -140,15 +138,9 @@ export default function MentorPage() {
                   />
                   <span className="absolute -bottom-1 -right-1 size-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900" />
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <span className="px-2 py-1 rounded-md bg-orange-500/10 text-orange-500 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                    <MessageCircle size={12} /> Mentor
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-bold">5.0</span>
-                  </div>
-                </div>
+                <span className="px-2 py-1 rounded-md bg-orange-500/10 text-orange-500 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                  <MessageCircle size={12} /> Mentor
+                </span>
               </div>
 
               {/* Info */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MessageSquare, ChevronRight, Loader2 } from 'lucide-react';
+import { chatApi } from '../../../api/chatApi';
 
 interface Mentor {
   userId: number;
@@ -39,13 +40,15 @@ const ChatListPage: React.FC = () => {
     const fetchRooms = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/chat/rooms');
-        const data = await response.json();
-        if (data.success && data.data) {
-          setRooms(data.data);
-        }
+        const data = await chatApi.getRooms();
+        setRooms(data.data as ChatRoom[]);
       } catch (error) {
-        console.error('Lỗi khi tải danh sách phòng chat:', error);
+        const message = error instanceof Error ? error.message : '';
+        if (message.includes('đăng nhập')) {
+          navigate('/login');
+        } else {
+          console.error('Lỗi khi tải danh sách phòng chat:', error);
+        }
       } finally {
         setIsLoading(false);
       }

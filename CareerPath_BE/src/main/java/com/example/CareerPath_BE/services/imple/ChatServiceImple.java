@@ -9,7 +9,6 @@ import com.example.CareerPath_BE.services.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,59 +23,27 @@ public class ChatServiceImple implements ChatService {
     private final ChatRoomParticipantsRepository chatRoomParticipantsRepository;
     private final ChatMessagesRepository chatMessagesRepository;
     private final UsersRepository usersRepository;
-    private final RolesRepository rolesRepository;
     private final UserProfilesRepository userProfilesRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ParticipantResponse> getMentors() {
-        // Tìm kiếm các user có Role là MENTOR
         List<Users> mentors = usersRepository.findByRoles_Name("MENTOR");
         if (mentors.isEmpty()) {
             mentors = usersRepository.findByRoles_Name("Mentor");
         }
 
-        // Tự động seed tài khoản Mentor mẫu nếu Database rỗng
+        return mentors.stream()
+                .map(this::mapToParticipantResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ParticipantResponse> getMentorsByCareerId(Integer careerId) {
+        List<Users> mentors = usersRepository.findByRoles_NameAndCareers_CareerId("MENTOR", careerId);
         if (mentors.isEmpty()) {
-            Roles mentorRole = rolesRepository.findByName("MENTOR")
-                    .orElseGet(() -> rolesRepository.save(new Roles("MENTOR")));
-
-            // Mentor 1
-            Users mentor1 = new Users();
-            mentor1.setFullName("Trần Minh Quân");
-            mentor1.setEmail("quan.tran@careerpath.com");
-            mentor1.setPasswordHash(passwordEncoder.encode("123456"));
-            mentor1.setCreatedAt(new Date());
-            mentor1.setRoles(mentorRole);
-            mentor1 = usersRepository.save(mentor1);
-
-            UserProfiles profile1 = new UserProfiles();
-            profile1.setUsers(mentor1);
-            profile1.setBio("Senior SE tại Google. Practical Coding, Direct Feedback.");
-            profile1.setSchool("Google");
-            profile1.setGrade(0);
-            profile1.setImage("https://i.pravatar.cc/150?u=1");
-            userProfilesRepository.save(profile1);
-
-            // Mentor 2
-            Users mentor2 = new Users();
-            mentor2.setFullName("Lê Thu Hà");
-            mentor2.setEmail("ha.le@careerpath.com");
-            mentor2.setPasswordHash(passwordEncoder.encode("123456"));
-            mentor2.setCreatedAt(new Date());
-            mentor2.setRoles(mentorRole);
-            mentor2 = usersRepository.save(mentor2);
-
-            UserProfiles profile2 = new UserProfiles();
-            profile2.setUsers(mentor2);
-            profile2.setBio("Tech Lead tại VNG. Career Strategy, Supportive Tone.");
-            profile2.setSchool("VNG");
-            profile2.setGrade(0);
-            profile2.setImage("https://i.pravatar.cc/150?u=2");
-            userProfilesRepository.save(profile2);
-
-            mentors = Arrays.asList(mentor1, mentor2);
+            mentors = usersRepository.findByRoles_NameAndCareers_CareerId("Mentor", careerId);
         }
 
         return mentors.stream()
@@ -218,12 +185,16 @@ public class ChatServiceImple implements ChatService {
         String image = (profile != null) ? profile.getImage() : null;
         String bio = (profile != null) ? profile.getBio() : null;
 
+        String role = (bio != null && !bio.isBlank())
+                ? bio
+                : (user.getRoles() != null ? user.getRoles().getName() : "USER");
+
         return ParticipantResponse.builder()
                 .userId(user.getUserId())
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .image(image)
-                .role(user.getRoles() != null ? user.getRoles().getName() : "USER")
+                .role(role)
                 .build();
     }
 
