@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, FileText, History, Settings } from 'lucide-react';
 import { useProfile } from '../../../hooks/useProfile';
+import { useStore } from '../../../store/useStore';
 import { AnimatePresence } from 'framer-motion';
 import { ProfileSidebar } from './components/ProfileSidebar';
 import { ProfileTab } from './components/ProfileTab';
@@ -10,6 +11,8 @@ import { SettingsTab } from './components/SettingsTab';
 
 const ProfilePage: React.FC = () => {
   const { profile, loading, updating, updateProfile } = useProfile();
+  const { user } = useStore();
+  const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
   const [activeTab, setActiveTab] = useState<'profile' | 'blogs' | 'history' | 'settings'>(
     'profile'
   );
@@ -76,7 +79,9 @@ const ProfilePage: React.FC = () => {
 
   const menuItems = [
     { id: 'profile', label: 'Thông tin cá nhân', icon: <User className="w-5 h-5" /> },
-    { id: 'blogs', label: 'Quản lý bài viết', icon: <FileText className="w-5 h-5" /> },
+    ...(isAdmin
+      ? [{ id: 'blogs', label: 'Quản lý bài viết', icon: <FileText className="w-5 h-5" /> }]
+      : []),
     { id: 'history', label: 'Lịch sử hoạt động', icon: <History className="w-5 h-5" /> },
     { id: 'settings', label: 'Cài đặt tài khoản', icon: <Settings className="w-5 h-5" /> },
   ];
@@ -108,7 +113,7 @@ const ProfilePage: React.FC = () => {
                 />
               )}
 
-              {activeTab === 'blogs' && <BlogsTab />}
+              {activeTab === 'blogs' && isAdmin && <BlogsTab />}
               {activeTab === 'history' && <HistoryTab />}
               {activeTab === 'settings' && <SettingsTab />}
             </AnimatePresence>

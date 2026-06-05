@@ -4,13 +4,41 @@ import { authService } from '../../services/authService';
 import { useStore } from '../../store/useStore';
 import { toast } from '../../store/useToastStore';
 import { authApi } from '../../api/authApi';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import logo from '../../assets/imgs/logo.png';
 
 export default function Navbar() {
   const { user, setUser, theme, toggleTheme } = useStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+  
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(target)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+  
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+  
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -110,7 +138,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-3">
             {user ? (
-              <div className="relative group">
+              <div ref={userMenuRef} className="relative group">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-primary/10 transition-all"
@@ -139,7 +167,7 @@ export default function Navbar() {
 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 py-2 z-50">
-                    {user && user.role && user.role.toUpperCase() === 'ADMIN' && (
+                    {isAdmin && (
                       <Link
                         to="/admin"
                         className="flex items-center gap-3 px-4 py-3 text-sm text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold"
@@ -148,20 +176,16 @@ export default function Navbar() {
                         Trang Admin
                       </Link>
                     )}
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Hồ sơ của tôi
-                    </Link>
-                    <Link
-                      to="/settings"
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      Cài đặt
-                    </Link>
+                    {!isAdmin && (
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-bold"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Hồ sơ của tôi
+                      </Link>
+                    )}
+                    
                     <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
                     <button
                       onClick={handleLogout}
@@ -199,7 +223,7 @@ export default function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-background-dark border-b border-slate-200 dark:border-slate-800 p-6 flex flex-col gap-4">
+        <div ref={mobileMenuRef} className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-background-dark border-b border-slate-200 dark:border-slate-800 p-6 flex flex-col gap-4">
           <Link to="/" onClick={() => setIsMenuOpen(false)}>
             Khám phá
           </Link>
@@ -215,7 +239,7 @@ export default function Navbar() {
           <Link to="/about" onClick={() => setIsMenuOpen(false)}>
             Về chúng tôi
           </Link>
-          {user && user.role && user.role.toUpperCase() === 'ADMIN' && (
+          {isAdmin && (
             <Link to="/admin" className="text-primary font-bold" onClick={() => setIsMenuOpen(false)}>
               Trang Admin
             </Link>
