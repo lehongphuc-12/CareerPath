@@ -6,16 +6,27 @@ import com.example.CareerPath_BE.dtos.Assessment.AssessmentInsightDto;
 import com.example.CareerPath_BE.dtos.Assessment.AssessmentResultResponseDto;
 import com.example.CareerPath_BE.dtos.Assessment.AssessmentSubmitRequestDto;
 import com.example.CareerPath_BE.dtos.Assessment.AssessmentTraitScoresDto;
+import com.example.CareerPath_BE.dtos.ErrorCode;
 import com.example.CareerPath_BE.entities.Choices;
 import com.example.CareerPath_BE.entities.Questions;
 import com.example.CareerPath_BE.entities.CareerMbtiMatches;
+import com.example.CareerPath_BE.entities.TestAttempts;
+import com.example.CareerPath_BE.entities.Tests;
+import com.example.CareerPath_BE.entities.UserAnswers;
+import com.example.CareerPath_BE.entities.Users;
+import com.example.CareerPath_BE.exceptions.AppException;
 import com.example.CareerPath_BE.repositories.QuestionsRepository;
 import com.example.CareerPath_BE.repositories.CareerMbtiMatchesRepository;
+import com.example.CareerPath_BE.repositories.TestAttemptsRepository;
+import com.example.CareerPath_BE.repositories.TestsRepository;
+import com.example.CareerPath_BE.repositories.UserAnswersRepository;
+import com.example.CareerPath_BE.repositories.UsersRepository;
 import com.example.CareerPath_BE.services.IAssessmentService;
 import com.example.CareerPath_BE.services.IGeminiInsightService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,20 +38,39 @@ public class AssessmentService implements IAssessmentService {
     private final QuestionsRepository questionsRepository;
     private final CareerMbtiMatchesRepository careerMbtiMatchesRepository;
     private final IGeminiInsightService geminiInsightService;
+    private final UsersRepository usersRepository;
+    private final TestAttemptsRepository testAttemptsRepository;
+    private final UserAnswersRepository userAnswersRepository;
+    private final TestsRepository testsRepository;
 
     public AssessmentService(
             QuestionsRepository questionsRepository,
             CareerMbtiMatchesRepository careerMbtiMatchesRepository,
-            IGeminiInsightService geminiInsightService
+            IGeminiInsightService geminiInsightService,
+            UsersRepository usersRepository,
+            TestAttemptsRepository testAttemptsRepository,
+            UserAnswersRepository userAnswersRepository,
+            TestsRepository testsRepository
     ) {
         this.questionsRepository = questionsRepository;
         this.careerMbtiMatchesRepository = careerMbtiMatchesRepository;
         this.geminiInsightService = geminiInsightService;
+        this.usersRepository = usersRepository;
+        this.testAttemptsRepository = testAttemptsRepository;
+        this.userAnswersRepository = userAnswersRepository;
+        this.testsRepository = testsRepository;
     }
 
     @Override
     @Transactional
-    public AssessmentResultResponseDto submitAssessment(AssessmentSubmitRequestDto request) {
+    public AssessmentResultResponseDto submitAssessment(AssessmentSubmitRequestDto request, Integer userId) {
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (user.getRoles() == null || !"User".equalsIgnoreCase(user.getRoles().getName())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED, "Chỉ người dùng có vai trò User mới được làm bài test");
+        }
+
         List<Questions> questions = questionsRepository.findAllWithChoices();
         Map<Integer, Questions> questionMap = questions.stream()
                 .collect(Collectors.toMap(Questions::getQuestionId, question -> question));
@@ -50,6 +80,7 @@ public class AssessmentService implements IAssessmentService {
             sideScores.put(side, 0);
         }
 
+        int answeredCount = 0;
         for (AssessmentAnswerRequestDto answer : request.answers()) {
             Questions question = questionMap.get(answer.questionId());
             if (question == null || question.getTestDimensions() == null || question.getDirection() == null) {
@@ -66,11 +97,12 @@ public class AssessmentService implements IAssessmentService {
                 continue;
             }
 
+            answeredCount++;
             int score = selectedChoice.getScoreValue();
             String direction = question.getDirection().trim().toUpperCase();
-            String positiveSide = question.getTestDimensions().getPositiveSide() != null 
+            String positiveSide = question.getTestDimensions().getPositiveSide() != null
                     ? question.getTestDimensions().getPositiveSide().trim().toUpperCase() : "";
-            String negativeSide = question.getTestDimensions().getNegativeSide() != null 
+            String negativeSide = question.getTestDimensions().getNegativeSide() != null
                     ? question.getTestDimensions().getNegativeSide().trim().toUpperCase() : "";
 
             if (direction.equals(positiveSide)) {
@@ -101,7 +133,9 @@ public class AssessmentService implements IAssessmentService {
         int teamwork = factorScores.getOrDefault("F", 0);
         int selfLearning = factorScores.getOrDefault("I", 0);
 
-        AssessmentTraitScoresDto traitScores = new AssessmentTraitScoresDto(logic, creativity, communication, discipline, teamwork, selfLearning);
+        AssessmentTraitScoresDto traitScores = new AssessmentTraitScoresDto(
+                logic, creativity, communication, discipline, teamwork, selfLearning
+        );
 
         List<CareerMbtiMatches> matches = careerMbtiMatchesRepository.findAllByMbtiTypeWithCareers(mbtiType);
         List<AssessmentCareerMatchDto> recommendedCareers = matches.stream()
@@ -123,14 +157,86 @@ public class AssessmentService implements IAssessmentService {
                 request.academicScores()
         );
 
+        Integer testId = questions.isEmpty() || questions.get(0).getTests() == null
+                ? 1
+                : questions.get(0).getTests().getTestId();
+        Tests test = testsRepository.findById(testId)
+                .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION, "Test not found"));
+
+        String resultSummary = buildResultSummary(mbtiType, insight);
+
+        TestAttempts attempt = new TestAttempts();
+        attempt.setUsers(user);
+        attempt.setTests(test);
+        attempt.setMbtiType(mbtiType);
+        attempt.setTotalQuestions(questions.size());
+        attempt.setCompletedQuestions(answeredCount);
+        attempt.setScoreE(sideScores.getOrDefault("E", 0));
+        attempt.setScoreI(sideScores.getOrDefault("I", 0));
+        attempt.setScoreS(sideScores.getOrDefault("S", 0));
+        attempt.setScoreN(sideScores.getOrDefault("N", 0));
+        attempt.setScoreT(sideScores.getOrDefault("T", 0));
+        attempt.setScoreF(sideScores.getOrDefault("F", 0));
+        attempt.setScoreJ(sideScores.getOrDefault("J", 0));
+        attempt.setScoreP(sideScores.getOrDefault("P", 0));
+        attempt.setCompletedAt(new Date());
+        attempt.setResultSummary(resultSummary);
+
+        TestAttempts savedAttempt = testAttemptsRepository.save(attempt);
+
+        for (AssessmentAnswerRequestDto answer : request.answers()) {
+            Questions question = questionMap.get(answer.questionId());
+            if (question == null) {
+                continue;
+            }
+
+            Choices selectedChoice = question.getChoiceses()
+                    .stream()
+                    .filter(choice -> answer.choiceId().equals(choice.getChoiceId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (selectedChoice == null) {
+                continue;
+            }
+
+            UserAnswers userAnswer = new UserAnswers();
+            userAnswer.setUsers(user);
+            userAnswer.setTestAttempts(savedAttempt);
+            userAnswer.setQuestions(question);
+            userAnswer.setChoices(selectedChoice);
+            userAnswer.setAnswerScore(selectedChoice.getScoreValue());
+            userAnswersRepository.save(userAnswer);
+        }
+
         return new AssessmentResultResponseDto(
                 traitScores,
                 request.preTestResult(),
                 calculateBias(traitScores, request.preTestResult()),
                 factorScores,
                 insight,
-                recommendedCareers
+                recommendedCareers,
+                savedAttempt.getAttemptId(),
+                mbtiType,
+                savedAttempt.getScoreE(),
+                savedAttempt.getScoreI(),
+                savedAttempt.getScoreS(),
+                savedAttempt.getScoreN(),
+                savedAttempt.getScoreT(),
+                savedAttempt.getScoreF(),
+                savedAttempt.getScoreJ(),
+                savedAttempt.getScoreP(),
+                savedAttempt.getTotalQuestions(),
+                savedAttempt.getCompletedQuestions(),
+                resultSummary
         );
+    }
+
+    private String buildResultSummary(String mbtiType, AssessmentInsightDto insight) {
+        String headline = insight != null && insight.headline() != null ? insight.headline() : "";
+        String summary = insight != null && insight.summary() != null ? insight.summary() : "";
+        String recommendation = insight != null && insight.recommendation() != null ? insight.recommendation() : "";
+        return String.format("MBTI: %s\n%s\n%s\n%s", mbtiType, headline, summary, recommendation).trim();
     }
 
     private void autoCalcPct(String pos, String neg, Map<String, Integer> sideScores, Map<String, Integer> factorScores) {

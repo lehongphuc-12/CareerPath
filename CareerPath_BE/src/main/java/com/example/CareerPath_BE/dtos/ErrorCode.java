@@ -16,6 +16,10 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
+    TEST_ATTEMPT_NOT_FOUND(1008, "Test attempt not found", HttpStatus.NOT_FOUND),
+    FEEDBACK_ALREADY_EXISTS(1009, "Feedback already submitted for this attempt", HttpStatus.BAD_REQUEST),
+    TEST_NOT_COMPLETED(1010, "Test attempt is not completed yet", HttpStatus.BAD_REQUEST),
+    INVALID_RATING(1011, "Rating must be between 1 and 5", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatus statusCode) {

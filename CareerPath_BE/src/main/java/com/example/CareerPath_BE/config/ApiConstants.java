@@ -22,13 +22,20 @@ public class ApiConstants {
     public static final String CAREER_CATEGORY_BASE = "/api/career-categories";
     public static final String CAREER_CATEGORY_ALL = "/api/career-categories/**";
 
+    // ===== TEST ATTEMPT API =====
+    public static final String TEST_ATTEMPT_BASE = "/api/test-attempts";
+    public static final String TEST_ATTEMPT_ALL = "/api/test-attempts/**";
+
+    // ===== ADMIN TEST DASHBOARD API =====
+    public static final String ADMIN_TEST_DASHBOARD_BASE = "/api/admin/test-dashboard";
+    public static final String ADMIN_TEST_DASHBOARD_ALL = "/api/admin/test-dashboard/**";
+
     // ===== PUBLIC ENDPOINTS (không cần xác thực) =====
     public static final String[] PUBLIC_ENDPOINTS = {
         AUTH_ALL,
         CAREER_BASE,
         CAREER_ALL,
         QUESTION_BASE,
-        QUESTION_ALL,
         CAREER_CATEGORY_BASE,
         CAREER_CATEGORY_ALL
     };

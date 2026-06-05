@@ -126,10 +126,57 @@ CREATE TABLE choices (
     choice_order INT
 );
 
+CREATE TABLE test_attempts (
+    attempt_id INT IDENTITY PRIMARY KEY,
+
+    user_id INT NOT NULL
+        REFERENCES users(user_id),
+
+    test_id INT NOT NULL
+        REFERENCES tests(test_id),
+
+    mbti_type VARCHAR(4) NULL,
+
+    total_questions INT,
+
+    completed_questions INT,
+
+    score_e INT DEFAULT 0,
+    score_i INT DEFAULT 0,
+    score_s INT DEFAULT 0,
+    score_n INT DEFAULT 0,
+    score_t INT DEFAULT 0,
+    score_f INT DEFAULT 0,
+    score_j INT DEFAULT 0,
+    score_p INT DEFAULT 0,
+    completed_at DATETIME2 NULL,
+    result_summary NVARCHAR(MAX) NULL
+);
+
+CREATE TABLE test_feedbacks (
+    feedback_id INT IDENTITY PRIMARY KEY,
+
+    attempt_id INT NOT NULL
+        REFERENCES test_attempts(attempt_id)
+        ON DELETE CASCADE,
+
+    user_id INT NOT NULL
+        REFERENCES users(user_id),
+
+    rating INT NOT NULL
+        CHECK (rating BETWEEN 1 AND 5),
+
+    feedback NVARCHAR(1000),
+
+    created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE user_answers (
     answer_id INT IDENTITY PRIMARY KEY,
 
     user_id INT REFERENCES users(user_id),
+
+    attempt_id INT REFERENCES test_attempts(attempt_id),
 
     question_id INT REFERENCES questions(question_id),
 
@@ -139,7 +186,7 @@ CREATE TABLE user_answers (
 
     created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT unique_user_question UNIQUE (user_id, question_id)
+    CONSTRAINT unique_attempt_question UNIQUE (attempt_id, question_id)
 );
 
 
@@ -331,3 +378,7 @@ ON career_mbti_matches(mbti_type);
 
 CREATE INDEX IX_Majors_MajorCode ON Majors(MajorCode);
 CREATE INDEX IX_Career_Major_MajorId ON Career_Major(MajorId);
+
+CREATE INDEX idx_test_attempts_user ON test_attempts(user_id);
+CREATE INDEX idx_test_attempts_completed_at ON test_attempts(completed_at DESC);
+CREATE INDEX idx_test_feedbacks_attempt ON test_feedbacks(attempt_id);

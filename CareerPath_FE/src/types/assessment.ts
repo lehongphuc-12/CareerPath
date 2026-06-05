@@ -40,6 +40,19 @@ export interface AssessmentResult {
   factorScores: Record<string, number>;
   insight: AssessmentInsight;
   recommendedCareers: CareerMatch[];
+  attemptId?: number;
+  mbtiType?: string;
+  scoreE?: number;
+  scoreI?: number;
+  scoreS?: number;
+  scoreN?: number;
+  scoreT?: number;
+  scoreF?: number;
+  scoreJ?: number;
+  scoreP?: number;
+  totalQuestions?: number;
+  completedQuestions?: number;
+  resultSummary?: string;
 }
 
 export interface AssessmentAnswerRequest {
