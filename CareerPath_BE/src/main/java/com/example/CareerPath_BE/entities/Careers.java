@@ -54,6 +54,10 @@ public class Careers implements java.io.Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "career")
     private Set<CareerMajor> careerMajors = new HashSet<>(0);
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
+    private Set<Users> users = new HashSet<>(0);
+
     public Careers() {
     }
 
@@ -163,5 +167,13 @@ public class Careers implements java.io.Serializable {
 
     public void setCareerMajors(Set<CareerMajor> careerMajors) {
         this.careerMajors = careerMajors;
+    }
+
+    public Set<Users> getUsers() {
+        return this.users;
+    }
+
+    public void setUsers(Set<Users> users) {
+        this.users = users;
     }
 }
