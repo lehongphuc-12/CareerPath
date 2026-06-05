@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Radar as RadarArea } from 'recharts';
 import { useStore } from '../../../store/useStore';
 import { Link } from 'react-router-dom';
+import { TestFeedbackForm } from './TestFeedbackForm';
 import {
   ArrowRight,
   TrendingDown,
@@ -252,7 +252,7 @@ export default function ResultPage() {
     ].join('');
   };
 
-  const mbti = getMbtiType(assessmentResult.factorScores);
+  const mbti = assessmentResult.mbtiType || getMbtiType(assessmentResult.factorScores);
   const mbtiDetail = MBTI_DETAILS[mbti] || {
     title: 'Nhà Hòa Giải (Mediator)',
     badge: 'from-green-600 to-emerald-650',
@@ -515,6 +515,13 @@ export default function ResultPage() {
           </div>
         </div>
       </div>
+
+      {/* Test Feedback */}
+      {assessmentResult.attemptId && (
+        <section className="pt-6 border-t border-slate-100 dark:border-slate-800">
+          <TestFeedbackForm attemptId={assessmentResult.attemptId} />
+        </section>
+      )}
 
       {/* Suggested Careers Grid */}
       <section className="space-y-6 pt-6 border-t border-slate-100 dark:border-slate-800">

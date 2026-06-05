@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/useStore';
 import { assessmentApi } from '../../../api/assessmentApi';
 import { Question } from '../../../types/assessment';
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, HelpCircle, Info, Loader2, Sparkles } from 'lucide-react';
+import { authService } from '../../../services/authService';
+import { PATHS } from '../../../routes/paths';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, HelpCircle, Info, Loader2, LogIn, Sparkles } from 'lucide-react';
 
 const QUESTIONS_PER_PAGE = 5;
 
@@ -15,8 +17,11 @@ export default function FullTestPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setTestResult, setAssessmentResult, preTestResult, academicScores, addXP } = useStore();
+  const { user, setTestResult, setAssessmentResult, preTestResult, academicScores, addXP } = useStore();
   const navigate = useNavigate();
+
+  const isAuthenticated = authService.isAuthenticated() && !!user;
+  const isUserRole = user?.role?.toLowerCase() === 'user';
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -34,6 +39,43 @@ export default function FullTestPage() {
 
     fetchQuestions();
   }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center space-y-6 shadow-lg">
+          <div className="size-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <LogIn className="text-primary" size={28} />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">Yêu cầu đăng nhập</h2>
+            <p className="text-slate-500">
+              Bạn cần đăng nhập với tài khoản User để làm bài test MBTI và lưu lịch sử kết quả.
+            </p>
+          </div>
+          <Link
+            to={PATHS.LOGIN}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-xl hover:shadow-lg transition-all"
+          >
+            <LogIn size={18} /> Đăng nhập ngay
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isUserRole) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <div className="bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800 rounded-3xl p-10 text-center space-y-4">
+          <h2 className="text-xl font-bold text-amber-600">Không có quyền làm bài test</h2>
+          <p className="text-slate-500">
+            Chỉ tài khoản có vai trò User mới được thực hiện bài đánh giá MBTI.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Smooth scroll to top when page changes
   useEffect(() => {

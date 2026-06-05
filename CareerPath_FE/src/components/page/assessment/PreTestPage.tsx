@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/useStore';
+import { authService } from '../../../services/authService';
+import { toast } from '../../../store/useToastStore';
+import { PATHS } from '../../../routes/paths';
 import {
   Brain,
   Palette,
@@ -77,6 +80,12 @@ export default function PreTestPage() {
   };
 
   const handleNext = () => {
+    if (!authService.isAuthenticated()) {
+      toast.warning('Vui lòng đăng nhập để làm bài test MBTI');
+      navigate(PATHS.LOGIN);
+      return;
+    }
+
     setPreTestResult(scores);
     if (useAcademicScores) {
       const scoresRecord: Record<string, number> = {};

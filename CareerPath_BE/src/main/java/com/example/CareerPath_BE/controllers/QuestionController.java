@@ -8,6 +8,9 @@ import com.example.CareerPath_BE.dtos.Assessment.ChoiceResponseDto;
 import com.example.CareerPath_BE.services.IAssessmentService;
 import com.example.CareerPath_BE.services.IQuestionService;
 import com.example.CareerPath_BE.config.JwtUtil;
+import com.example.CareerPath_BE.dtos.ErrorCode;
+import com.example.CareerPath_BE.exceptions.AppException;
+import com.example.CareerPath_BE.utils.AuthUtils;
 import com.example.CareerPath_BE.repositories.QuestionsRepository;
 import com.example.CareerPath_BE.repositories.TestDimensionsRepository;
 import com.example.CareerPath_BE.repositories.ChoicesRepository;
@@ -17,7 +20,6 @@ import com.example.CareerPath_BE.entities.Questions;
 import com.example.CareerPath_BE.entities.Choices;
 import com.example.CareerPath_BE.entities.Tests;
 import com.example.CareerPath_BE.entities.TestDimensions;
-import com.example.CareerPath_BE.entities.UserAnswers;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.Data;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -72,9 +75,22 @@ public class QuestionController {
 
     @PostMapping("/submit")
     public ResponseEntity<ApiResponse<AssessmentResultResponseDto>> submitAssessment(
+            HttpServletRequest httpRequest,
             @Valid @RequestBody AssessmentSubmitRequestDto request
     ) {
-        AssessmentResultResponseDto result = assessmentService.submitAssessment(request);
+        String token = AuthUtils.extractToken(httpRequest);
+        if (token == null || !jwtUtil.validateToken(token)) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED, "Yêu cầu đăng nhập để làm bài test");
+        }
+
+        List<String> roles = jwtUtil.extractRoles(token);
+        boolean isUser = roles.stream().anyMatch(r -> r.equalsIgnoreCase("User"));
+        if (!isUser) {
+            throw new AppException(ErrorCode.UNAUTHORIZED, "Chỉ người dùng có vai trò User mới được làm bài test");
+        }
+
+        Integer userId = jwtUtil.extractUserId(token).intValue();
+        AssessmentResultResponseDto result = assessmentService.submitAssessment(request, userId);
         return ResponseEntity.ok(
                 new ApiResponse<>(true, 200, "Assessment submitted successfully", result)
         );
@@ -225,11 +241,7 @@ public class QuestionController {
                 .filter(c -> c.getQuestions() != null && c.getQuestions().getQuestionId().equals(id))
                 .toList();
         
-        List<UserAnswers> answers = userAnswersRepository.findAll().stream()
-                .filter(a -> a.getQuestions() != null && a.getQuestions().getQuestionId().equals(id))
-                .toList();
-
-        userAnswersRepository.deleteAll(answers);
+        userAnswersRepository.deleteByQuestions_QuestionId(id);
         choicesRepository.deleteAll(choices);
         questionsRepository.delete(question);
 
