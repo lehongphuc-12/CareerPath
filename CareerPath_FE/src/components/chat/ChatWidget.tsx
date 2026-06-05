@@ -7,6 +7,7 @@ import {
 import { useStore } from '../../store/useStore';
 import { Client } from '@stomp/stompjs';
 import { authService } from '../../services/authService';
+import { chatApi } from '../../api/chatApi';
 
 type View = 'list' | 'chat';
 
@@ -58,11 +59,8 @@ const ChatWidget: React.FC = () => {
   const fetchRooms = async () => {
     if (!user) return;
     try {
-      const response = await fetch('/api/chat/rooms');
-      const data = await response.json();
-      if (data.success && data.data) {
-        setRoomsList(data.data);
-      }
+      const data = await chatApi.getRooms();
+      setRoomsList(data.data as ChatRoom[]);
     } catch (error) {
       console.error('Lỗi khi tải danh sách phòng chat:', error);
     }
@@ -184,11 +182,8 @@ const ChatWidget: React.FC = () => {
   const loadRoomMessages = async (roomId: number) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/chat/rooms/${roomId}/messages`);
-      const data = await response.json();
-      if (data.success && data.data) {
-        setMessages(data.data);
-      }
+      const data = await chatApi.getMessages(roomId);
+      setMessages(data.data as ChatMessage[]);
     } catch (error) {
       console.error('Lỗi khi tải lịch sử tin nhắn:', error);
     } finally {

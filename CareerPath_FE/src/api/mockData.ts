@@ -86,28 +86,6 @@ export const careers = [
   }
 ];
 
-export const mentors = [
-  {
-    id: 1,
-    name: "Trần Minh Quân",
-    role: "Senior SE tại Google",
-    rating: 4.9,
-    reviews: 48,
-    image: "https://i.pravatar.cc/150?u=1",
-    industry: "Tech",
-    style: ["Practical Coding", "Direct Feedback"]
-  },
-  {
-    id: 2,
-    name: "Lê Thu Hà",
-    role: "Tech Lead tại VNG",
-    rating: 4.8,
-    reviews: 32,
-    image: "https://i.pravatar.cc/150?u=2",
-    industry: "Tech",
-    style: ["Career Strategy", "Supportive Tone"]
-  }
-];
 
 export const blogs = [
   {

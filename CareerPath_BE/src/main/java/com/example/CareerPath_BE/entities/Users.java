@@ -25,6 +25,10 @@ public class Users  implements java.io.Serializable {
      @JoinColumn(name = "role_id")
      private Roles roles;
 
+     @ManyToOne(fetch = FetchType.LAZY)
+     @JoinColumn(name = "career_id")
+     private Careers careers;
+
      @Column(name = "email", unique = true, nullable = false)
      private String email;
 
@@ -80,6 +84,14 @@ public class Users  implements java.io.Serializable {
     
     public void setRoles(Roles roles) {
         this.roles = roles;
+    }
+
+    public Careers getCareers() {
+        return this.careers;
+    }
+    
+    public void setCareers(Careers careers) {
+        this.careers = careers;
     }
     public String getEmail() {
         return this.email;

@@ -26,9 +26,11 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.jwtFilter = jwtFilter;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Bean
@@ -49,11 +51,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**", "/api/careers", "/api/careers/**", "/api/questions", "/api/questions/**", "/ws", "/ws/**").permitAll()
                 .requestMatchers(ApiConstants.PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/blogs", "/api/blogs/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/chat/mentors").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/blogs/*/view").permitAll()
                 .requestMatchers("/api/blogs/**").authenticated()
                 .requestMatchers("/api/ai/**").authenticated()
-                .anyRequest().authenticated()   
+                .requestMatchers("/api/chat/**").authenticated()
+                .anyRequest().authenticated()
             )
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .httpBasic(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)

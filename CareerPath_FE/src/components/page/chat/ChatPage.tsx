@@ -5,6 +5,7 @@ import { Send, ArrowLeft, Bot, Loader2, Phone, Video } from 'lucide-react';
 import { useStore } from '../../../store/useStore';
 import { Client } from '@stomp/stompjs';
 import { authService } from '../../../services/authService';
+import { chatApi } from '../../../api/chatApi';
 
 interface Mentor {
   userId: number;
@@ -53,14 +54,16 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const response = await fetch('/api/chat/rooms');
-        const data = await response.json();
-        if (data.success && data.data) {
-          const found = (data.data as ChatRoom[]).find(r => r.roomId === roomId);
-          setRoom(found || null);
-        }
+        const data = await chatApi.getRooms();
+        const found = (data.data as ChatRoom[]).find(r => r.roomId === roomId);
+        setRoom(found || null);
       } catch (error) {
-        console.error('Lỗi khi tải thông tin phòng chat:', error);
+        const message = error instanceof Error ? error.message : '';
+        if (message.includes('đăng nhập')) {
+          navigate('/login');
+        } else {
+          console.error('Lỗi khi tải thông tin phòng chat:', error);
+        }
       }
     };
     fetchRoom();
@@ -71,13 +74,15 @@ const ChatPage: React.FC = () => {
     const fetchMessages = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/chat/rooms/${roomId}/messages`);
-        const data = await response.json();
-        if (data.success && data.data) {
-          setMessages(data.data);
-        }
+        const data = await chatApi.getMessages(roomId);
+        setMessages(data.data as ChatMessage[]);
       } catch (error) {
-        console.error('Lỗi khi tải lịch sử tin nhắn:', error);
+        const message = error instanceof Error ? error.message : '';
+        if (message.includes('đăng nhập')) {
+          navigate('/login');
+        } else {
+          console.error('Lỗi khi tải lịch sử tin nhắn:', error);
+        }
       } finally {
         setIsLoading(false);
       }
