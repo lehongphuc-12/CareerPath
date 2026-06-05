@@ -18,12 +18,18 @@ public class ApiConstants {
     public static final String QUESTION_BASE = "/api/questions";
     public static final String QUESTION_ALL = "/api/questions/**";
 
+    // ===== CAREER CATEGORY API =====
+    public static final String CAREER_CATEGORY_BASE = "/api/career-categories";
+    public static final String CAREER_CATEGORY_ALL = "/api/career-categories/**";
+
     // ===== PUBLIC ENDPOINTS (không cần xác thực) =====
     public static final String[] PUBLIC_ENDPOINTS = {
         AUTH_ALL,
         CAREER_BASE,
         CAREER_ALL,
         QUESTION_BASE,
-        QUESTION_ALL
+        QUESTION_ALL,
+        CAREER_CATEGORY_BASE,
+        CAREER_CATEGORY_ALL
     };
 }

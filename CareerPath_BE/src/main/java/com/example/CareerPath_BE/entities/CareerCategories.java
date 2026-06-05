@@ -27,6 +27,7 @@ public class CareerCategories implements java.io.Serializable {
     @Column(name = "created_at", updatable = false)
     private Date createdAt = new Date();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     private Set<Careers> careers = new HashSet<>(0);
 

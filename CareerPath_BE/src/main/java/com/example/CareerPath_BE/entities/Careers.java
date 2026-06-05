@@ -42,12 +42,15 @@ public class Careers implements java.io.Serializable {
     @Column(name = "created_at", updatable = false)
     private Date createdAt = new Date();
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
     private Set<CareerSkills> careerSkillses = new HashSet<>(0);
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "careers")
     private Set<CareerMbtiMatches> careerMbtiMatches = new HashSet<>(0);
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "career")
     private Set<CareerMajor> careerMajors = new HashSet<>(0);
 
