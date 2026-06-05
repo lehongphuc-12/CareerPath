@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
+import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.List;
 
 import com.example.CareerPath_BE.config.JwtUtil;
@@ -80,9 +80,15 @@ public class BlogController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<ApiResponse<BlogCommentResponseDto>> addComment(
             @PathVariable int id,
-            @CookieValue(name = "token", required = false) String token,
+            @CookieValue(name = "token", required = false) String tokenCookie,
+            @RequestHeader(name = "Authorization", required = false) String authHeader,
             @RequestBody CreateCommentDto dto) {
         
+        String token = tokenCookie;
+        if (token == null && authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+
         if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(
                     new ApiResponse<>(false, 401, "Unauthorized: Invalid or missing token", null));
@@ -97,7 +103,14 @@ public class BlogController {
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<BlogDetailResponseDto>> createBlog(
         @ModelAttribute CreateBlogRequestDto request,
-        @CookieValue(name = "token", required = true) String token) {
+        @CookieValue(name = "token", required = false) String tokenCookie,
+        @RequestHeader(name = "Authorization", required = false) String authHeader) {
+        
+        String token = tokenCookie;
+        if (token == null && authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+
         if (token == null || !jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).body(
                 new ApiResponse<>(false, 401, "Unauthorized: Invalid or missing token", null));
