@@ -139,341 +139,465 @@ BEGIN
 
 END;
 
-INSERT INTO careers 
-(name, description, min_salary, max_salary, demand_level, image)
+INSERT INTO CareerCategories
+(name, description, image)
 VALUES
-(N'Giám đốc điều hành', N'Quản lý và điều hành hoạt động doanh nghiệp.', 30000000, 150000000, 9, NULL),
+(N'Công nghệ thông tin', N'Các nghề liên quan đến phát triển phần mềm, dữ liệu và hạ tầng CNTT.', NULL),
 
-(N'Quản lý marketing', N'Lập kế hoạch và triển khai chiến lược marketing.', 15000000, 50000000, 9, NULL),
+(N'Kinh doanh - Quản trị', N'Các nghề về quản lý, vận hành và phát triển doanh nghiệp.', NULL),
 
-(N'Quản lý kinh doanh', N'Quản lý đội ngũ bán hàng và doanh số.', 15000000, 60000000, 8, NULL),
+(N'Tài chính - Ngân hàng', N'Các nghề về tài chính, đầu tư, kế toán và ngân hàng.', NULL),
 
-(N'Quản lý nhân sự', N'Tuyển dụng và quản lý nhân viên.', 12000000, 40000000, 8, NULL),
+(N'Marketing - Truyền thông', N'Các nghề về marketing, quảng cáo và xây dựng thương hiệu.', NULL),
 
-(N'Kế toán và kiểm toán', N'Quản lý tài chính và kiểm tra sổ sách kế toán.', 10000000, 35000000, 8, NULL),
+(N'Kỹ thuật - Công nghiệp', N'Các nghề kỹ thuật trong sản xuất và công nghiệp.', NULL),
 
-(N'Chuyên viên tư vấn tài chính', N'Tư vấn đầu tư và quản lý tài chính cá nhân.', 15000000, 50000000, 8, NULL),
+(N'Logistics - Chuỗi cung ứng', N'Các nghề liên quan đến vận chuyển và quản lý chuỗi cung ứng.', NULL),
 
-(N'Nhân viên tín dụng', N'Hỗ trợ khách hàng vay vốn và thẩm định hồ sơ.', 10000000, 30000000, 7, NULL),
+(N'Y tế - Sức khỏe', N'Các nghề chăm sóc sức khỏe và y tế.', NULL),
 
-(N'Kiểm thử phần mềm', N'Đảm bảo chất lượng và phát hiện lỗi phần mềm.', 12000000, 35000000, 9, NULL),
+(N'Giáo dục - Đào tạo', N'Các nghề giảng dạy và đào tạo.', NULL),
 
-(N'Lập trình viên web', N'Phát triển website và ứng dụng web.', 15000000, 50000000, 10, NULL),
+(N'Luật - Hành chính', N'Các nghề liên quan đến pháp luật và hành chính.', NULL),
 
-(N'Thiết kế UI/UX', N'Thiết kế giao diện và trải nghiệm người dùng.', 12000000, 40000000, 9, NULL),
+(N'Thiết kế - Sáng tạo', N'Các nghề về thiết kế và sáng tạo nội dung.', NULL),
 
-(N'Quản trị cơ sở dữ liệu', N'Quản lý và tối ưu hệ thống cơ sở dữ liệu.', 15000000, 45000000, 8, NULL),
+(N'Bất động sản - Dịch vụ', N'Các nghề về bất động sản và dịch vụ khách hàng.', NULL),
 
-(N'Nhà khoa học dữ liệu', N'Phân tích dữ liệu và xây dựng mô hình AI.', 20000000, 70000000, 10, NULL),
+(N'Du lịch - Khách sạn - Hàng không', N'Các nghề trong lĩnh vực du lịch và hàng không.', NULL),
 
-(N'Quản lý dự án CNTT', N'Điều phối và quản lý dự án công nghệ thông tin.', 20000000, 60000000, 9, NULL),
+(N'Nông nghiệp Công nghệ cao', N'Các nghề ứng dụng công nghệ trong nông nghiệp.', NULL),
 
-(N'Kỹ thuật viên mạng', N'Cài đặt và bảo trì hệ thống mạng máy tính.', 10000000, 30000000, 8, NULL),
+(N'Nghệ thuật - Giải trí', N'Các nghề trong lĩnh vực nghệ thuật và giải trí.', NULL),
 
-(N'IT Support', N'Hỗ trợ kỹ thuật cho người dùng máy tính.', 8000000, 20000000, 8, NULL),
+(N'Khoa học - Công vụ', N'Các nghề nghiên cứu khoa học và khu vực công.', NULL);
 
-(N'Kỹ sư xây dựng', N'Thiết kế và giám sát công trình xây dựng.', 12000000, 50000000, 8, NULL),
-
-(N'Kỹ sư cơ khí', N'Thiết kế và vận hành hệ thống cơ khí.', 12000000, 45000000, 8, NULL),
-
-(N'Kỹ sư điện', N'Thiết kế và bảo trì hệ thống điện.', 12000000, 45000000, 8, NULL),
-
-(N'Kỹ sư robot', N'Phát triển hệ thống robot và tự động hóa.', 18000000, 60000000, 9, NULL),
-
-(N'Kiến trúc sư', N'Thiết kế công trình và không gian xây dựng.', 15000000, 50000000, 8, NULL),
-
-(N'Nhà thiết kế nội thất', N'Thiết kế không gian nội thất.', 10000000, 35000000, 7, NULL),
-
-(N'Nhà thiết kế đồ họa', N'Thiết kế hình ảnh và truyền thông trực quan.', 10000000, 30000000, 9, NULL),
-
-(N'Nhiếp ảnh gia', N'Chụp ảnh nghệ thuật và thương mại.', 8000000, 40000000, 6, NULL),
-
-(N'Luật sư', N'Tư vấn và bảo vệ quyền lợi pháp lý.', 15000000, 80000000, 8, NULL),
-
-(N'Giáo viên mầm non', N'Giảng dạy và chăm sóc trẻ nhỏ.', 7000000, 15000000, 7, NULL),
-
-(N'Giáo viên tiểu học', N'Giảng dạy học sinh tiểu học.', 8000000, 20000000, 7, NULL),
-
-(N'Giảng viên CNTT', N'Giảng dạy công nghệ thông tin tại đại học.', 15000000, 40000000, 8, NULL),
-
-(N'Gia sư', N'Hỗ trợ học tập cá nhân cho học sinh.', 5000000, 20000000, 7, NULL),
-
-(N'Điều dưỡng', N'Chăm sóc và hỗ trợ bệnh nhân.', 9000000, 25000000, 9, NULL),
-
-(N'Nha sĩ', N'Khám và điều trị các bệnh về răng.', 25000000, 100000000, 8, NULL),
-
-(N'Bác sĩ đa khoa', N'Khám và điều trị bệnh tổng quát.', 20000000, 80000000, 10, NULL),
-
-(N'Kỹ thuật viên xét nghiệm', N'Thực hiện các xét nghiệm y khoa.', 10000000, 25000000, 8, NULL),
-
-(N'Kỹ thuật viên thú y', N'Hỗ trợ chăm sóc và điều trị động vật.', 8000000, 20000000, 7, NULL),
-
-(N'Bếp trưởng', N'Quản lý và chế biến món ăn.', 12000000, 50000000, 8, NULL),
-
-(N'Nhân viên pha chế', N'Pha chế đồ uống tại quán bar hoặc cafe.', 7000000, 20000000, 7, NULL),
-
-(N'Nhân viên pha cà phê', N'Pha chế và phục vụ cà phê.', 6000000, 15000000, 7, NULL),
-
-(N'Phục vụ nhà hàng', N'Phục vụ khách hàng tại nhà hàng.', 6000000, 15000000, 7, NULL),
-
-(N'Lễ tân khách sạn', N'Tiếp đón và hỗ trợ khách hàng.', 7000000, 18000000, 7, NULL),
-
-(N'Hướng dẫn viên du lịch', N'Hướng dẫn khách du lịch tham quan.', 8000000, 30000000, 7, NULL),
-
-(N'Môi giới bất động sản', N'Tư vấn và giao dịch bất động sản.', 10000000, 100000000, 8, NULL),
-
-(N'Nhân viên bảo hiểm', N'Tư vấn và bán sản phẩm bảo hiểm.', 8000000, 40000000, 7, NULL),
-
-(N'Nhân viên chăm sóc khách hàng', N'Hỗ trợ và giải đáp thắc mắc khách hàng.', 7000000, 18000000, 8, NULL),
-
-(N'Thu ngân', N'Thực hiện thanh toán cho khách hàng.', 6000000, 12000000, 7, NULL),
-
-(N'Nhân viên bán hàng', N'Tư vấn và bán sản phẩm.', 7000000, 25000000, 8, NULL),
-
-(N'Thợ điện', N'Lắp đặt và sửa chữa hệ thống điện.', 10000000, 30000000, 8, NULL),
-
-(N'Thợ mộc', N'Sản xuất và sửa chữa đồ gỗ.', 8000000, 25000000, 7, NULL),
-
-(N'Kỹ thuật viên sửa chữa ô tô', N'Bảo trì và sửa chữa ô tô.', 10000000, 35000000, 8, NULL),
-
-(N'Nhân viên bảo vệ', N'Đảm bảo an ninh tại khu vực làm việc.', 7000000, 18000000, 7, NULL),
-
-(N'Lính cứu hỏa', N'Chữa cháy và cứu hộ cứu nạn.', 10000000, 25000000, 8, NULL),
-
-(N'Tài xế giao hàng', N'Vận chuyển hàng hóa đến khách hàng.', 8000000, 25000000, 9, NULL),
-
-(N'Tài xế xe buýt', N'Điều khiển xe buýt chở khách.', 9000000, 20000000, 7, NULL),
-
-(N'Phi công', N'Điều khiển máy bay dân dụng.', 50000000, 200000000, 9, NULL),
-
-(N'Tiếp viên hàng không', N'Phục vụ hành khách trên chuyến bay.', 15000000, 40000000, 8, NULL);
-INSERT INTO career_mbti_matches (career_id, mbti_type, compatibility_score)
+INSERT INTO Careers
+(category_id, name, description, min_salary, max_salary, demand_level, image)
 VALUES
 
--- 1. Giám đốc điều hành
-(1, 'ENTJ', 95),
-(1, 'ESTJ', 90),
-(1, 'INTJ', 85),
+-- 1. Công nghệ thông tin
+(1,N'Kỹ sư phần mềm',N'Phát triển và bảo trì phần mềm.',15000000,60000000,10,NULL),
+(1,N'Frontend Developer',N'Phát triển giao diện người dùng.',15000000,50000000,10,NULL),
+(1,N'Backend Developer',N'Phát triển hệ thống phía máy chủ.',15000000,60000000,10,NULL),
+(1,N'Mobile Developer',N'Phát triển ứng dụng di động.',15000000,60000000,10,NULL),
+(1,N'QA Engineer',N'Kiểm thử và đảm bảo chất lượng phần mềm.',12000000,40000000,9,NULL),
+(1,N'Data Scientist',N'Phân tích dữ liệu và AI.',25000000,80000000,10,NULL),
+(1,N'AI Engineer',N'Xây dựng hệ thống trí tuệ nhân tạo.',25000000,90000000,10,NULL),
+(1,N'Cybersecurity Specialist',N'Bảo mật hệ thống và dữ liệu.',20000000,80000000,10,NULL),
+(1,N'DevOps Engineer',N'Tự động hóa triển khai phần mềm.',20000000,80000000,10,NULL),
+(1,N'Business Analyst',N'Phân tích yêu cầu nghiệp vụ.',18000000,60000000,9,NULL),
 
--- 2. Quản lý marketing
-(2, 'ENFP', 92),
-(2, 'ENTP', 90),
-(2, 'ESFP', 80),
+-- 2. Kinh doanh - Quản trị
+(2,N'Giám đốc điều hành',N'Điều hành doanh nghiệp.',30000000,150000000,9,NULL),
+(2,N'Quản lý Kinh doanh',N'Quản lý hoạt động kinh doanh.',15000000,60000000,8,NULL),
+(2,N'Quản lý Nhân sự',N'Quản lý nguồn nhân lực.',12000000,45000000,8,NULL),
+(2,N'Quản lý Vận hành',N'Điều phối hoạt động doanh nghiệp.',15000000,60000000,8,NULL),
 
--- 3. Quản lý kinh doanh
-(3, 'ESTP', 95),
-(3, 'ENTJ', 90),
-(3, 'ENFJ', 85),
+-- 3. Tài chính - Ngân hàng
+(3,N'Kế toán',N'Quản lý và ghi nhận tài chính.',10000000,35000000,8,NULL),
+(3,N'Kiểm toán viên',N'Kiểm tra báo cáo tài chính.',12000000,45000000,8,NULL),
+(3,N'Chuyên viên Tài chính',N'Phân tích tài chính doanh nghiệp.',15000000,50000000,8,NULL),
+(3,N'Chuyên viên Phân tích Đầu tư',N'Đánh giá cơ hội đầu tư.',15000000,70000000,9,NULL),
 
--- 4. Quản lý nhân sự
-(4, 'ENFJ', 95),
-(4, 'ESFJ', 90),
-(4, 'INFJ', 82),
+-- 4. Marketing - Truyền thông
+(4,N'Digital Marketing Specialist',N'Triển khai marketing số.',12000000,50000000,10,NULL),
+(4,N'SEO Specialist',N'Tối ưu công cụ tìm kiếm.',10000000,35000000,8,NULL),
+(4,N'Content Marketing Specialist',N'Sản xuất nội dung marketing.',10000000,35000000,8,NULL),
+(4,N'Social Media Specialist',N'Quản lý mạng xã hội.',10000000,40000000,9,NULL),
 
--- 5. Kế toán và kiểm toán
-(5, 'ISTJ', 95),
-(5, 'ESTJ', 88),
-(5, 'INTJ', 80),
+-- 5. Kỹ thuật - Công nghiệp
+(5,N'Kỹ sư Xây dựng',N'Thiết kế và giám sát công trình.',12000000,50000000,8,NULL),
+(5,N'Kỹ sư Cơ khí',N'Thiết kế hệ thống cơ khí.',12000000,45000000,8,NULL),
+(5,N'Kỹ sư Điện',N'Thiết kế hệ thống điện.',12000000,45000000,8,NULL),
+(5,N'Kỹ sư Tự động hóa',N'Phát triển hệ thống tự động.',15000000,60000000,9,NULL),
+(5,N'Kỹ sư Bán dẫn',N'Nghiên cứu và phát triển vi mạch.',25000000,100000000,10,NULL),
 
--- 6. Chuyên viên tư vấn tài chính
-(6, 'ENTJ', 88),
-(6, 'ESTJ', 85),
-(6, 'ENFJ', 80),
+-- 6. Logistics - Chuỗi cung ứng
+(6,N'Chuyên viên Logistics',N'Quản lý vận chuyển hàng hóa.',12000000,45000000,9,NULL),
+(6,N'Chuyên viên Chuỗi cung ứng',N'Tối ưu chuỗi cung ứng.',15000000,50000000,9,NULL),
+(6,N'Quản lý Kho vận',N'Điều hành kho hàng.',12000000,50000000,8,NULL),
+(6,N'Chuyên viên Xuất nhập khẩu',N'Xử lý nghiệp vụ xuất nhập khẩu.',12000000,45000000,8,NULL),
 
--- 7. Nhân viên tín dụng
-(7, 'ESTJ', 85),
-(7, 'ESFJ', 80),
+-- 7. Y tế - Sức khỏe
+(7,N'Bác sĩ Đa khoa',N'Khám và điều trị bệnh tổng quát.',20000000,80000000,10,NULL),
+(7,N'Bác sĩ Chuyên khoa',N'Điều trị chuyên sâu.',30000000,150000000,10,NULL),
+(7,N'Nha sĩ',N'Chăm sóc sức khỏe răng miệng.',25000000,100000000,8,NULL),
+(7,N'Dược sĩ',N'Tư vấn và quản lý thuốc.',12000000,50000000,8,NULL),
 
--- 8. Kiểm thử phần mềm
-(8, 'ISTJ', 92),
-(8, 'INTJ', 85),
-(8, 'ISTP', 82),
+-- 8. Giáo dục - Đào tạo
+(8,N'Giảng viên Đại học',N'Giảng dạy và nghiên cứu.',15000000,50000000,8,NULL),
+(8,N'Giáo viên Tiếng Anh',N'Giảng dạy tiếng Anh.',10000000,40000000,9,NULL),
+(8,N'Giáo viên THPT',N'Giảng dạy bậc trung học phổ thông.',10000000,35000000,8,NULL),
+(8,N'Chuyên viên Đào tạo',N'Xây dựng chương trình đào tạo.',12000000,45000000,8,NULL),
 
--- 9. Lập trình viên web
-(9, 'INTP', 95),
-(9, 'ISTP', 88),
-(9, 'INTJ', 85),
+-- 9. Luật - Hành chính
+(9,N'Luật sư',N'Tư vấn và bảo vệ quyền lợi pháp lý.',15000000,80000000,8,NULL),
+(9,N'Chuyên viên Pháp chế',N'Đảm bảo tuân thủ pháp luật.',12000000,50000000,8,NULL),
+(9,N'Công chứng viên',N'Chứng thực văn bản pháp lý.',15000000,50000000,7,NULL),
+(9,N'Thẩm phán',N'Xét xử và giải quyết tranh chấp.',25000000,80000000,8,NULL),
 
--- 10. Thiết kế UI/UX
-(10, 'INFP', 92),
-(10, 'ISFP', 90),
-(10, 'ENFP', 85),
+-- 10. Thiết kế - Sáng tạo
+(10,N'Graphic Designer',N'Thiết kế đồ họa.',10000000,35000000,8,NULL),
+(10,N'Video Editor',N'Biên tập video.',10000000,40000000,8,NULL),
+(10,N'Interior Designer',N'Thiết kế nội thất.',12000000,50000000,8,NULL),
+(10,N'Motion Graphic Designer',N'Thiết kế đồ họa chuyển động.',12000000,50000000,9,NULL),
 
--- 11. Quản trị cơ sở dữ liệu
-(11, 'ISTJ', 95),
-(11, 'INTJ', 90),
+-- 11. Bất động sản - Dịch vụ
+(11,N'Môi giới Bất động sản',N'Tư vấn và giao dịch bất động sản.',10000000,100000000,8,NULL),
+(11,N'Chuyên viên Tư vấn Bảo hiểm',N'Tư vấn giải pháp bảo hiểm.',10000000,60000000,8,NULL),
 
--- 12. Nhà khoa học dữ liệu
-(12, 'INTP', 96),
-(12, 'INTJ', 92),
-(12, 'ISTJ', 80),
+-- 12. Du lịch - Khách sạn - Hàng không
+(12,N'Hướng dẫn viên Du lịch',N'Hướng dẫn khách tham quan.',8000000,30000000,8,NULL),
+(12,N'Tiếp viên Hàng không',N'Phục vụ hành khách trên máy bay.',15000000,45000000,9,NULL),
+(12,N'Phi công',N'Điều khiển máy bay dân dụng.',50000000,200000000,9,NULL),
+(12,N'Quản lý Khách sạn',N'Điều hành khách sạn.',15000000,60000000,8,NULL),
 
--- 13. Quản lý dự án CNTT
-(13, 'ENTJ', 95),
-(13, 'ESTJ', 90),
-(13, 'ENFJ', 80),
+-- 13. Nông nghiệp Công nghệ cao
+(13,N'Kỹ sư Nông nghiệp',N'Ứng dụng kỹ thuật vào nông nghiệp.',12000000,50000000,8,NULL),
+(13,N'Kỹ sư Công nghệ Thực phẩm',N'Phát triển và kiểm soát thực phẩm.',12000000,50000000,8,NULL),
+(13,N'Chuyên gia Nông nghiệp Công nghệ cao',N'Ứng dụng công nghệ hiện đại vào sản xuất.',15000000,60000000,9,NULL),
 
--- 14. Kỹ thuật viên mạng
-(14, 'ISTP', 90),
-(14, 'ISTJ', 88),
+-- 14. Nghệ thuật - Giải trí
+(14,N'MC',N'Dẫn chương trình.',10000000,100000000,8,NULL),
+(14,N'Diễn viên',N'Tham gia biểu diễn nghệ thuật.',10000000,100000000,7,NULL),
+(14,N'Nhiếp ảnh gia',N'Sáng tạo nội dung hình ảnh.',10000000,50000000,7,NULL),
+(14,N'Nhà sáng tạo Nội dung',N'Sản xuất nội dung số.',10000000,100000000,10,NULL),
 
--- 15. IT Support
-(15, 'ISFJ', 85),
-(15, 'ISTJ', 82),
+-- 15. Khoa học - Công vụ
+(15,N'Nhà nghiên cứu Khoa học',N'Thực hiện nghiên cứu khoa học.',15000000,60000000,8,NULL),
+(15,N'Công chức Hành chính',N'Thực hiện công tác quản lý nhà nước.',10000000,30000000,7,NULL),
+(15,N'Chuyên viên Hải quan',N'Quản lý hoạt động xuất nhập khẩu.',12000000,40000000,8,NULL),
+(15,N'Chuyên viên Thuế',N'Tư vấn và quản lý thuế.',12000000,50000000,8,NULL);
 
--- 16. Kỹ sư xây dựng
-(16, 'ISTJ', 90),
-(16, 'INTJ', 85),
+INSERT INTO career_mbti_matches
+(career_id, mbti_type, compatibility_score)
+VALUES
 
--- 17. Kỹ sư cơ khí
-(17, 'ISTP', 92),
-(17, 'INTJ', 85),
+-- 1. Kỹ sư phần mềm
+(1,'INTJ',98),
+(1,'INTP',96),
+(1,'ISTJ',88),
 
--- 18. Kỹ sư điện
-(18, 'INTP', 90),
-(18, 'ISTP', 88),
+-- 2. Frontend Developer
+(2,'ISFP',96),
+(2,'INFP',94),
+(2,'ENFP',88),
 
--- 19. Kỹ sư robot
-(19, 'INTP', 95),
-(19, 'INTJ', 92),
+-- 3. Backend Developer
+(3,'INTP',98),
+(3,'INTJ',96),
+(3,'ISTJ',90),
 
--- 20. Kiến trúc sư
-(20, 'INTJ', 96),
-(20, 'INFP', 82),
+-- 4. Mobile Developer
+(4,'ISTP',96),
+(4,'INTP',94),
+(4,'ISFP',86),
 
--- 21. Nhà thiết kế nội thất
-(21, 'ISFP', 92),
-(21, 'INFP', 88),
+-- 5. QA Engineer
+(5,'ISTJ',99),
+(5,'ISFJ',92),
+(5,'INTJ',88),
 
--- 22. Nhà thiết kế đồ họa
-(22, 'INFP', 95),
-(22, 'ISFP', 92),
-(22, 'ENFP', 82),
+-- 6. Data Scientist
+(6,'INTP',99),
+(6,'INTJ',97),
+(6,'ENTJ',90),
 
--- 23. Nhiếp ảnh gia
-(23, 'ISFP', 95),
-(23, 'INFP', 85),
+-- 7. AI Engineer
+(7,'INTP',99),
+(7,'INTJ',98),
+(7,'ENTP',91),
 
--- 24. Luật sư
-(24, 'ENTJ', 92),
-(24, 'INTJ', 88),
-(24, 'ESTJ', 85),
+-- 8. Cybersecurity Specialist
+(8,'INTJ',99),
+(8,'ISTP',95),
+(8,'INTP',93),
 
--- 25. Giáo viên mầm non
-(25, 'ESFJ', 95),
-(25, 'ENFP', 82),
+-- 9. DevOps Engineer
+(9,'ISTJ',96),
+(9,'INTJ',94),
+(9,'ESTJ',90),
 
--- 26. Giáo viên tiểu học
-(26, 'ESFJ', 92),
-(26, 'ISFJ', 88),
+-- 10. Business Analyst
+(10,'ENTJ',97),
+(10,'INTJ',94),
+(10,'ENTP',90),
 
--- 27. Giảng viên CNTT
-(27, 'INTJ', 90),
-(27, 'INTP', 88),
+-- 11. Giám đốc điều hành
+(11,'ENTJ',99),
+(11,'ESTJ',96),
+(11,'ENFJ',90),
 
--- 28. Gia sư
-(28, 'INFJ', 88),
-(28, 'ENFJ', 85),
+-- 12. Quản lý Kinh doanh
+(12,'ENTJ',97),
+(12,'ESTJ',95),
+(12,'ENTP',90),
 
--- 29. Điều dưỡng
-(29, 'ISFJ', 95),
-(29, 'ESFJ', 92),
+-- 13. Quản lý Nhân sự
+(13,'ENFJ',98),
+(13,'ESFJ',95),
+(13,'ENFP',90),
 
--- 30. Nha sĩ
-(30, 'ISTJ', 90),
-(30, 'ISFJ', 82),
+-- 14. Quản lý Vận hành
+(14,'ESTJ',98),
+(14,'ISTJ',94),
+(14,'ENTJ',90),
 
--- 31. Bác sĩ đa khoa
-(31, 'INFJ', 88),
-(31, 'ISFJ', 85),
+-- 15. Kế toán
+(15,'ISTJ',99),
+(15,'ESTJ',95),
+(15,'ISFJ',88),
+-- 16. Kiểm toán viên
+(16,'ISTJ',99),
+(16,'ESTJ',95),
+(16,'INTJ',90),
 
--- 32. Kỹ thuật viên xét nghiệm
-(32, 'ISTJ', 92),
-(32, 'INTJ', 80),
+-- 17. Chuyên viên Tài chính
+(17,'INTJ',98),
+(17,'ENTJ',95),
+(17,'ISTJ',90),
 
--- 33. Kỹ thuật viên thú y
-(33, 'ISFP', 85),
-(33, 'ISFJ', 82),
+-- 18. Chuyên viên Phân tích Đầu tư
+(18,'INTJ',99),
+(18,'INTP',96),
+(18,'ENTJ',92),
 
--- 34. Bếp trưởng
-(34, 'ESFP', 90),
-(34, 'ISFP', 85),
+-- 19. Digital Marketing Specialist
+(19,'ENFP',98),
+(19,'ENFJ',94),
+(19,'ENTP',90),
 
--- 35. Nhân viên pha chế
-(35, 'ESFP', 95),
-(35, 'ESTP', 85),
+-- 20. SEO Specialist
+(20,'INTJ',97),
+(20,'ISTJ',94),
+(20,'INTP',90),
 
--- 36. Nhân viên pha cà phê
-(36, 'ESFP', 85),
-(36, 'ISFP', 80),
+-- 21. Content Marketing Specialist
+(21,'INFP',98),
+(21,'ENFP',95),
+(21,'INFJ',90),
 
--- 37. Phục vụ nhà hàng
-(37, 'ESFJ', 88),
-(37, 'ESFP', 85),
+-- 22. Social Media Specialist
+(22,'ESFP',97),
+(22,'ENFP',95),
+(22,'ENFJ',90),
 
--- 38. Lễ tân khách sạn
-(38, 'ESFJ', 90),
-(38, 'ENFJ', 80),
+-- 23. Kỹ sư Xây dựng
+(23,'ISTJ',97),
+(23,'ISTP',94),
+(23,'ESTJ',90),
 
--- 39. Hướng dẫn viên du lịch
-(39, 'ENFP', 92),
-(39, 'ESFP', 88),
+-- 24. Kỹ sư Cơ khí
+(24,'ISTP',98),
+(24,'INTJ',93),
+(24,'ISTJ',90),
 
--- 40. Môi giới bất động sản
-(40, 'ENTJ', 92),
-(40, 'ESTP', 88),
+-- 25. Kỹ sư Điện
+(25,'ISTP',98),
+(25,'INTJ',94),
+(25,'ISTJ',90),
 
--- 41. Nhân viên bảo hiểm
-(41, 'ESTJ', 88),
-(41, 'ESFJ', 82),
+-- 26. Kỹ sư Tự động hóa
+(26,'INTJ',98),
+(26,'ISTP',95),
+(26,'INTP',90),
 
--- 42. Nhân viên chăm sóc khách hàng
-(42, 'ESFJ', 92),
-(42, 'ENFJ', 85),
+-- 27. Kỹ sư Bán dẫn
+(27,'INTP',99),
+(27,'INTJ',97),
+(27,'ISTJ',92),
 
--- 43. Thu ngân
-(43, 'ISFJ', 75),
-(43, 'ESFJ', 70),
+-- 28. Chuyên viên Logistics
+(28,'ESTJ',97),
+(28,'ISTJ',95),
+(28,'ENTJ',88),
 
--- 44. Nhân viên bán hàng
-(44, 'ESFP', 92),
-(44, 'ESTP', 88),
+-- 29. Chuyên viên Chuỗi cung ứng
+(29,'ESTJ',98),
+(29,'ENTJ',94),
+(29,'ISTJ',90),
 
--- 45. Thợ điện
-(45, 'ISTP', 92),
-(45, 'ISTJ', 85),
+-- 30. Quản lý Kho vận
+(30,'ESTJ',99),
+(30,'ISTJ',95),
+(30,'ESFJ',86);
+INSERT INTO career_mbti_matches
+(career_id, mbti_type, compatibility_score)
+VALUES
 
--- 46. Thợ mộc
-(46, 'ISTP', 90),
-(46, 'ISFP', 82),
+-- 31. Chuyên viên Xuất nhập khẩu
+(31,'ESTJ',97),
+(31,'ISTJ',94),
+(31,'ENTJ',88),
 
--- 47. Kỹ thuật viên sửa chữa ô tô
-(47, 'ISTP', 95),
-(47, 'ESTP', 78),
+-- 32. Bác sĩ Đa khoa
+(32,'INFJ',98),
+(32,'ISFJ',95),
+(32,'ENFJ',90),
 
--- 48. Nhân viên bảo vệ
-(48, 'ISTJ', 82),
-(48, 'ISFJ', 75),
+-- 33. Bác sĩ Chuyên khoa
+(33,'INFJ',99),
+(33,'INTJ',95),
+(33,'ISFJ',92),
 
--- 49. Lính cứu hỏa
-(49, 'ESTP', 92),
-(49, 'ESFP', 82),
+-- 34. Nha sĩ
+(34,'ISTJ',98),
+(34,'ISFJ',95),
+(34,'ESTJ',88),
 
--- 50. Tài xế giao hàng
-(50, 'ISTP', 80),
-(50, 'ISFP', 75),
+-- 35. Dược sĩ
+(35,'ISFJ',98),
+(35,'ISTJ',94),
+(35,'INFJ',90),
 
--- 51. Tài xế xe buýt
-(51, 'ISTJ', 82),
-(51, 'ISFJ', 78),
+-- 36. Giảng viên Đại học
+(36,'INFJ',98),
+(36,'INTJ',95),
+(36,'ENFJ',90),
+
+-- 37. Giáo viên Tiếng Anh
+(37,'ENFJ',98),
+(37,'ENFP',94),
+(37,'INFJ',90),
+
+-- 38. Giáo viên THPT
+(38,'ENFJ',97),
+(38,'ESFJ',94),
+(38,'INFJ',90),
+
+-- 39. Chuyên viên Đào tạo
+(39,'ENFJ',98),
+(39,'ENTJ',92),
+(39,'ESFJ',90),
+
+-- 40. Luật sư
+(40,'ENTJ',98),
+(40,'INTJ',95),
+(40,'ESTJ',90),
+
+-- 41. Chuyên viên Pháp chế
+(41,'ISTJ',98),
+(41,'INTJ',95),
+(41,'ESTJ',90),
+
+-- 42. Công chứng viên
+(42,'ISTJ',99),
+(42,'ISFJ',92),
+(42,'ESTJ',90),
+
+-- 43. Thẩm phán
+(43,'INTJ',99),
+(43,'ISTJ',95),
+(43,'ENTJ',92),
+
+-- 44. Graphic Designer
+(44,'INFP',98),
+(44,'ISFP',95),
+(44,'ENFP',90),
+
+-- 45. Video Editor
+(45,'ISFP',98),
+(45,'INFP',94),
+(45,'ISTP',88);
+INSERT INTO career_mbti_matches
+(career_id, mbti_type, compatibility_score)
+VALUES
+
+-- 46. Interior Designer
+(46,'INFP',98),
+(46,'ISFP',95),
+(46,'INFJ',90),
+
+-- 47. Motion Graphic Designer
+(47,'ISFP',98),
+(47,'ENFP',94),
+(47,'INFP',90),
+
+-- 48. Môi giới Bất động sản
+(48,'ENTP',98),
+(48,'ENFJ',95),
+(48,'ESFP',92),
+
+-- 49. Chuyên viên Tư vấn Bảo hiểm
+(49,'ENFJ',98),
+(49,'ESFJ',94),
+(49,'ENTJ',88),
+
+-- 50. Hướng dẫn viên Du lịch
+(50,'ESFP',98),
+(50,'ENFP',95),
+(50,'ENFJ',90),
+
+-- 51. Tiếp viên Hàng không
+(51,'ESFJ',98),
+(51,'ENFJ',95),
+(51,'ISFJ',90),
 
 -- 52. Phi công
-(52, 'ISTP', 95),
-(52, 'INTJ', 88),
+(52,'ISTJ',99),
+(52,'ESTJ',95),
+(52,'ISTP',92),
 
--- 53. Tiếp viên hàng không
-(53, 'ESFJ', 92),
-(53, 'ENFJ', 88);
+-- 53. Quản lý Khách sạn
+(53,'ESFJ',98),
+(53,'ENTJ',94),
+(53,'ENFJ',90),
+
+-- 54. Kỹ sư Nông nghiệp
+(54,'ISTJ',97),
+(54,'ISTP',94),
+(54,'ISFJ',88),
+
+-- 55. Kỹ sư Công nghệ Thực phẩm
+(55,'ISTJ',98),
+(55,'INTJ',94),
+(55,'ISFJ',90),
+
+-- 56. Chuyên gia Nông nghiệp Công nghệ cao
+(56,'INTJ',98),
+(56,'ISTJ',94),
+(56,'INTP',90),
+
+-- 57. MC
+(57,'ENFP',99),
+(57,'ENFJ',96),
+(57,'ESFP',92),
+
+-- 58. Diễn viên
+(58,'ESFP',99),
+(58,'ENFP',95),
+(58,'ISFP',92),
+
+-- 59. Nhiếp ảnh gia
+(59,'ISFP',99),
+(59,'INFP',95),
+(59,'ISTP',88),
+
+-- 60. Nhà sáng tạo Nội dung
+(60,'ENFP',99),
+(60,'ENTP',95),
+(60,'INFP',92),
+
+-- 61. Nhà nghiên cứu Khoa học
+(61,'INTP',99),
+(61,'INTJ',97),
+(61,'ISTJ',90),
+
+-- 62. Công chức Hành chính
+(62,'ISTJ',98),
+(62,'ISFJ',94),
+(62,'ESTJ',90),
+
+-- 63. Chuyên viên Hải quan
+(63,'ISTJ',98),
+(63,'ESTJ',95),
+(63,'INTJ',88),
+
+-- 64. Chuyên viên Thuế
+(64,'ISTJ',99),
+(64,'INTJ',94),
+(64,'ESTJ',92);
 
 -- =========================
 -- MAJORS
@@ -661,7 +785,6 @@ INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (179, '7440201',
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (180, '7440212', N'Bản đồ học', '744');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (181, '7440217', N'Địa lý tự nhiên', '744');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (182, '7440222', N'Khí tượng và khí hậu học', '744');
-INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (183, '7440221', N'Sửa mã ngành', '744');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (184, '7440224', N'Thủy văn học', '744');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (185, '7440228', N'Hải dương học', '744');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (186, '7440301', N'Khoa học môi trường', '744');
@@ -809,14 +932,12 @@ INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (327, '7729001',
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (328, '7760101', N'Công tác xã hội', '776');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (329, '7760102', N'Công tác thanh thiếu niên', '776');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (330, '7760103', N'Hỗ trợ giáo dục người khuyết tật', '776');
-INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (331, '8760103', N'Sửa mã ngành', '876');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (332, '7810101', N'Du lịch', '781');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (333, '7810103', N'Quản trị dịch vụ du lịch và lữ hành', '781');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (334, '7810201', N'Quản trị khách sạn', '781');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (335, '7810202', N'Quản trị nhà hàng và dịch vụ ăn uống', '781');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (336, '7810301', N'Quản lý thể dục thể thao', '781');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (337, '7810302', N'Huấn luyện thể thao', '781');
-INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (338, '7140207', N'Ngành chuyển đến từ nhóm ngành 71402', '714');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (339, '7810501', N'Kinh tế gia đình', '781');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (340, '7840101', N'Khai thác vận tải', '784');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (341, '7840102', N'Quản lý hoạt động bay', '784');
@@ -850,7 +971,6 @@ INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (368, '7860214',
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (369, '7860217', N'Tình báo quân sự', '786');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (370, '7860218', N'Hậu cần quân sự', '786');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (371, '7860219', N'Chỉ huy, tham mưu thông tin', '786');
-INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (372, '7860220', N'Sửa mã ngành', '786');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (373, '7860220', N'Chỉ huy, quản lý kỹ thuật', '786');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (374, '7860222', N'Quân sự cơ sở', '786');
 INSERT INTO Majors (Id, MajorCode, MajorName, GroupCode) VALUES (375, '7860226', N'Chỉ huy kỹ thuật phòng không', '786');
@@ -865,187 +985,136 @@ SET IDENTITY_INSERT Majors OFF;
 -- =========================
 -- CAREER_MAJOR MAP
 -- =========================
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 144, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 106, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 157, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 148, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 110, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 145, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 133, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 137, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 148, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 132, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (3, 144, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (3, 148, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (3, 149, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (4, 158, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (4, 161, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (4, 120, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (4, 156, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 154, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 155, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 151, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 112, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 151, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 108, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 111, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 112, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (7, 108, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (7, 151, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (7, 112, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 196, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 194, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 198, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 192, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 197, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 201, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 197, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 162, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 159, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (10, 75, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (10, 133, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (10, 135, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (11, 197, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (11, 202, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (11, 189, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 189, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 192, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 111, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 197, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 193, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (13, 202, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (13, 195, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (13, 194, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (14, 195, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (14, 197, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (14, 201, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (15, 195, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (15, 194, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (15, 196, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 280, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 284, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 205, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 288, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 289, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (17, 228, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (17, 209, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (17, 227, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (17, 233, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (18, 240, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (18, 215, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (18, 229, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 246, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 229, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 240, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 216, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (20, 271, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (20, 275, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (20, 203, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (20, 272, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (21, 277, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (21, 273, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (21, 77, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (22, 75, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (22, 46, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (22, 49, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (22, 226, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (23, 71, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (23, 66, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (23, 72, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (23, 73, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 163, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 167, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 168, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 42, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 116, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (25, 4, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (25, 22, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (25, 121, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (26, 5, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (26, 22, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (26, 121, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 12, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 19, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 32, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 14, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 15, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 43, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 41, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (28, 1, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (28, 3, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (28, 2, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (29, 316, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (29, 317, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (29, 323, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (30, 319, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (30, 320, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (30, 311, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (31, 311, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (31, 313, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (31, 312, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (32, 321, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (32, 170, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (32, 172, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (33, 310, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (33, 293, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (33, 169, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (34, 335, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (34, 262, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (34, 261, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (35, 261, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (35, 335, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (35, 262, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (35, 265, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (36, 335, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (36, 332, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (37, 335, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (37, 334, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (38, 334, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (38, 332, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (38, 333, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 333, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 332, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 131, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 86, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 123, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (40, 146, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (40, 144, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (40, 108, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (41, 152, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (41, 151, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (41, 112, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (42, 148, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (42, 145, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (42, 149, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (43, 154, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (43, 144, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (43, 155, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (44, 224, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (44, 147, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (44, 110, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (45, 244, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (45, 214, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (45, 240, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (46, 270, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 196, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 201, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (1, 194, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 196, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (2, 201, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (3, 196, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (3, 201, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (4, 196, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (4, 201, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 196, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 201, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (5, 197, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 189, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 194, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (6, 199, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (7, 199, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (7, 194, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (7, 201, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 202, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 195, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (8, 201, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 195, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 196, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (9, 201, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (10, 159, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (10, 197, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (10, 144, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (11, 144, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (11, 106, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 144, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 148, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (12, 147, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (13, 158, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (13, 144, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (14, 144, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (14, 156, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (15, 154, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (15, 151, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 155, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (16, 154, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (17, 151, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (17, 108, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (18, 108, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (18, 151, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 145, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 149, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (19, 133, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (20, 145, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (20, 149, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (21, 145, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (21, 132, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (21, 137, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (22, 145, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (22, 137, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (23, 280, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (23, 284, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 228, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (24, 210, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (25, 240, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (25, 215, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (26, 246, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (26, 217, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 244, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (27, 248, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (28, 224, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (28, 147, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (29, 224, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (29, 148, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (30, 224, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (30, 144, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (31, 147, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (31, 110, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (32, 311, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (33, 311, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (34, 319, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (35, 314, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (35, 315, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (36, 1, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (36, 144, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (37, 32, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (37, 86, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (38, 1, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (38, 41, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 3, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (39, 158, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (40, 163, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (40, 167, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (40, 168, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (41, 163, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (41, 167, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (42, 163, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (43, 163, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (44, 75, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (44, 46, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (45, 133, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (45, 66, 1);
 INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (46, 277, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (46, 232, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (47, 237, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (47, 211, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (47, 231, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (48, 351, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (48, 354, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (48, 348, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (48, 163, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (49, 358, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (49, 347, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (50, 340, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (50, 355, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (50, 224, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (51, 340, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (51, 206, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (46, 273, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (47, 133, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (47, 75, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (48, 146, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (48, 144, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (49, 152, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (49, 151, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (50, 332, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (50, 333, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (51, 332, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (51, 86, 0);
 INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (52, 234, 1);
 INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (52, 341, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (52, 343, 0);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (53, 333, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (53, 332, 1);
-INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (53, 86, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (53, 334, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (53, 333, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (54, 290, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (54, 294, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (55, 261, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (55, 265, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (56, 290, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (56, 170, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (57, 137, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (57, 132, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (58, 64, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (58, 60, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (59, 71, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (60, 133, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (60, 145, 0);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (61, 170, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (61, 187, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (62, 116, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (62, 157, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (63, 147, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (63, 110, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (64, 154, 1);
+INSERT INTO Career_Major (CareerId, MajorId, IsPrimary) VALUES (64, 151, 1);

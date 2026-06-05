@@ -1,5 +1,4 @@
-create database CareerPath;
-use CareerPath
+
 -- =========================
 -- ROLES / GENDERS / TEST TYPES
 -- =========================
@@ -125,19 +124,21 @@ CREATE TABLE user_answers (
 -- =========================
 -- CAREERS
 -- =========================
-
+CREATE TABLE CareerCategories (
+    category_id INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(100) NOT NULL UNIQUE,
+    description NVARCHAR(500) NULL,
+    image NVARCHAR(500) NULL,
+    created_at DATETIME DEFAULT GETDATE()
+);
 CREATE TABLE careers (
     career_id INT IDENTITY PRIMARY KEY,
-
     name NVARCHAR(255) NOT NULL,
-
     description NVARCHAR(MAX),
-
     min_salary DECIMAL(12,2),
     max_salary DECIMAL(12,2),
-
     demand_level INT, -- 1 -> 10
-
+    category_id INT NULL,
     image VARCHAR(255),
 
     created_at DATETIME2 DEFAULT CURRENT_TIMESTAMP
