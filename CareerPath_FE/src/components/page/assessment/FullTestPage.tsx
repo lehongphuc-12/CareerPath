@@ -321,13 +321,13 @@ export default function FullTestPage() {
                 </div>
 
                 <div className="flex items-center justify-between md:justify-center gap-4 md:gap-8 py-6 w-full max-w-xl mx-auto select-none">
-                  {/* Left Label: Agree */}
+                  {/* Left Label: Disagree */}
                   <button
                     type="button"
-                    onClick={() => handleSelectAnswer(globalIdx, q.choices[0].choiceId)}
-                    className="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 dark:text-emerald-400 hover:scale-105 active:scale-95 transition-transform text-left shrink-0"
+                    onClick={() => handleSelectAnswer(globalIdx, q.choices[q.choices.length - 1].choiceId)}
+                    className="text-xs sm:text-sm md:text-base font-extrabold text-purple-600 dark:text-purple-400 hover:scale-105 active:scale-95 transition-transform text-left shrink-0"
                   >
-                    Đồng ý
+                    Không đồng ý
                   </button>
                   
                   {/* Circles list */}
@@ -353,17 +353,17 @@ export default function FullTestPage() {
                       let selectedStyle = "";
                       
                       if (choiceIdx < midpoint) {
-                        // Green/Agree side
-                        borderStyle = "border-emerald-500 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10";
-                        selectedStyle = "border-emerald-500 bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-400";
+                        // Purple/Disagree side (left = Không đồng ý)
+                        borderStyle = "border-purple-500 hover:bg-purple-50/20 dark:hover:bg-purple-950/10";
+                        selectedStyle = "border-purple-500 bg-purple-500/20 dark:bg-purple-500/30 text-purple-600 dark:text-purple-400";
                       } else if (choiceIdx === midpoint) {
                         // Neutral middle
                         borderStyle = "border-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/10";
                         selectedStyle = "border-slate-400 bg-slate-400/20 dark:bg-slate-400/30 text-slate-500 dark:text-slate-400";
                       } else {
-                        // Purple/Disagree side
-                        borderStyle = "border-purple-500 hover:bg-purple-50/20 dark:hover:bg-purple-950/10";
-                        selectedStyle = "border-purple-500 bg-purple-500/20 dark:bg-purple-500/30 text-purple-600 dark:text-purple-400";
+                        // Green/Agree side (right = Đồng ý)
+                        borderStyle = "border-emerald-500 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10";
+                        selectedStyle = "border-emerald-500 bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-400";
                       }
                       
                       return (
@@ -390,13 +390,13 @@ export default function FullTestPage() {
                     })}
                   </div>
 
-                  {/* Right Label: Disagree */}
+                  {/* Right Label: Agree */}
                   <button
                     type="button"
-                    onClick={() => handleSelectAnswer(globalIdx, q.choices[q.choices.length - 1].choiceId)}
-                    className="text-xs sm:text-sm md:text-base font-extrabold text-purple-600 dark:text-purple-450 hover:scale-105 active:scale-95 transition-transform text-right shrink-0"
+                    onClick={() => handleSelectAnswer(globalIdx, q.choices[0].choiceId)}
+                    className="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 dark:text-emerald-400 hover:scale-105 active:scale-95 transition-transform text-right shrink-0"
                   >
-                    Không đồng ý
+                    Đồng ý
                   </button>
                 </div>
               </div>
