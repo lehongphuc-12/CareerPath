@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://careerpath-1-sbkl.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
