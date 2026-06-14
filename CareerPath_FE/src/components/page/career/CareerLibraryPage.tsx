@@ -117,20 +117,58 @@ export default function CareerLibraryPage() {
             <ChevronLeft size={24} />
           </button>
 
-          <div className="flex gap-2">
-            {[...Array(careerPage.totalPages)].map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setPage(idx)}
-                className={`w-10 h-10 rounded-xl font-bold transition-colors ${
-                  page === idx
-                    ? 'bg-primary text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700'
-                }`}
-              >
-                {idx + 1}
-              </button>
-            ))}
+          <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
+            {(() => {
+              const totalPages = careerPage.totalPages;
+              const currentPage = page + 1; // 1-indexed for logic
+              const delta = 1;
+              const range = [];
+              const rangeWithDots = [];
+              let l;
+
+              for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+                  range.push(i);
+                }
+              }
+
+              for (const i of range) {
+                if (l) {
+                  if (i - l === 2) {
+                    rangeWithDots.push(l + 1);
+                  } else if (i - l !== 1) {
+                    rangeWithDots.push('...');
+                  }
+                }
+                rangeWithDots.push(i);
+                l = i;
+              }
+
+              return rangeWithDots.map((item, idx) => {
+                if (item === '...') {
+                  return (
+                    <span key={`dots-${idx}`} className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-slate-500 font-bold">
+                      ...
+                    </span>
+                  );
+                }
+                
+                const pageIdx = (item as number) - 1;
+                return (
+                  <button
+                    key={pageIdx}
+                    onClick={() => setPage(pageIdx)}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl font-bold transition-colors ${
+                      page === pageIdx
+                        ? 'bg-primary text-white shadow-md shadow-primary/20'
+                        : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                );
+              });
+            })()}
           </div>
 
           <button
