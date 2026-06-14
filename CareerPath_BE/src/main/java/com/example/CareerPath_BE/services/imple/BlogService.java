@@ -282,7 +282,8 @@ public class BlogService implements IBlogService {
         return responseDto;
     }
 
-    private String generateSlug(String title) {
+    @Override
+    public String generateSlug(String title) {
         String baseSlug = title.toLowerCase().trim()
                 .replaceAll("[^a-z0-9\s-]", "")
                 .replaceAll("\s+", "-");
