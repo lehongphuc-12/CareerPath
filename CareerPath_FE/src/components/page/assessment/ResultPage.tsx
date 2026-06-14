@@ -419,7 +419,7 @@ export default function ResultPage() {
                   <p className="font-extrabold text-sm text-slate-800 dark:text-slate-150 group-hover:text-primary transition-colors">
                     Thư viện nghề nghiệp
                   </p>
-                  <p className="text-xs text-slate-400 truncate mt-0.5">
+                  <p className="text-xs text-slate-400 line-clamp-2 mt-0.5">
                     So sánh các lộ trình và mô tả vị trí chi tiết
                   </p>
                 </div>
@@ -437,7 +437,7 @@ export default function ResultPage() {
                   <p className="font-extrabold text-sm text-slate-800 dark:text-slate-150 group-hover:text-primary transition-colors">
                     Kết nối Mentor phù hợp
                   </p>
-                  <p className="text-xs text-slate-400 truncate mt-0.5">
+                  <p className="text-xs text-slate-400 line-clamp-2 mt-0.5">
                     Nhận hướng dẫn phát triển kỹ năng từ chuyên gia
                   </p>
                 </div>
