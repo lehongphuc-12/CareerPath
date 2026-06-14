@@ -55,11 +55,11 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-primary/20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 lg:px-10 py-4 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="CareerPath Logo" className="h-10 object-contain" />
-          <h2 className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+    <header className="sticky top-0 z-50 border-b border-slate-200 dark:border-primary/20 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-4 sm:px-6 lg:px-10 py-3 sm:py-4 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+        <Link to="/" className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <img src={logo} alt="CareerPath Logo" className="h-8 sm:h-10 object-contain" />
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
             CareerPath
           </h2>
         </Link>
@@ -118,37 +118,37 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1 sm:gap-4 shrink-0">
           <button
             onClick={toggleTheme}
-            className="p-2 hover:bg-slate-200 dark:hover:bg-primary/20 rounded-full transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-primary/20 rounded-full transition-colors"
             title={theme === 'light' ? 'Chuyển sang chế độ tối' : 'Chuyển sang chế độ sáng'}
           >
             {theme === 'light' ? (
-              <Moon size={20} className="text-slate-600" />
+              <Moon className="text-slate-600 size-5 sm:size-[20px]" />
             ) : (
-              <Sun size={20} className="text-slate-300" />
+              <Sun className="text-slate-300 size-5 sm:size-[20px]" />
             )}
           </button>
 
-          <button className="p-2 hover:bg-slate-200 dark:hover:bg-primary/20 rounded-full transition-colors relative">
-            <Bell size={20} className="text-slate-600 dark:text-slate-300" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white dark:ring-background-dark"></span>
+          <button className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-primary/20 rounded-full transition-colors relative">
+            <Bell className="text-slate-600 dark:text-slate-300 size-5 sm:size-[20px]" />
+            <span className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white dark:ring-background-dark"></span>
           </button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
             {user ? (
               <div ref={userMenuRef} className="relative group">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-primary/10 transition-all"
+                  className="flex items-center gap-1 sm:gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-primary/10 transition-all"
                 >
                   <div className="flex flex-col items-end hidden sm:flex px-2">
                     <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
                       {user.name || 'User'}
                     </span>
                   </div>
-                  <div className="w-10 h-10 bg-primary/10 border-2 border-primary/20 rounded-xl flex items-center justify-center text-primary font-black shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 border-2 border-primary/20 rounded-xl flex items-center justify-center text-primary font-black shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
                     {user.avatar ? (
                       <img
                         src={user.avatar}
@@ -161,7 +161,7 @@ export default function Navbar() {
                   </div>
                   <ChevronDown
                     size={16}
-                    className={`text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                    className={`text-slate-400 transition-transform hidden sm:block ${isUserMenuOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
 
@@ -199,7 +199,7 @@ export default function Navbar() {
 
               </div>
             ) : (
-              <>
+              <div className="hidden md:flex items-center gap-2">
                 <Link
                   to="/login"
                   className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
@@ -212,12 +212,12 @@ export default function Navbar() {
                 >
                   Đăng ký
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
-          <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          <button className="md:hidden p-1.5 sm:p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X className="size-5 sm:size-6" /> : <Menu className="size-5 sm:size-6" />}
           </button>
         </div>
       </div>
