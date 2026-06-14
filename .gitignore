@@ -68,3 +68,5 @@ pnpm-debug.log*
 # ==========================================
 .temp/
 .tmp/
+# Added by code-review-graph
+.code-review-graph/
