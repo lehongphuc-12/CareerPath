@@ -8,9 +8,12 @@ import { ToastContainer } from './components/common/Toast';
 import ReactGA from 'react-ga4';
 import { useLocation } from 'react-router-dom';
 
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
+
 function AnalyticsTracker() {
   const location = useLocation();
   useEffect(() => {
+    if (!GA_MEASUREMENT_ID) return;
     ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
   }, [location]);
   return null;
@@ -18,6 +21,12 @@ function AnalyticsTracker() {
 
 function App() {
   const { theme, setUser } = useStore();
+
+  useEffect(() => {
+    if (GA_MEASUREMENT_ID) {
+      ReactGA.initialize(GA_MEASUREMENT_ID);
+    }
+  }, []);
 
   useEffect(() => {
     // Session recovery
