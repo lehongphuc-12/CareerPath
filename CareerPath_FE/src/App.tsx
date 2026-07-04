@@ -12,10 +12,28 @@ const GA_MEASUREMENT_ID = import.meta.env.VITE_GOOGLE_ANALYTICS_ID;
 
 function AnalyticsTracker() {
   const location = useLocation();
+
   useEffect(() => {
-    if (!GA_MEASUREMENT_ID) return;
-    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
+    console.group("📊 AnalyticsTracker");
+
+    if (!GA_MEASUREMENT_ID) {
+      console.groupEnd();
+      return;
+    }
+
+    try {
+      ReactGA.send({
+        hitType: "pageview",
+        page: location.pathname + location.search,
+      });
+
+    } catch (err) {
+      console.error("❌ Failed to send pageview", err);
+    }
+
+    console.groupEnd();
   }, [location]);
+
   return null;
 }
 
@@ -23,30 +41,41 @@ function App() {
   const { theme, setUser } = useStore();
 
   useEffect(() => {
-    if (GA_MEASUREMENT_ID) {
-      ReactGA.initialize(GA_MEASUREMENT_ID);
+    console.group("🚀 Google Analytics Init");
+
+
+    if (!GA_MEASUREMENT_ID) {
+      console.error("❌ GA ID not found");
+      console.groupEnd();
+      return;
     }
+
+    try {
+      ReactGA.initialize(GA_MEASUREMENT_ID);
+    } catch (err) {
+      console.error("❌ ReactGA initialize failed", err);
+    }
+
+    console.groupEnd();
   }, []);
 
   useEffect(() => {
-    // Session recovery
     const initAuth = async () => {
       try {
         const user = await authApi.getMe();
+
         if (user) {
-          // Map API user to store user (adding defaults for level/xp)
           setUser({
             ...user,
             level: 1,
-            xp: 0
+            xp: 0,
           });
-          // Update persistence just in case
+
           authService.saveAuth({ user });
         }
       } catch (err) {
-        // Only clear and log if we thought we were authenticated
         if (authService.isAuthenticated()) {
-          console.warn('Session recovery failed:', err);
+          console.warn("Session recovery failed:", err);
           authService.clearAuth();
           setUser(null as any);
         }
@@ -57,12 +86,12 @@ function App() {
   }, [setUser]);
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.body.classList.add('dark');
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.body.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
+      document.body.classList.remove("dark");
     }
   }, [theme]);
 
