@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "user_answers", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "question_id"}))
+@Table(name = "user_answers", uniqueConstraints = @UniqueConstraint(columnNames = {"attempt_id", "question_id"}))
 public class UserAnswers implements java.io.Serializable {
 
     @Id
@@ -15,6 +15,10 @@ public class UserAnswers implements java.io.Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users users;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attempt_id")
+    private TestAttempts testAttempts;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
@@ -56,6 +60,14 @@ public class UserAnswers implements java.io.Serializable {
 
     public void setUsers(Users users) {
         this.users = users;
+    }
+
+    public TestAttempts getTestAttempts() {
+        return this.testAttempts;
+    }
+
+    public void setTestAttempts(TestAttempts testAttempts) {
+        this.testAttempts = testAttempts;
     }
 
     public Questions getQuestions() {

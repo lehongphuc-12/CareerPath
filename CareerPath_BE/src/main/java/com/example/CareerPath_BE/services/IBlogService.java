@@ -20,5 +20,6 @@ public interface IBlogService {
     void incrementViewCount(int blogId);
     void deleteBlog(int blogId);
     BlogDetailResponseDto updateBlog(int blogId, CreateBlogRequestDto request);
+    String generateSlug(String title);
 }
 

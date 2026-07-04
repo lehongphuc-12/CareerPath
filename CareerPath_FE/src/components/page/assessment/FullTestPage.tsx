@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/useStore';
 import { assessmentApi } from '../../../api/assessmentApi';
 import { Question } from '../../../types/assessment';
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, HelpCircle, Info, Loader2, Sparkles } from 'lucide-react';
+import { authService } from '../../../services/authService';
+import { PATHS } from '../../../routes/paths';
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, HelpCircle, Info, Loader2, LogIn, Sparkles } from 'lucide-react';
 
 const QUESTIONS_PER_PAGE = 5;
 
@@ -15,8 +17,11 @@ export default function FullTestPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setTestResult, setAssessmentResult, preTestResult, academicScores, addXP } = useStore();
+  const { user, setTestResult, setAssessmentResult, preTestResult, academicScores, addXP } = useStore();
   const navigate = useNavigate();
+
+  const isAuthenticated = authService.isAuthenticated() && !!user;
+  const isUserRole = user?.role?.toLowerCase() === 'user';
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -34,6 +39,43 @@ export default function FullTestPage() {
 
     fetchQuestions();
   }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center space-y-6 shadow-lg">
+          <div className="size-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <LogIn className="text-primary" size={28} />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">Yêu cầu đăng nhập</h2>
+            <p className="text-slate-500">
+              Bạn cần đăng nhập với tài khoản User để làm bài test MBTI và lưu lịch sử kết quả.
+            </p>
+          </div>
+          <Link
+            to={PATHS.LOGIN}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-xl hover:shadow-lg transition-all"
+          >
+            <LogIn size={18} /> Đăng nhập ngay
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isUserRole) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 px-4">
+        <div className="bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800 rounded-3xl p-10 text-center space-y-4">
+          <h2 className="text-xl font-bold text-amber-600">Không có quyền làm bài test</h2>
+          <p className="text-slate-500">
+            Chỉ tài khoản có vai trò User mới được thực hiện bài đánh giá MBTI.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Smooth scroll to top when page changes
   useEffect(() => {
@@ -90,7 +132,7 @@ export default function FullTestPage() {
         .filter((item): item is { questionId: number; choiceId: number } => item !== null);
 
       const result = await assessmentApi.submitAssessment(payload, preTestResult, academicScores);
-      
+
       await new Promise((resolve) => setTimeout(resolve, 4000));
       clearInterval(stepInterval);
 
@@ -252,24 +294,21 @@ export default function FullTestPage() {
               <div
                 key={q.questionId}
                 id={`question-${globalIdx}`}
-                className={`bg-white dark:bg-slate-900 border rounded-2xl p-6 shadow-md transition-all duration-300 ${
-                  isAnswered 
-                    ? 'border-emerald-500/20 shadow-emerald-500/5 bg-emerald-50/5 dark:bg-emerald-950/5' 
+                className={`bg-white dark:bg-slate-900 border rounded-2xl p-6 shadow-md transition-all duration-300 ${isAnswered
+                    ? 'border-emerald-500/20 shadow-emerald-500/5 bg-emerald-50/5 dark:bg-emerald-950/5'
                     : 'border-slate-200 dark:border-slate-800/80 shadow-slate-200/10 hover:border-primary/20'
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-3 mb-5">
-                  <div className={`p-1.5 rounded-lg shrink-0 ${
-                    isAnswered 
-                      ? 'bg-emerald-500/10 text-emerald-500' 
+                  <div className={`p-1.5 rounded-lg shrink-0 ${isAnswered
+                      ? 'bg-emerald-500/10 text-emerald-500'
                       : 'bg-primary/10 text-primary'
-                  }`}>
+                    }`}>
                     {isAnswered ? <CheckCircle2 size={18} /> : <HelpCircle size={18} />}
                   </div>
                   <div>
-                    <span className={`text-xs font-bold uppercase tracking-wide block ${
-                      isAnswered ? 'text-emerald-500' : 'text-slate-400'
-                    }`}>
+                    <span className={`text-xs font-bold uppercase tracking-wide block ${isAnswered ? 'text-emerald-500' : 'text-slate-400'
+                      }`}>
                       Câu hỏi {globalIdx + 1}
                     </span>
                     <h4 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 mt-1 leading-snug">
@@ -278,84 +317,102 @@ export default function FullTestPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between md:justify-center gap-4 md:gap-8 py-6 w-full max-w-xl mx-auto select-none">
-                  {/* Left Label: Agree */}
-                  <button
-                    type="button"
-                    onClick={() => handleSelectAnswer(globalIdx, q.choices[0].choiceId)}
-                    className="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 dark:text-emerald-400 hover:scale-105 active:scale-95 transition-transform text-left shrink-0"
-                  >
-                    Đồng ý
-                  </button>
-                  
-                  {/* Circles list */}
-                  <div className="flex items-center justify-center gap-3 md:gap-5 flex-1">
-                    {q.choices.map((option, choiceIdx) => {
-                      const isSelected = answers[globalIdx] === option.choiceId;
-                      const totalChoicesCount = q.choices.length;
-                      
-                      // Calculate size
-                      let sizeClass = "size-6 md:size-8";
-                      let checkSize = 10;
-                      if (choiceIdx === 0 || choiceIdx === totalChoicesCount - 1) {
-                        sizeClass = "size-10 md:size-12";
-                        checkSize = 18;
-                      } else if (choiceIdx === 1 || choiceIdx === totalChoicesCount - 2) {
-                        sizeClass = "size-8 md:size-10";
-                        checkSize = 14;
-                      }
-                      
-                      // Colors based on choice index relative to midpoint
-                      const midpoint = (totalChoicesCount - 1) / 2;
-                      let borderStyle = "";
-                      let selectedStyle = "";
-                      
-                      if (choiceIdx < midpoint) {
-                        // Green/Agree side
-                        borderStyle = "border-emerald-500 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10";
-                        selectedStyle = "border-emerald-500 bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-400";
-                      } else if (choiceIdx === midpoint) {
-                        // Neutral middle
-                        borderStyle = "border-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/10";
-                        selectedStyle = "border-slate-400 bg-slate-400/20 dark:bg-slate-400/30 text-slate-500 dark:text-slate-400";
-                      } else {
-                        // Purple/Disagree side
-                        borderStyle = "border-purple-500 hover:bg-purple-50/20 dark:hover:bg-purple-950/10";
-                        selectedStyle = "border-purple-500 bg-purple-500/20 dark:bg-purple-500/30 text-purple-600 dark:text-purple-400";
-                      }
-                      
-                      return (
-                        <button
-                          key={option.choiceId}
-                          type="button"
-                          onClick={() => handleSelectAnswer(globalIdx, option.choiceId)}
-                          className={`rounded-full border-2 flex items-center justify-center transition-all duration-205 cursor-pointer hover:scale-110 active:scale-95 ${sizeClass} ${
-                            isSelected ? selectedStyle : `${borderStyle} bg-transparent text-transparent`
-                          }`}
-                          title={option.content}
-                        >
-                          {isSelected && (
-                            <motion.div
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ duration: 0.15 }}
-                            >
-                              <Check size={checkSize} className="stroke-[3.5]" />
-                            </motion.div>
-                          )}
-                        </button>
-                      );
-                    })}
+                <div className="flex flex-col gap-4 py-6 w-full max-w-xl mx-auto select-none">
+                  <div className="flex justify-between w-full md:hidden px-1 sm:px-4">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAnswer(globalIdx, q.choices[q.choices.length - 1].choiceId)}
+                      className="text-[11px] sm:text-xs font-extrabold text-purple-600 dark:text-purple-400 hover:scale-105 active:scale-95 transition-transform text-left"
+                    >
+                      Không đồng ý
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAnswer(globalIdx, q.choices[0].choiceId)}
+                      className="text-[11px] sm:text-xs font-extrabold text-emerald-600 dark:text-emerald-400 hover:scale-105 active:scale-95 transition-transform text-right"
+                    >
+                      Đồng ý
+                    </button>
                   </div>
 
-                  {/* Right Label: Disagree */}
-                  <button
-                    type="button"
-                    onClick={() => handleSelectAnswer(globalIdx, q.choices[q.choices.length - 1].choiceId)}
-                    className="text-xs sm:text-sm md:text-base font-extrabold text-purple-600 dark:text-purple-450 hover:scale-105 active:scale-95 transition-transform text-right shrink-0"
-                  >
-                    Không đồng ý
-                  </button>
+                  <div className="flex items-center justify-center md:justify-between gap-2 sm:gap-4 md:gap-8 w-full">
+                    {/* Left Label: Disagree (Desktop) */}
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAnswer(globalIdx, q.choices[q.choices.length - 1].choiceId)}
+                      className="hidden md:block text-sm md:text-base font-extrabold text-purple-600 dark:text-purple-400 hover:scale-105 active:scale-95 transition-transform text-left shrink-0"
+                    >
+                      Không đồng ý
+                    </button>
+
+                    {/* Circles list */}
+                    <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-5 flex-1">
+                      {q.choices.map((option, choiceIdx) => {
+                        const isSelected = answers[globalIdx] === option.choiceId;
+                        const totalChoicesCount = q.choices.length;
+
+                        // Calculate size
+                        let sizeClass = "size-6 md:size-8";
+                        let checkSize = 10;
+                        if (choiceIdx === 0 || choiceIdx === totalChoicesCount - 1) {
+                          sizeClass = "size-10 md:size-12";
+                          checkSize = 18;
+                        } else if (choiceIdx === 1 || choiceIdx === totalChoicesCount - 2) {
+                          sizeClass = "size-8 md:size-10";
+                          checkSize = 14;
+                        }
+
+                        // Colors based on choice index relative to midpoint
+                        const midpoint = (totalChoicesCount - 1) / 2;
+                        let borderStyle = "";
+                        let selectedStyle = "";
+
+                        if (choiceIdx < midpoint) {
+                          // Purple/Disagree side (left = Không đồng ý)
+                          borderStyle = "border-purple-500 hover:bg-purple-50/20 dark:hover:bg-purple-950/10";
+                          selectedStyle = "border-purple-500 bg-purple-500/20 dark:bg-purple-500/30 text-purple-600 dark:text-purple-400";
+                        } else if (choiceIdx === midpoint) {
+                          // Neutral middle
+                          borderStyle = "border-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/10";
+                          selectedStyle = "border-slate-400 bg-slate-400/20 dark:bg-slate-400/30 text-slate-500 dark:text-slate-400";
+                        } else {
+                          // Green/Agree side (right = Đồng ý)
+                          borderStyle = "border-emerald-500 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10";
+                          selectedStyle = "border-emerald-500 bg-emerald-500/20 dark:bg-emerald-500/30 text-emerald-600 dark:text-emerald-400";
+                        }
+
+                        return (
+                          <button
+                            key={option.choiceId}
+                            type="button"
+                            onClick={() => handleSelectAnswer(globalIdx, option.choiceId)}
+                            className={`rounded-full border-2 flex items-center justify-center transition-all duration-205 cursor-pointer hover:scale-110 active:scale-95 ${sizeClass} ${isSelected ? selectedStyle : `${borderStyle} bg-transparent text-transparent`
+                              }`}
+                            title={option.content}
+                          >
+                            {isSelected && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 0.15 }}
+                              >
+                                <Check size={checkSize} className="stroke-[3.5]" />
+                              </motion.div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Right Label: Agree (Desktop) */}
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAnswer(globalIdx, q.choices[0].choiceId)}
+                      className="hidden md:block text-sm md:text-base font-extrabold text-emerald-600 dark:text-emerald-400 hover:scale-105 active:scale-95 transition-transform text-right shrink-0"
+                    >
+                      Đồng ý
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -364,7 +421,7 @@ export default function FullTestPage() {
       </AnimatePresence>
 
       {/* Pagination Footer */}
-      <div 
+      <div
         id="pagination-footer"
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-slate-200 dark:border-slate-800"
       >

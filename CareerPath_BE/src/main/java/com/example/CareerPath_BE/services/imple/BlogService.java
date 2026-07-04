@@ -194,7 +194,7 @@ public class BlogService implements IBlogService {
         blog.setUsers(user);
         blog.setViewCount(0);
         blog.setLikeCount(0);
-
+        blog.setSlug(generateSlug(request.getTitle()));
         Set<BlogCategories> categories = new HashSet<>();
         categories.add(category);
         blog.setBlogCategories(categories);
@@ -280,5 +280,20 @@ public class BlogService implements IBlogService {
         responseDto.setCommentCount(saved.getBlogComments().size());
         responseDto.setLikeCount(saved.getLikeCount());
         return responseDto;
+    }
+
+    @Override
+    public String generateSlug(String title) {
+        String baseSlug = title.toLowerCase().trim()
+                .replaceAll("[^a-z0-9\s-]", "")
+                .replaceAll("\s+", "-");
+
+        String uniqueSlug = baseSlug;
+        int counter = 1;
+        while (blogRepository.existsBySlug(uniqueSlug)) {
+            uniqueSlug = baseSlug + "-" + counter;
+            counter++;
+        }
+        return uniqueSlug;
     }
 }

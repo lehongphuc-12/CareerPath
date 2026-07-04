@@ -9,7 +9,8 @@ import {
   HelpCircle,
   FileText,
   Shield,
-  AlertTriangle
+  AlertTriangle,
+  ClipboardList,
 } from 'lucide-react';
 
 // Import sub-components
@@ -18,11 +19,12 @@ import UserManagement from './components/UserManagement';
 import CareerManagement from './components/CareerManagement';
 import QuestionManagement from './components/QuestionManagement';
 import BlogManagement from './components/BlogManagement';
+import TestResultManagement from './components/TestResultManagement';
 
 export default function AdminPage() {
   const { user } = useStore();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'careers' | 'questions' | 'blogs'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'careers' | 'questions' | 'blogs' | 'test-results'>('overview');
 
   // Route protection
   useEffect(() => {
@@ -106,6 +108,12 @@ export default function AdminPage() {
           >
             <FileText size={18} /> Bài viết (Blogs)
           </button>
+          <button
+            onClick={() => setActiveTab('test-results')}
+            className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold transition-all text-sm ${activeTab === 'test-results' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+          >
+            <ClipboardList size={18} /> Kết quả bài test
+          </button>
         </aside>
 
         {/* Main Tab Content */}
@@ -115,6 +123,7 @@ export default function AdminPage() {
           {activeTab === 'careers' && <CareerManagement />}
           {activeTab === 'questions' && <QuestionManagement />}
           {activeTab === 'blogs' && <BlogManagement />}
+          {activeTab === 'test-results' && <TestResultManagement />}
         </main>
       </div>
     </div>

@@ -5,6 +5,10 @@ import { authService } from '../services/authService';
 import { useStore } from '../store/useStore';
 import { toast } from '../store/useToastStore';
 import { LoginRequest } from '../types/auth';
+import { PATHS } from '../routes/paths';
+
+const getPostLoginPath = (role: string) =>
+  role?.toUpperCase() === 'ADMIN' ? PATHS.ADMIN : PATHS.HOME;
 
 export const useLogin = () => {
   const navigate = useNavigate();
@@ -41,7 +45,7 @@ export const useLogin = () => {
         xp: 0
       });
       toast.success('Đăng nhập thành công!');
-      navigate('/');
+      navigate(getPostLoginPath(response.user.role));
     } catch (err: any) {
       const msg = err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
       setError(msg);
@@ -65,7 +69,7 @@ export const useLogin = () => {
         xp: 0
       });
       toast.success('Đăng nhập Google thành công!');
-      navigate('/');
+      navigate(getPostLoginPath(response.user.role));
     } catch (err: any) {
       const msg = err.message || 'Đăng nhập bằng Google thất bại. Vui lòng thử lại.';
       setError(msg);
