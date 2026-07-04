@@ -5,6 +5,16 @@ import { useStore } from './store/useStore';
 import { authService } from './services/authService';
 import { authApi } from './api/authApi';
 import { ToastContainer } from './components/common/Toast';
+import ReactGA from 'react-ga4';
+import { useLocation } from 'react-router-dom';
+
+function AnalyticsTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    ReactGA.send({ hitType: 'pageview', page: location.pathname + location.search });
+  }, [location]);
+  return null;
+}
 
 function App() {
   const { theme, setUser } = useStore();
@@ -49,6 +59,7 @@ function App() {
 
   return (
     <Router>
+      <AnalyticsTracker />
       <AppRoutes />
       <ToastContainer />
     </Router>
